@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Cherry Convertor
 
 Free, privacy-first image tools. Compress, resize, convert, and prepare Indian document photos **entirely in the browser**.
@@ -58,3 +59,7 @@ Four-color system only:
 ## Licence
 
 Private project. Use and deploy as you wish for Cherry Convertor.
+=======
+# cherry-convertor
+Free online image tools – Image Compressor, Resizer, Passport Photo Maker, JPG to PDF and more. Client-side processing.
+>>>>>>> afbff83479199c418ecad4e2446d9296a0bed0e2
