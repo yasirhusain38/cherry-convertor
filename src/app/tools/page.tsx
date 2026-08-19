@@ -5,7 +5,7 @@ import { TOOLS } from "@/lib/tools";
 export const metadata: Metadata = {
   title: "All Image Tools",
   description:
-    "Browse every Cherry Convertor tool: compress, resize, convert any format, watermark, rotate, and Indian document photo makers.",
+    "Browse every Cherry Converter tool: compress, resize, convert any format, watermark, rotate, and Indian document photo makers.",
   alternates: { canonical: "/tools" },
 };
 

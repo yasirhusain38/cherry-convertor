@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "Cherry Convertor — free image tools, processed in your browser";
+export const alt = "Cherry Converter — free image tools, processed in your browser";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -34,7 +34,7 @@ export default function OpenGraphImage() {
           >
             C
           </div>
-          CHERRY CONVERTOR
+          CHERRY CONVERTER
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
           <div

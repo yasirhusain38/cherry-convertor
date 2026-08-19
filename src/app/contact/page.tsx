@@ -3,7 +3,7 @@ import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Contact",
-  description: "Contact Cherry Convertor for product questions, press, or partnership.",
+  description: "Contact Cherry Converter for product questions, press, or partnership.",
   alternates: { canonical: "/contact" },
 };
 

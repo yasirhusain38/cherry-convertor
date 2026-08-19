@@ -37,7 +37,7 @@ export function Logo({
     <Link
       href="/"
       className="group flex items-center gap-3 no-underline"
-      aria-label="Cherry Convertor home"
+      aria-label="Cherry Converter home"
     >
       <CherryMark className="h-8 w-8 shrink-0" />
       {compact ? null : (
@@ -46,7 +46,7 @@ export function Logo({
             inverted ? "text-[#F5F5F1]" : "text-ink"
           }`}
         >
-          Cherry Convertor
+          Cherry Converter
         </span>
       )}
     </Link>

@@ -48,7 +48,7 @@ export function WatermarkPanel({
         <input
           className="field text-base"
           value={value.watermark}
-          placeholder="e.g. © Priya Sharma  ·  cherryconvertor.com  ·  Confidential"
+          placeholder="e.g. © Priya Sharma  ·  cherryconverter.com  ·  Confidential"
           onChange={(event) => patch({ watermark: event.target.value })}
         />
       </label>

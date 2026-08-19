@@ -5,7 +5,7 @@ import { SITE } from "@/lib/site";
 export const metadata: Metadata = {
   title: "About",
   description:
-    "Cherry Convertor is a free, privacy-first image tools studio. Compress, resize, and prepare Indian document photos entirely in the browser.",
+    "Cherry Converter is a free, privacy-first image tools studio. Compress, resize, and prepare Indian document photos entirely in the browser.",
   alternates: { canonical: "/about" },
 };
 
@@ -13,7 +13,7 @@ export default function AboutPage() {
   return (
     <article className="container-page prose-site max-w-3xl py-16">
       <p className="label">Studio</p>
-      <h1 className="display mt-3 text-5xl">About Cherry Convertor</h1>
+      <h1 className="display mt-3 text-5xl">About Cherry Converter</h1>
       <p className="mt-6">
         {SITE.name} is a free image-tools studio built for people who need a 50 KB
         JPEG at 11 p.m. before a form closes — and who would rather not upload a
@@ -30,7 +30,7 @@ export default function AboutPage() {
         Almost every tool uses the HTML5 Canvas API and the File API. HEIC files
         are decoded with a lightweight in-browser library (heic2any / libheif).
         PDFs are assembled with jsPDF. ZIPs are packed with JSZip. None of those
-        steps require a Cherry Convertor server.
+        steps require a Cherry Converter server.
       </p>
       <h2>What is next</h2>
       <p>

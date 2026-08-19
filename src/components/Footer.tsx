@@ -40,7 +40,7 @@ export function Footer() {
       </div>
       <div className="border-t border-[var(--line)]">
         <div className="container-page flex flex-col gap-3 py-5 text-xs tracking-[0.12em] text-[var(--ink-faint)] uppercase sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} Cherry Convertor</p>
+          <p>© {new Date().getFullYear()} Cherry Converter</p>
           <div className="flex flex-wrap gap-5">
             <Link href="/about">About</Link>
             <Link href="/privacy">Privacy</Link>

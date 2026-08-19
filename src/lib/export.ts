@@ -121,7 +121,7 @@ export async function canvasToFormat(
   }
   if (format.id === "html") {
     const dataUrl = await pngDataUrl(canvas);
-    const html = `<!doctype html><meta charset="utf-8"><title>Cherry Convertor</title><img alt="" src="${dataUrl}" width="${canvas.width}" height="${canvas.height}">`;
+    const html = `<!doctype html><meta charset="utf-8"><title>Cherry Converter</title><img alt="" src="${dataUrl}" width="${canvas.width}" height="${canvas.height}">`;
     return wrapResult(new Blob([html], { type: format.mime }), canvas, format.mime);
   }
   if (format.id === "json") {

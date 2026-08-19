@@ -4,7 +4,7 @@ import { SITE } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Privacy Policy",
   description:
-    "Cherry Convertor processes images in your browser. We do not upload, store, or sell your photos. Read the full privacy policy.",
+    "Cherry Converter processes images in your browser. We do not upload, store, or sell your photos. Read the full privacy policy.",
   alternates: { canonical: "/privacy" },
 };
 

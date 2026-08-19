@@ -4,7 +4,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Journal",
   description:
-    "Guides on Indian passport photos, 50KB form uploads, HEIC conversion, and private image compression. Cherry Convertor journal.",
+    "Guides on Indian passport photos, 50KB form uploads, HEIC conversion, and private image compression. Cherry Converter journal.",
   alternates: { canonical: "/blog" },
 };
 

@@ -83,7 +83,7 @@ export const CATEGORIES: Array<{
 const sizeFaqs = (kb: string, use: string): FaqItem[] => [
   {
     q: `How do I resize an image to ${kb} for free?`,
-    a: `Upload the photo on this page. Cherry Convertor compresses it in your browser until the file is ${kb} or smaller, then you download the result. Nothing is uploaded to a server.`,
+    a: `Upload the photo on this page. Cherry Converter compresses it in your browser until the file is ${kb} or smaller, then you download the result. Nothing is uploaded to a server.`,
   },
   {
     q: `Will the photo stay clear at ${kb}?`,
@@ -108,7 +108,7 @@ export const TOOLS: ToolDef[] = [
     kicker: "01  /  Compress",
     h1: "Compress images online without uploading them",
     lede: "Drop a JPEG, PNG, WebP, or HEIC file. Type any target size in KB or MB, or tune quality. Compare before and after. Processing stays on this device.",
-    metaTitle: "Image Compressor Online Free – Cherry Convertor",
+    metaTitle: "Image Compressor Online Free – Cherry Converter",
     metaDescription:
       "Compress JPG, PNG, and WebP images in your browser. See original vs new size, compare before and after, and download instantly. No upload, no login.",
     keywords: ["image compressor", "compress jpg", "reduce image size", "compress png online"],
@@ -123,7 +123,7 @@ export const TOOLS: ToolDef[] = [
       },
       {
         q: "Do you upload my photos?",
-        a: "No. Cherry Convertor is built so images never leave the browser for this tool. There is no account and no server-side processing.",
+        a: "No. Cherry Converter is built so images never leave the browser for this tool. There is no account and no server-side processing.",
       },
       {
         q: "Which formats can I compress?",
@@ -144,7 +144,7 @@ export const TOOLS: ToolDef[] = [
     kicker: "Convert  /  Any format",
     h1: "Convert any file — search every format",
     lede: "Drop a file, search the output format, download. Images, HEIC, SVG, ICO, BMP, and PDF run in your browser. Office, audio, and video are listed so you can see what stays desktop-only.",
-    metaTitle: "Convert Any File Online Free – Cherry Convertor",
+    metaTitle: "Convert Any File Online Free – Cherry Converter",
     metaDescription:
       "Convert images to JPG, PNG, WebP, BMP, ICO, SVG, GIF, AVIF, or PDF in your browser. Searchable format list. No upload, no login.",
     keywords: [
@@ -179,7 +179,7 @@ export const TOOLS: ToolDef[] = [
     kicker: "02  /  Resize",
     h1: "Resize an image by pixels, percent, or aspect lock",
     lede: "Set exact pixels, or type any file size — 1 KB, 2 MB, 1 GB. The encoder hits that cap in your browser.",
-    metaTitle: "Image Resizer Online Free – Cherry Convertor",
+    metaTitle: "Image Resizer Online Free – Cherry Converter",
     metaDescription:
       "Resize images by exact pixels or percentage in your browser. Lock aspect ratio, preview live, and download JPG, PNG, or WebP. Free, no upload.",
     keywords: ["image resizer", "resize photo online", "change image dimensions"],
@@ -215,7 +215,7 @@ export const TOOLS: ToolDef[] = [
     kicker: "Target  /  10 KB",
     h1: "Resize an image to 10KB online",
     lede: "Built for strict exam and job portals that reject anything above 10 KB. The encoder hunts for the smallest usable JPEG that still looks like you.",
-    metaTitle: "Resize Image to 10KB Online Free – Cherry Convertor",
+    metaTitle: "Resize Image to 10KB Online Free – Cherry Converter",
     metaDescription:
       "Compress any photo to 10KB or less in your browser. Ideal for SSC, railway, and strict Indian form uploads. Free, private, no login.",
     keywords: ["resize image to 10kb", "compress image to 10kb", "photo 10kb"],
@@ -232,7 +232,7 @@ export const TOOLS: ToolDef[] = [
     kicker: "Target  /  20 KB",
     h1: "Resize an image to 20KB online",
     lede: "A common ceiling for SSC, banking, and state exam photo uploads. Drop a file and download a JPEG at or under 20 KB.",
-    metaTitle: "Resize Image to 20KB Online Free – Cherry Convertor",
+    metaTitle: "Resize Image to 20KB Online Free – Cherry Converter",
     metaDescription:
       "Resize any image to 20KB free in your browser. Used for SSC, IBPS, and government form photos. No upload, no watermark.",
     keywords: ["resize image to 20kb", "compress photo 20kb", "ssc photo 20kb"],
@@ -249,7 +249,7 @@ export const TOOLS: ToolDef[] = [
     kicker: "Target  /  30 KB",
     h1: "Resize an image to 30KB online",
     lede: "Mid-range form limit. Keeps more facial detail than 10–20 KB tools while still clearing most Indian e-governance caps.",
-    metaTitle: "Resize Image to 30KB Online Free – Cherry Convertor",
+    metaTitle: "Resize Image to 30KB Online Free – Cherry Converter",
     metaDescription:
       "Compress a photo to 30KB online, privately in your browser. Useful for university and state government uploads that sit between 20 and 50 KB.",
     keywords: ["resize image to 30kb", "compress image 30kb"],
@@ -266,7 +266,7 @@ export const TOOLS: ToolDef[] = [
     kicker: "Target  /  50 KB",
     h1: "Resize an image to 50KB online",
     lede: "The most requested Indian form size. Passport portals, Aadhaar-related uploads, PAN, and college applications often stop at 50 KB.",
-    metaTitle: "Resize Image to 50KB Online Free – Cherry Convertor",
+    metaTitle: "Resize Image to 50KB Online Free – Cherry Converter",
     metaDescription:
       "Resize any image to 50KB free. Browser-based compression for passport, Aadhaar, PAN, and college forms. See original vs new size instantly.",
     keywords: ["resize image to 50kb", "compress image to 50kb", "photo 50kb online"],
@@ -295,7 +295,7 @@ export const TOOLS: ToolDef[] = [
     kicker: "Target  /  100 KB",
     h1: "Resize an image to 100KB online",
     lede: "A gentler cap used by universities, some passport desks, and email attachments. More headroom means cleaner skin tone and text.",
-    metaTitle: "Resize Image to 100KB Online Free – Cherry Convertor",
+    metaTitle: "Resize Image to 100KB Online Free – Cherry Converter",
     metaDescription:
       "Compress images to 100KB in your browser. Free tool for university forms, email, and portals that allow a higher quality JPEG.",
     keywords: ["resize image to 100kb", "compress to 100kb"],
@@ -312,7 +312,7 @@ export const TOOLS: ToolDef[] = [
     kicker: "Target  /  200 KB",
     h1: "Resize an image to 200KB online",
     lede: "Good for WhatsApp-alternative shares, HR portals, and documents that still need a small email footprint.",
-    metaTitle: "Resize Image to 200KB Online Free – Cherry Convertor",
+    metaTitle: "Resize Image to 200KB Online Free – Cherry Converter",
     metaDescription:
       "Reduce any photo to 200KB online without uploading it. Free JPEG compressor with live size comparison.",
     keywords: ["resize image to 200kb", "compress photo 200kb"],
@@ -329,7 +329,7 @@ export const TOOLS: ToolDef[] = [
     kicker: "Target  /  500 KB",
     h1: "Resize an image to 500KB online",
     lede: "Half a megabyte is plenty for most web and application photos while staying well under typical email limits.",
-    metaTitle: "Resize Image to 500KB Online Free – Cherry Convertor",
+    metaTitle: "Resize Image to 500KB Online Free – Cherry Converter",
     metaDescription:
       "Compress an image to 500KB free in your browser. Keep more detail than strict 20–50 KB tools. No upload required.",
     keywords: ["resize image to 500kb", "compress image 500kb"],
@@ -346,7 +346,7 @@ export const TOOLS: ToolDef[] = [
     kicker: "Target  /  1 MB",
     h1: "Resize an image to 1MB online",
     lede: "Cap a large phone photo at 1 MB for websites, tickets, and portals that allow higher quality uploads.",
-    metaTitle: "Resize Image to 1MB Online Free – Cherry Convertor",
+    metaTitle: "Resize Image to 1MB Online Free – Cherry Converter",
     metaDescription:
       "Compress any image to 1MB or less in your browser. Free, private, and built for high-quality web and form uploads.",
     keywords: ["resize image to 1mb", "compress image to 1mb"],
@@ -363,7 +363,7 @@ export const TOOLS: ToolDef[] = [
     kicker: "Convert  /  PDF",
     h1: "Convert JPG to PDF in your browser",
     lede: "One photo or a whole set. Each image becomes a page. Files are assembled locally with no server hop.",
-    metaTitle: "JPG to PDF Converter Online Free – Cherry Convertor",
+    metaTitle: "JPG to PDF Converter Online Free – Cherry Converter",
     metaDescription:
       "Convert JPG images to PDF free in your browser. Add multiple photos, pick A4 or Letter, and download instantly. Images never leave your device.",
     keywords: ["jpg to pdf", "jpeg to pdf", "photo to pdf"],
@@ -392,7 +392,7 @@ export const TOOLS: ToolDef[] = [
     kicker: "Convert  /  PDF",
     h1: "Convert multiple images to one PDF",
     lede: "JPG, PNG, and WebP in a single document. Reorder is first-in order. Built for scanned pages and mixed photo sets.",
-    metaTitle: "Image to PDF Converter Online Free – Cherry Convertor",
+    metaTitle: "Image to PDF Converter Online Free – Cherry Converter",
     metaDescription:
       "Turn multiple images into a single PDF in your browser. Supports JPG, PNG, and WebP. Free, private, no watermark.",
     keywords: ["image to pdf", "png to pdf", "multiple images to pdf"],
@@ -421,7 +421,7 @@ export const TOOLS: ToolDef[] = [
     kicker: "Convert  /  PNG",
     h1: "Convert JPG to PNG online",
     lede: "Lossless PNG output with optional transparency fill. Useful when you need a format that editors and printers accept everywhere.",
-    metaTitle: "JPG to PNG Converter Online Free – Cherry Convertor",
+    metaTitle: "JPG to PNG Converter Online Free – Cherry Converter",
     metaDescription:
       "Convert JPG to PNG in your browser. Free, no upload, instant download. Keep full resolution while changing format.",
     keywords: ["jpg to png", "jpeg to png converter"],
@@ -446,7 +446,7 @@ export const TOOLS: ToolDef[] = [
     kicker: "Convert  /  JPG",
     h1: "Convert PNG to JPG online",
     lede: "Flatten transparency onto white (or a colour you pick) and export a smaller JPEG for forms and email.",
-    metaTitle: "PNG to JPG Converter Online Free – Cherry Convertor",
+    metaTitle: "PNG to JPG Converter Online Free – Cherry Converter",
     metaDescription:
       "Convert PNG to JPG free in your browser. Flatten transparency, choose quality, and download a smaller photo. No upload.",
     keywords: ["png to jpg", "png to jpeg", "convert png"],
@@ -471,7 +471,7 @@ export const TOOLS: ToolDef[] = [
     kicker: "Convert  /  WebP",
     h1: "Convert JPG to WebP online",
     lede: "WebP is the modern web default. Same photo, often 25–40% smaller than JPEG at a matched quality.",
-    metaTitle: "JPG to WebP Converter Online Free – Cherry Convertor",
+    metaTitle: "JPG to WebP Converter Online Free – Cherry Converter",
     metaDescription:
       "Convert JPG to WebP in your browser. Smaller files for websites, still processed locally. Free and private.",
     keywords: ["jpg to webp", "jpeg to webp"],
@@ -496,7 +496,7 @@ export const TOOLS: ToolDef[] = [
     kicker: "Convert  /  JPG",
     h1: "Convert WebP to JPG online",
     lede: "Open a WebP from WhatsApp or a modern camera and save a JPEG that older portals will accept.",
-    metaTitle: "WebP to JPG Converter Online Free – Cherry Convertor",
+    metaTitle: "WebP to JPG Converter Online Free – Cherry Converter",
     metaDescription:
       "Convert WebP to JPG free in your browser. Make WhatsApp and modern camera photos compatible with Indian forms.",
     keywords: ["webp to jpg", "webp to jpeg"],
@@ -521,7 +521,7 @@ export const TOOLS: ToolDef[] = [
     kicker: "Convert  /  HEIC",
     h1: "Convert HEIC to JPG in the browser",
     lede: "iPhone photos arrive as HEIC. We decode them locally with a lightweight library, then export a JPEG any form will take.",
-    metaTitle: "HEIC to JPG Converter Online Free – Cherry Convertor",
+    metaTitle: "HEIC to JPG Converter Online Free – Cherry Converter",
     metaDescription:
       "Convert iPhone HEIC photos to JPG in your browser. No upload. Download a standard JPEG for email, WhatsApp, and Indian forms.",
     keywords: ["heic to jpg", "heic to jpeg", "iphone heic converter"],
@@ -529,7 +529,7 @@ export const TOOLS: ToolDef[] = [
     faqs: [
       {
         q: "What library do you use?",
-        a: "heic2any (libheif) runs in the browser. The HEIC file is not sent to Cherry Convertor servers.",
+        a: "heic2any (libheif) runs in the browser. The HEIC file is not sent to Cherry Converter servers.",
       },
       {
         q: "Can I convert several HEIC files?",
@@ -550,7 +550,7 @@ export const TOOLS: ToolDef[] = [
     kicker: "Documents  /  Passport",
     h1: "Passport photo maker for India and international sizes",
     lede: "Crop to official aspect, set a white background, export the exact millimetre size, and optionally print a sheet of copies.",
-    metaTitle: "Passport Photo Maker Online Free – Cherry Convertor",
+    metaTitle: "Passport Photo Maker Online Free – Cherry Converter",
     metaDescription:
       "Make India, US, UK, and Schengen passport photos in your browser. Crop, white background, exact mm size, and a printable sheet. No upload.",
     keywords: ["passport photo maker", "passport size photo online", "india passport photo"],
@@ -579,7 +579,7 @@ export const TOOLS: ToolDef[] = [
     kicker: "Documents  /  Passport",
     h1: "Resize a photo to passport size",
     lede: "Already cropped? Drop it here to hit 51×51 mm (India) or another official size, then compress for the upload portal.",
-    metaTitle: "Passport Photo Resizer Online Free – Cherry Convertor",
+    metaTitle: "Passport Photo Resizer Online Free – Cherry Converter",
     metaDescription:
       "Resize any photo to Indian or international passport size in your browser. Exact millimetres, optional 20–50 KB export.",
     keywords: ["passport photo resizer", "passport size photo 51x51", "resize passport photo"],
@@ -604,7 +604,7 @@ export const TOOLS: ToolDef[] = [
     kicker: "Documents  /  Aadhaar",
     h1: "Aadhaar photo resizer — 3.5 × 4.5 cm",
     lede: "UIDAI-style portrait: 35×45 mm, white background, typically 20–50 KB JPEG. Crop and export without uploading.",
-    metaTitle: "Aadhaar Photo Resizer Online Free – Cherry Convertor",
+    metaTitle: "Aadhaar Photo Resizer Online Free – Cherry Converter",
     metaDescription:
       "Resize a photo for Aadhaar / UIDAI: 3.5×4.5 cm, white background, 20–50 KB. Processed in your browser. Free.",
     keywords: ["aadhaar photo resizer", "aadhaar photo size", "uidai photo 50kb"],
@@ -629,7 +629,7 @@ export const TOOLS: ToolDef[] = [
     kicker: "Documents  /  PAN",
     h1: "PAN card photo resizer — 2.5 × 3.5 cm",
     lede: "NSDL / Protean style portrait with a white field. Export a small JPEG that clears the 20–50 KB window.",
-    metaTitle: "PAN Card Photo Resizer Online Free – Cherry Convertor",
+    metaTitle: "PAN Card Photo Resizer Online Free – Cherry Converter",
     metaDescription:
       "Resize a photo for PAN card e-KYC: 2.5×3.5 cm, white background, under 50 KB. Runs locally in your browser.",
     keywords: ["pan card photo resizer", "pan photo size", "pan card photo 50kb"],
@@ -654,7 +654,7 @@ export const TOOLS: ToolDef[] = [
     kicker: "Documents  /  Signature",
     h1: "Signature resizer and size reducer",
     lede: "Crop a pen scan, convert it to clean black ink, and hit 10–20 KB for PAN, exam, and banking forms.",
-    metaTitle: "Signature Resizer / Signature Size Reducer Free – Cherry Convertor",
+    metaTitle: "Signature Resizer / Signature Size Reducer Free – Cherry Converter",
     metaDescription:
       "Resize and compress a signature to 10–20 KB. Crop, ink cleanup, and exact centimetre sizes. Processed in your browser.",
     keywords: ["signature resizer", "signature size reducer", "signature 20kb", "pan signature"],
@@ -678,7 +678,7 @@ export const TOOLS: ToolDef[] = [
     kicker: "Documents  /  Visa",
     h1: "Visa photo resizer — India, US, UK, Schengen",
     lede: "Switch presets for the embassy you are applying to. Crop, white background, exact millimetres.",
-    metaTitle: "Visa Photo Resizer Online Free – Cherry Convertor",
+    metaTitle: "Visa Photo Resizer Online Free – Cherry Converter",
     metaDescription:
       "Resize visa photos for India, US, UK, and Schengen sizes in your browser. Exact mm output, white background, free.",
     keywords: ["visa photo resizer", "india visa photo", "schengen photo size"],
@@ -703,7 +703,7 @@ export const TOOLS: ToolDef[] = [
     kicker: "Documents  /  Exam",
     h1: "Exam form photo resizer (SSC, UPSC, NEET, JEE)",
     lede: "Stamp-size 3.5×4.5 cm with a hard 10–100 KB ceiling. Built for the portals that reject anything else.",
-    metaTitle: "Exam Form Photo Resizer Online Free – Cherry Convertor",
+    metaTitle: "Exam Form Photo Resizer Online Free – Cherry Converter",
     metaDescription:
       "Resize exam form photos for SSC, UPSC, NEET, and JEE. 3.5×4.5 cm and 10–50 KB JPEG, processed in your browser.",
     keywords: ["exam form photo", "ssc photo resizer", "neet photo size", "upsc photo 20kb"],
@@ -728,7 +728,7 @@ export const TOOLS: ToolDef[] = [
     kicker: "Documents  /  College",
     h1: "College admission photo resizer",
     lede: "Standard Indian application portrait — 3.5×4.5 cm, 10–50 KB, white background. Ready for university portals.",
-    metaTitle: "College Admission Photo Resizer Online Free – Cherry Convertor",
+    metaTitle: "College Admission Photo Resizer Online Free – Cherry Converter",
     metaDescription:
       "Resize a photo for Indian college and university applications. 3.5×4.5 cm, 10–50 KB, browser-based and free.",
     keywords: ["college admission photo", "university photo resizer", "admission photo 50kb"],
@@ -749,7 +749,7 @@ export const TOOLS: ToolDef[] = [
     kicker: "Documents  /  Government",
     h1: "Government form photo resizer",
     lede: "A generic 3.5×4.5 cm, 20–50 KB export that clears the majority of Indian e-governance photo fields.",
-    metaTitle: "Government Form Photo Resizer Online Free – Cherry Convertor",
+    metaTitle: "Government Form Photo Resizer Online Free – Cherry Converter",
     metaDescription:
       "Resize photos for Indian government forms: 3.5×4.5 cm, 20–50 KB JPEG. Private browser processing, no login.",
     keywords: ["government form photo", "e governance photo size", "india form photo 50kb"],
@@ -770,7 +770,7 @@ export const TOOLS: ToolDef[] = [
     kicker: "Edit  /  DPI",
     h1: "Change image DPI (72, 150, 300)",
     lede: "Rewrite JPEG / PNG density metadata, or resample so a print size holds at the new DPI. No server, no install.",
-    metaTitle: "Image DPI Changer Online Free – Cherry Convertor",
+    metaTitle: "Image DPI Changer Online Free – Cherry Converter",
     metaDescription:
       "Change image DPI to 72, 150, or 300 in your browser. Update metadata or resample for print. Free and private.",
     keywords: ["dpi changer", "change image dpi", "300 dpi converter"],
@@ -794,7 +794,7 @@ export const TOOLS: ToolDef[] = [
     kicker: "Bulk  /  Resize",
     h1: "Bulk image resizer — many files at once",
     lede: "Drop a folder of photos, set one width, and download a ZIP. Everything is resized locally.",
-    metaTitle: "Bulk Image Resizer Online Free – Cherry Convertor",
+    metaTitle: "Bulk Image Resizer Online Free – Cherry Converter",
     metaDescription:
       "Resize multiple images at once in your browser. Set max width, keep aspect ratio, download a ZIP. No upload.",
     keywords: ["bulk image resizer", "resize multiple images", "batch resize photos"],
@@ -819,7 +819,7 @@ export const TOOLS: ToolDef[] = [
     kicker: "Bulk  /  Compress",
     h1: "Bulk image compressor — ZIP download",
     lede: "One quality setting, many files, one ZIP. Built for clearing a camera roll before a form deadline.",
-    metaTitle: "Bulk Image Compressor Online Free – Cherry Convertor",
+    metaTitle: "Bulk Image Compressor Online Free – Cherry Converter",
     metaDescription:
       "Compress multiple images at once in your browser and download a ZIP. Free, private, no account.",
     keywords: ["bulk image compressor", "compress multiple images", "batch compress jpg"],
@@ -840,7 +840,7 @@ export const TOOLS: ToolDef[] = [
     kicker: "Edit  /  Rotate",
     h1: "Rotate an image 90°, 180°, or 270°",
     lede: "Spin a photo in the browser, then search any output format — JPG, PNG, WebP, PDF, ICO, SVG, and more.",
-    metaTitle: "Rotate Image Online Free – Cherry Convertor",
+    metaTitle: "Rotate Image Online Free – Cherry Converter",
     metaDescription:
       "Rotate JPG, PNG, and HEIC photos 90, 180, or 270 degrees in your browser. Export any supported format. No upload.",
     keywords: ["rotate image", "rotate photo 90 degrees", "rotate jpg online"],
@@ -860,7 +860,7 @@ export const TOOLS: ToolDef[] = [
     kicker: "Edit  /  Flip",
     h1: "Flip an image horizontally or vertically",
     lede: "Mirror a selfie or flip a scan. Then download in any searchable format.",
-    metaTitle: "Flip Image Online Free – Cherry Convertor",
+    metaTitle: "Flip Image Online Free – Cherry Converter",
     metaDescription:
       "Flip photos horizontally or vertically in your browser. Export JPG, PNG, WebP, PDF, and more. Private, no upload.",
     keywords: ["flip image", "mirror photo", "flip horizontal online"],
@@ -880,7 +880,7 @@ export const TOOLS: ToolDef[] = [
     kicker: "Edit  /  B&W",
     h1: "Convert a photo to black and white",
     lede: "One-click grayscale plus brightness and contrast. Search the output format you need.",
-    metaTitle: "Black and White Photo Converter Free – Cherry Convertor",
+    metaTitle: "Black and White Photo Converter Free – Cherry Converter",
     metaDescription:
       "Turn any photo black and white in your browser. Adjust contrast, export any format. No upload.",
     keywords: ["black and white converter", "grayscale photo", "photo to bw"],
@@ -900,7 +900,7 @@ export const TOOLS: ToolDef[] = [
     kicker: "Edit  /  Watermark",
     h1: "Add a text watermark to a photo",
     lede: "Stamp a name or URL on the corner, then download JPG, PNG, PDF, or any searchable format.",
-    metaTitle: "Add Watermark to Image Online Free – Cherry Convertor",
+    metaTitle: "Add Watermark to Image Online Free – Cherry Converter",
     metaDescription:
       "Add a text watermark in your browser. Private, no upload. Export JPG, PNG, WebP, PDF, and more.",
     keywords: ["add watermark", "watermark photo online", "text watermark"],
@@ -928,7 +928,7 @@ export const TOOLS: ToolDef[] = [
     kicker: "Convert  /  Base64",
     h1: "Image to Base64, JSON, HTML, or Markdown",
     lede: "Search TXT, JSON, HTML, or MD in the format picker. The file never leaves this tab.",
-    metaTitle: "Image to Base64 Converter Online Free – Cherry Convertor",
+    metaTitle: "Image to Base64 Converter Online Free – Cherry Converter",
     metaDescription:
       "Convert an image to Base64, JSON, HTML, or Markdown in your browser. Free and private.",
     keywords: ["image to base64", "image to json", "data url converter"],
@@ -948,7 +948,7 @@ export const TOOLS: ToolDef[] = [
     kicker: "Edit  /  Crop",
     h1: "Crop a photo online — free, no upload",
     lede: "Drag the frame, lock an aspect (1:1, 3:4, 2:3, free), and export JPEG, PNG, or WebP.",
-    metaTitle: "Photo Cropper Online Free – Cherry Convertor",
+    metaTitle: "Photo Cropper Online Free – Cherry Converter",
     metaDescription:
       "Crop photos in your browser with aspect-ratio locks. Free, private, instant download. No account.",
     keywords: ["photo cropper", "crop image online", "crop photo 1:1"],
@@ -968,7 +968,7 @@ export const TOOLS: ToolDef[] = [
     kicker: "Edit  /  Background",
     h1: "Background remover — basic, on-device",
     lede: "A corner-sampled chroma key. Best on studio-style portraits with a flat wall. An AI model can be added later without changing this page’s privacy promise.",
-    metaTitle: "Background Remover Online Free – Cherry Convertor",
+    metaTitle: "Background Remover Online Free – Cherry Converter",
     metaDescription:
       "Remove a flat photo background in your browser. Basic chroma-key tool — private, no upload. AI version can be added later.",
     keywords: ["background remover", "remove photo background", "transparent background"],

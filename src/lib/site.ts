@@ -1,13 +1,13 @@
 export const SITE = {
-  name: "Cherry Convertor",
+  name: "Cherry Converter",
   shortName: "Cherry",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://cherryconvertor.com",
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://cherryconverter.com",
   locale: "en_IN",
   tagline: "Free image tools. Processed in your browser.",
   description:
-    "Compress, resize, convert, and prepare Indian document photos entirely in your browser. Cherry Convertor never uploads your images.",
-  email: "hello@cherryconvertor.com",
-  twitter: "@cherryconvertor",
+    "Compress, resize, convert, and prepare Indian document photos entirely in your browser. Cherry Converter never uploads your images.",
+  email: "hello@cherryconverter.com",
+  twitter: "@cherryconverter",
   keywords: [
     "image compressor",
     "resize image to 50kb",

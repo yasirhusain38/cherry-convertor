@@ -18,7 +18,7 @@ export default function Home() {
       <section className="relative overflow-hidden bg-[#F2013F] text-[#F5F5F1]">
         <div className="hero-grid pointer-events-none absolute inset-0" />
         <div className="container-page relative py-20 md:py-28">
-          <p className="label label-light">Cherry Convertor  /  zero uplink</p>
+          <p className="label label-light">Cherry Converter  /  zero uplink</p>
           <h1 className="display mt-6 max-w-5xl text-5xl sm:text-7xl md:text-[88px]">
             Free image tools.
             <br />
@@ -88,7 +88,7 @@ export default function Home() {
         <div className="container-page py-20">
           <p className="label">02  /  Why browser-side</p>
           <h2 className="display mt-3 max-w-3xl text-4xl md:text-5xl">
-            Why Cherry Convertor
+            Why Cherry Converter
           </h2>
           <div className="mt-12 grid gap-10 md:grid-cols-3">
             {[

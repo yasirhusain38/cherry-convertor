@@ -41,7 +41,7 @@ export function PdfTool() {
       }
       if (format.id === "pdf") {
         const pdf = await imagesToPdf({ images, pageSize });
-        downloadBlob(pdf, "cherry-convertor.pdf");
+        downloadBlob(pdf, "cherry-converter.pdf");
       } else {
         const zip = new JSZip();
         for (let i = 0; i < files.length; i += 1) {

@@ -21,7 +21,7 @@ export async function generateMetadata({
   if (!tool) return {};
   const url = `/tools/${tool.slug}`;
   return {
-    title: tool.metaTitle.replace(" – Cherry Convertor", ""),
+    title: tool.metaTitle.replace(" – Cherry Converter", ""),
     description: tool.metaDescription,
     keywords: tool.keywords,
     alternates: { canonical: url },
