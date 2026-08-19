@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Cherry Convertor
 
-## Getting Started
+Free, privacy-first image tools. Compress, resize, convert, and prepare Indian document photos **entirely in the browser**.
 
-First, run the development server:
+## Why Next.js (not a folder of HTML files)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+| | Static HTML | Next.js App Router |
+|---|---|---|
+| Unique titles / OG / FAQ JSON-LD for 31 pages | Manual duplication | `generateMetadata` + tool registry |
+| Core Web Vitals | Fast if you are careful | Fast with the App Router + no client JS on marketing pages |
+| Hosting cost | Any CDN | Same — deploy to Vercel, Cloudflare, or Netlify |
+| Image work | Your own JS | Same Canvas / WASM engine, shared once |
+
+This repo is **Next.js 16 + TypeScript + Tailwind v4**. All heavy lifting is client-side (Canvas, `heic2any`, `jsPDF`, `JSZip`). There is no image-upload API.
+
+## Folder structure
+
+```
+src/
+  app/                     # Routes, SEO, sitemap, robots, OG
+    page.tsx               # Homepage
+    tools/page.tsx         # All tools
+    tools/[slug]/page.tsx  # 31 dedicated tool landing pages
+    about | privacy | contact | blog
+  components/              # Chrome + tool workspaces
+  lib/
+    tools.ts               # SEO copy, FAQs, related links
+    image.ts               # Canvas engine (compress / target KB / crop / DPI)
+    presets.ts             # Passport, Aadhaar, PAN, visa, exam sizes
+    pdf.ts                 # JPG / image → PDF + photo sheets
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Local development
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm install
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Open [http://localhost:3000](http://localhost:3000).
 
-## Learn More
+```bash
+npm run build
+npm start
+```
 
-To learn more about Next.js, take a look at the following resources:
+Set `NEXT_PUBLIC_SITE_URL` in production so canonical URLs and the sitemap use your domain.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Brand
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Four-color system only:
 
-## Deploy on Vercel
+- `#F2013F` Cherry Tomato (colorguide.org) — primary / buttons / logo
+- `#B81D24` hover / pressed / secondary red
+- `#221F1F` canvas, header, hero, cards
+- `#F5F5F1` type, paper, light controls
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Licence
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Private project. Use and deploy as you wish for Cherry Convertor.

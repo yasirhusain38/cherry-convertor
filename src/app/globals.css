@@ -1,26 +1,289 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --red: #f2013f;
+  --red-deep: #b81d24;
+  --charcoal: #221f1f;
+  --paper: #f5f5f1;
+
+  --bg: var(--charcoal);
+  --bg-elevated: var(--charcoal);
+  --bg-dark: var(--charcoal);
+  --bg-darker: var(--charcoal);
+  --ink: var(--paper);
+  --ink-soft: color-mix(in srgb, var(--paper) 68%, var(--charcoal));
+  --ink-faint: color-mix(in srgb, var(--paper) 48%, var(--charcoal));
+  --line: color-mix(in srgb, var(--paper) 16%, var(--charcoal));
+  --line-strong: color-mix(in srgb, var(--paper) 28%, var(--charcoal));
+  --brand: var(--red);
+  --brand-hover: var(--red-deep);
+  --brand-deep: var(--red-deep);
+  --cream: var(--paper);
+  --cream-dark: color-mix(in srgb, var(--paper) 22%, var(--charcoal));
+  --focus: var(--red);
+  --radius: 12px;
+  --radius-lg: 16px;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-bg: var(--bg);
+  --color-elevated: var(--bg-elevated);
+  --color-ink: var(--ink);
+  --color-muted: var(--ink-soft);
+  --color-line: var(--line);
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-dark: var(--bg-dark);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-geist-sans), Inter, system-ui, sans-serif;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100%;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--brand);
+  color: var(--paper);
+}
+
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 3px;
+}
+
+a {
+  color: inherit;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.skip-link {
+  position: absolute;
+  left: 12px;
+  top: -48px;
+  z-index: 80;
+  background: var(--brand);
+  color: var(--paper);
+  padding: 8px 14px;
+  border-radius: 8px;
+}
+
+.skip-link:focus {
+  top: 12px;
+}
+
+.container-page {
+  width: min(1180px, calc(100% - 40px));
+  margin-inline: auto;
+}
+
+.label {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--red);
+}
+
+.label-light {
+  color: var(--paper);
+}
+
+.display {
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 0.92;
+}
+
+.rule {
+  height: 1px;
+  background: var(--line);
+  border: 0;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 0 22px;
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background 160ms ease,
+    color 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease;
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--brand);
+  color: var(--paper);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--brand-hover);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--line-strong);
+}
+
+.btn-ghost:hover:not(:disabled) {
+  border-color: var(--brand);
+  color: var(--brand);
+}
+
+.btn-dark {
+  background: var(--paper);
+  color: var(--charcoal);
+}
+
+.btn-dark:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--paper) 86%, var(--red));
+}
+
+.card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--red);
+  border-radius: var(--radius-lg);
+}
+
+.card-hover {
+  transition:
+    border-color 180ms ease,
+    transform 180ms ease;
+}
+
+.card-hover:hover {
+  border-color: var(--brand);
+  transform: translateY(-2px);
+}
+
+.hero-grid {
+  background-image:
+    linear-gradient(to right, color-mix(in srgb, var(--paper) 8%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--paper) 8%, transparent) 1px, transparent 1px);
+  background-size: 80px 80px;
+  mask-image: radial-gradient(ellipse at center, var(--charcoal) 30%, transparent 78%);
+}
+
+.dropzone {
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-lg);
+  background: var(--bg-elevated);
+  transition:
+    border-color 160ms ease,
+    background 160ms ease;
+}
+
+.dropzone[data-active="true"] {
+  border-color: var(--brand);
+  background: color-mix(in srgb, var(--red) 16%, var(--charcoal));
+}
+
+.field {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid var(--line);
+  background: var(--bg-elevated);
+  border-radius: 12px;
+  padding: 0 14px;
+  color: var(--ink);
+  font: inherit;
+}
+
+.field:focus {
+  outline: none;
+  border-color: var(--brand);
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 2px;
+  background: var(--cream-dark);
+  border-radius: 999px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--brand);
+  cursor: pointer;
+  border: 2px solid var(--paper);
+  box-shadow: 0 0 0 1px var(--brand);
+}
+
+.stat {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  letter-spacing: -0.03em;
+}
+
+.prose-site h2 {
+  font-size: 1.75rem;
+  letter-spacing: -0.03em;
+  margin: 2.5rem 0 0.8rem;
+}
+
+.prose-site h3 {
+  font-size: 1.1rem;
+  margin: 1.8rem 0 0.5rem;
+}
+
+.prose-site p,
+.prose-site li {
+  color: var(--ink-soft);
+  line-height: 1.7;
+}
+
+.prose-site ul {
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 0.4rem;
+}
+
+@media (max-width: 720px) {
+  .container-page {
+    width: min(1180px, calc(100% - 28px));
+  }
+
+  .display {
+    letter-spacing: -0.035em;
+  }
 }
