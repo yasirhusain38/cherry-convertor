@@ -22,13 +22,18 @@ export default function PrivacyPage() {
       </p>
       <h2>What we may collect</h2>
       <ul>
-        <li>Anonymous page analytics (if a privacy-respecting beacon is enabled later).</li>
+        <li>
+          Anonymous page analytics via Google Analytics (measurement ID
+          G-G6QNRC4QBL): pages viewed, device type, and approximate location.
+          This does not include your photos.
+        </li>
         <li>Whatever you choose to send to {SITE.email} by email.</li>
       </ul>
       <h2>Cookies</h2>
       <p>
-        The first version sets no tracking cookies. A future analytics cookie, if
-        any, will be documented here before it ships.
+        Google Analytics may set cookies such as <code>_ga</code> to distinguish
+        browsers. Image tools still run on your device; those cookies are not
+        used to upload or store photographs.
       </p>
       <h2>Third-party code</h2>
       <p>
