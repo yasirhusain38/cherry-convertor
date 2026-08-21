@@ -11,6 +11,8 @@ const NAV = [
   { href: "/tools/resize-image", label: "Resize" },
   { href: "/tools/convert", label: "Convert" },
   { href: "/tools/passport-photo-maker", label: "Documents" },
+  { href: "/countries", label: "Countries" },
+  { href: "/regions", label: "Regions" },
   { href: "/tools", label: "All tools" },
 ];
 

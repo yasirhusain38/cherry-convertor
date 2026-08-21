@@ -48,7 +48,7 @@ export default function OpenGraphImage() {
             }}
           >
             <span>Free image tools.</span>
-            <span>Zero uploads.</span>
+            <span>100% Privacy.</span>
           </div>
           <div style={{ display: "flex", fontSize: 24, color: "#B81D24" }}>
             Compress · 50KB · Passport · Aadhaar · HEIC · PDF

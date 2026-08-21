@@ -19,15 +19,16 @@ import {
   type ProcessResult,
 } from "@/lib/image";
 import { blobToDataUrl, makePhotoSheet } from "@/lib/pdf";
-import { PHOTO_PRESETS, getPreset, mmToPx } from "@/lib/presets";
+import { PHOTO_SPECS, getPhotoSpec, photoPixels } from "@/data/photo-specs";
 import type { ToolDef } from "@/lib/tools";
 
 export function PhotoTool({ tool }: { tool: ToolDef }) {
   const [file, setFile] = useState<File | null>(null);
   const [bitmap, setBitmap] = useState<ImageBitmap | null>(null);
   const [presetId, setPresetId] = useState(tool.photoPreset ?? "in-passport");
-  const [bg, setBg] = useState("#ffffff");
-  const [targetKb, setTargetKb] = useState(50);
+  const spec = useMemo(() => getPhotoSpec(presetId), [presetId]);
+  const [bg, setBg] = useState(spec.background);
+  const [targetKb, setTargetKb] = useState(spec.maxKB ?? 50);
   const [useTarget, setUseTarget] = useState(true);
   const [result, setResult] = useState<ProcessResult | null>(null);
   const [busy, setBusy] = useState(false);
@@ -38,11 +39,12 @@ export function PhotoTool({ tool }: { tool: ToolDef }) {
   const [offsetX, setOffsetX] = useState(0);
   const [offsetY, setOffsetY] = useState(0);
 
-  const preset = useMemo(() => getPreset(presetId), [presetId]);
-  const pixels = {
-    width: mmToPx(preset.widthMm, preset.dpi),
-    height: mmToPx(preset.heightMm, preset.dpi),
-  };
+  const pixels = photoPixels(spec);
+
+  useEffect(() => {
+    setBg(spec.background);
+    setTargetKb(spec.maxKB ?? 50);
+  }, [spec]);
 
   async function load(files: File[]) {
     const next = files[0];
@@ -123,8 +125,8 @@ export function PhotoTool({ tool }: { tool: ToolDef }) {
     const dataUrl = await blobToDataUrl(result.blob);
     const sheet = await makePhotoSheet({
       photoDataUrl: dataUrl,
-      photoWmm: preset.widthMm,
-      photoHmm: preset.heightMm,
+      photoWmm: spec.widthMm,
+      photoHmm: spec.heightMm,
       copies: pageSize === "4x6" ? 6 : 8,
       pageSize,
     });
@@ -162,7 +164,7 @@ export function PhotoTool({ tool }: { tool: ToolDef }) {
           <div
             className="mx-auto overflow-hidden border border-[var(--line)] bg-[var(--cream)]"
             style={{
-              aspectRatio: `${preset.widthMm} / ${preset.heightMm}`,
+              aspectRatio: `${spec.widthMm} / ${spec.heightMm}`,
               maxWidth: 360,
             }}
           >
@@ -175,23 +177,42 @@ export function PhotoTool({ tool }: { tool: ToolDef }) {
               </div>
             )}
           </div>
-          <p className="mt-4 text-center text-sm text-[var(--ink-soft)]">{preset.notes}</p>
+          <p className="mt-4 text-center text-sm text-[var(--ink-soft)]">{spec.notes}</p>
         </div>
 
         <div className="grid gap-4">
           <label className="grid gap-2 text-sm">
             Official size
             <select className="field" value={presetId} onChange={(event) => setPresetId(event.target.value)}>
-              {PHOTO_PRESETS.map((item) => (
+              {PHOTO_SPECS.map((item) => (
                 <option key={item.id} value={item.id}>
                   {item.label}
                 </option>
               ))}
             </select>
           </label>
-          <p className="stat text-sm text-[var(--ink-soft)]">
-            {preset.widthMm} × {preset.heightMm} mm · {preset.dpi} DPI · {pixels.width} × {pixels.height} px
-          </p>
+          <dl className="grid grid-cols-2 gap-2 text-sm text-[var(--ink-soft)]">
+            <div>
+              <dt className="label">Size</dt>
+              <dd>
+                {spec.widthMm} × {spec.heightMm} mm
+              </dd>
+            </div>
+            <div>
+              <dt className="label">Pixels</dt>
+              <dd>
+                {pixels.width} × {pixels.height}
+              </dd>
+            </div>
+            <div>
+              <dt className="label">Background</dt>
+              <dd>{spec.backgroundLabel}</dd>
+            </div>
+            <div>
+              <dt className="label">File cap</dt>
+              <dd>{spec.maxKB ? `${spec.minKB ? `${spec.minKB}–` : ""}${spec.maxKB} KB` : "Open"}</dd>
+            </div>
+          </dl>
           <label className="grid gap-2 text-sm">
             Background
             <input className="field h-12" type="color" value={bg} onChange={(event) => setBg(event.target.value)} />
@@ -242,8 +263,8 @@ export function PhotoTool({ tool }: { tool: ToolDef }) {
               Max KB · {targetKb}
               <input
                 type="range"
-                min={10}
-                max={200}
+                min={spec.minKB ?? 10}
+                max={Math.max(spec.maxKB ?? 200, 500)}
                 value={targetKb}
                 onChange={(event) => setTargetKb(Number(event.target.value))}
               />

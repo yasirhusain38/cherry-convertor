@@ -4,6 +4,7 @@ import type { ToolDef } from "@/lib/tools";
 import { BulkTool } from "./BulkTool";
 import { ConvertTool } from "./ConvertTool";
 import { CropTool } from "./CropTool";
+import { DocumentCompressTool } from "./DocumentCompressTool";
 import { BgTool, DpiTool, SignatureTool } from "./EditTools";
 import { PdfTool } from "./PdfTool";
 import { PhotoTool } from "./PhotoTool";
@@ -11,6 +12,8 @@ import { SingleImageTool } from "./SingleImageTool";
 
 export function ToolWorkspace({ tool }: { tool: ToolDef }) {
   switch (tool.mode) {
+    case "document-compress":
+      return <DocumentCompressTool tool={tool} />;
     case "universal-convert":
       return <ConvertTool />;
     case "pdf":

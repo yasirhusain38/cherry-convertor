@@ -4,10 +4,10 @@ import { SITE } from "@/lib/site";
 import { CATEGORIES, popularTools } from "@/lib/tools";
 
 const STATS = [
-  { k: "36+", v: "Dedicated tools" },
-  { k: "40+", v: "Searchable formats" },
+  { k: "170+", v: "Dedicated tools" },
+  { k: "80+", v: "Country hubs" },
   { k: "0", v: "Server uploads" },
-  { k: "IN+", v: "Global + Indian specs" },
+  { k: "8", v: "World regions" },
 ];
 
 export default function Home() {
@@ -22,7 +22,7 @@ export default function Home() {
           <h1 className="display mt-6 max-w-5xl text-5xl sm:text-7xl md:text-[88px]">
             Free image tools.
             <br />
-            Zero uploads.
+            100% Privacy.
           </h1>
           <p className="mt-8 max-w-xl text-base leading-7 text-[#F5F5F1]/80 md:text-lg">
             Compress to any KB, search any output format, watermark, rotate, or
@@ -97,8 +97,8 @@ export default function Home() {
                 d: "There is no upload pipeline to disable. Photos are decoded, drawn, and encoded with the Canvas API on your machine.",
               },
               {
-                t: "Built for Indian forms",
-                d: "50KB, 20KB, Aadhaar, PAN, passport, exam, and signature sizes are dedicated pages — not buried presets.",
+                t: "India, US, UK, UAE, Schengen",
+                d: "Dedicated pages for Aadhaar and PAN — and for US 2×2, DS-160 240KB, UK 35×45, Emirates ID, and 2MB PDFs.",
               },
               {
                 t: "Quiet, fast interface",
@@ -120,10 +120,14 @@ export default function Home() {
         <h2 className="display mt-3 text-4xl">India + international</h2>
         <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {[
-            { href: "/tools/passport-photo-maker", t: "Passport", d: "51×51 mm and global sizes" },
-            { href: "/tools/aadhaar-photo-resizer", t: "Aadhaar", d: "3.5×4.5 cm, 20–50 KB" },
-            { href: "/tools/pan-card-photo-resizer", t: "PAN", d: "2.5×3.5 cm + signature" },
-            { href: "/tools/exam-form-photo-resizer", t: "Exam / visa", d: "SSC, NEET, Schengen" },
+            { href: "/tools/us-passport-photo", t: "US 2×2", d: "Passport, DS-160, Green Card" },
+            { href: "/tools/uk-passport-photo", t: "UK / Schengen", d: "35×45 mm biometric" },
+            { href: "/tools/emirates-id-photo", t: "UAE", d: "Emirates ID + 100 KB visa" },
+            { href: "/tools/aadhaar-photo-resizer", t: "India", d: "Aadhaar, PAN, 20–50 KB" },
+            { href: "/tools/compress-bank-statement", t: "Bank statement", d: "PDF under 2 MB" },
+            { href: "/tools/compress-pdf-to-2mb", t: "Compress PDF", d: "Visa pack file cap" },
+            { href: "/countries/united-states", t: "US hub", d: "All United States tools" },
+            { href: "/regions", t: "Regions", d: "Eight world hubs" },
           ].map((item) => (
             <Link key={item.href} href={item.href} className="card card-hover p-6 no-underline">
               <p className="label">Spec</p>
