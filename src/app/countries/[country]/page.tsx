@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ToolCard } from "@/components/ToolCard";
+import { CountryCatalog } from "@/components/CountryCatalog";
 import { COUNTRIES, getCountry } from "@/data/countries";
 import { specsForCountry } from "@/data/photo-specs";
 import { regionSlugFromName } from "@/data/regions";
@@ -12,7 +12,6 @@ import {
   photoToolsForCountry,
   supportingToolsForCountry,
 } from "@/lib/country-tools";
-import type { ToolDef } from "@/lib/tools";
 
 export function generateStaticParams() {
   return COUNTRIES.map((country) => ({ country: country.slug }));
@@ -33,17 +32,6 @@ export async function generateMetadata({
     description: country.blurb,
     alternates: { canonical: `/countries/${country.slug}` },
   };
-}
-
-function ToolGrid({ tools }: { tools: ToolDef[] }) {
-  if (!tools.length) return null;
-  return (
-    <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      {tools.map((tool, index) => (
-        <ToolCard key={tool.slug} tool={tool} index={index} />
-      ))}
-    </div>
-  );
 }
 
 export default async function CountryPage({
@@ -89,88 +77,14 @@ export default async function CountryPage({
           </p>
         </div>
       </section>
-      {specs.length ? (
-        <section className="container-page py-10">
-          <p className="label">Official sizes</p>
-          <h2 className="display mt-2 text-3xl">Photo specs for {country.name}</h2>
-          <div className="mt-4 overflow-x-auto">
-            <table className="w-full min-w-[640px] text-left text-sm">
-              <thead className="label text-[var(--ink-faint)]">
-                <tr>
-                  <th className="py-3 pr-4">Document</th>
-                  <th className="py-3 pr-4">mm</th>
-                  <th className="py-3 pr-4">Pixels</th>
-                  <th className="py-3 pr-4">Cap</th>
-                  <th className="py-3">Background</th>
-                </tr>
-              </thead>
-              <tbody>
-                {specs.map((spec) => (
-                  <tr key={spec.id} className="border-t border-[var(--line)]">
-                    <td className="py-3 pr-4">{spec.document}</td>
-                    <td className="py-3 pr-4">
-                      {spec.widthMm} × {spec.heightMm}
-                    </td>
-                    <td className="py-3 pr-4">
-                      {spec.widthPx ?? "—"} × {spec.heightPx ?? "—"}
-                    </td>
-                    <td className="py-3 pr-4">{spec.maxKB ? `${spec.maxKB} KB` : "—"}</td>
-                    <td className="py-3">{spec.backgroundLabel}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
-      ) : null}
-      {photos.length ? (
-        <section className="container-page pb-12">
-          <p className="label">Photo tools</p>
-          <h2 className="display mt-2 text-3xl">{country.name} photos</h2>
-          <p className="mt-2 max-w-2xl text-sm text-[var(--ink-soft)]">
-            Only {country.name} photo sizes. Other countries live on their own hubs.
-          </p>
-          <ToolGrid tools={photos} />
-        </section>
-      ) : null}
-      {finance.length ? (
-        <section className="container-page pb-12">
-          <p className="label">Finance calculators</p>
-          <h2 className="display mt-2 text-3xl">{country.name} calculators</h2>
-          <p className="mt-2 max-w-2xl text-sm text-[var(--ink-soft)]">
-            EMI, tax, VAT/GST, and retirement maths for {country.name}. Runs in this browser.
-          </p>
-          <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {finance.map((tool) => (
-              <Link key={tool.slug} href={`/finance/${tool.slug}`} className="card card-hover p-6 no-underline">
-                <p className="label">{tool.kicker}</p>
-                <h3 className="mt-3 text-xl tracking-tight">{tool.name}</h3>
-                <p className="mt-2 text-sm text-[var(--ink-soft)]">{tool.lede}</p>
-              </Link>
-            ))}
-          </div>
-        </section>
-      ) : null}
-      {banking.length ? (
-        <section className="container-page pb-12">
-          <p className="label">Banking, tax &amp; accounts</p>
-          <h2 className="display mt-2 text-3xl">{country.name} finance documents</h2>
-          <p className="mt-2 max-w-2xl text-sm text-[var(--ink-soft)]">
-            No portrait. Bank statements, payslips, tax certificates, and KYC scans — rebuilt in this browser.
-          </p>
-          <ToolGrid tools={banking} />
-        </section>
-      ) : null}
-      {supporting.length ? (
-        <section className="container-page pb-12">
-          <p className="label">Civil &amp; academic PDFs</p>
-          <h2 className="display mt-2 text-3xl">Other {country.name} documents</h2>
-          <p className="mt-2 max-w-2xl text-sm text-[var(--ink-soft)]">
-            Birth and marriage certificates, PCC, marksheets, tenancy, and utility bills. No photo required.
-          </p>
-          <ToolGrid tools={supporting} />
-        </section>
-      ) : null}
+      <CountryCatalog
+        countryName={country.name}
+        specs={specs}
+        photos={photos}
+        finance={finance}
+        banking={banking}
+        supporting={supporting}
+      />
       {nearby.length ? (
         <section className="border-t border-[var(--line)]">
           <div className="container-page py-12">

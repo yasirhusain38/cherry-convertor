@@ -46,6 +46,7 @@ export function Footer() {
             <Link href="/privacy">Privacy</Link>
             <Link href="/contact">Contact</Link>
             <Link href="/blog">Journal</Link>
+            <Link href="/search">Search</Link>
             <Link href="/countries">Countries</Link>
             <Link href="/finance">Finance</Link>
             <Link href="/regions">Regions</Link>

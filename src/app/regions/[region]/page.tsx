@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { RegionCountries } from "@/components/RegionCountries";
 import { countriesInRegion, getRegion, REGIONS } from "@/data/regions";
 
 export function generateStaticParams() {
@@ -51,15 +52,7 @@ export default async function RegionPage({
           </p>
         </div>
       </section>
-      <section className="container-page grid gap-4 py-14 md:grid-cols-2 lg:grid-cols-3">
-        {countries.map((country) => (
-          <Link key={country.slug} href={`/countries/${country.slug}`} className="card card-hover p-6 no-underline">
-            <p className="label">{country.region}</p>
-            <h2 className="mt-4 text-2xl tracking-tight">{country.name}</h2>
-            <p className="mt-2 text-sm leading-6 text-[var(--ink-soft)]">{country.blurb}</p>
-          </Link>
-        ))}
-      </section>
+      <RegionCountries countries={countries} />
     </>
   );
 }

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { countriesInRegion, REGIONS } from "@/data/regions";
+import { RegionsExplorer } from "@/components/RegionsExplorer";
 
 export const metadata: Metadata = {
   title: "Document Photo Tools by Region",
@@ -22,18 +21,7 @@ export default function RegionsPage() {
           </p>
         </div>
       </section>
-      <section className="container-page grid gap-4 py-14 md:grid-cols-2 lg:grid-cols-4">
-        {REGIONS.map((region) => {
-          const count = countriesInRegion(region.name).length;
-          return (
-            <Link key={region.slug} href={`/regions/${region.slug}`} className="card card-hover p-6 no-underline">
-              <p className="label">{count} countries</p>
-              <h2 className="mt-4 text-2xl tracking-tight">{region.name}</h2>
-              <p className="mt-2 text-sm leading-6 text-[var(--ink-soft)]">{region.blurb}</p>
-            </Link>
-          );
-        })}
-      </section>
+      <RegionsExplorer />
     </>
   );
 }
