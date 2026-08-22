@@ -4,10 +4,10 @@ import { SITE } from "@/lib/site";
 import { CATEGORIES, popularTools } from "@/lib/tools";
 
 const STATS = [
-  { k: "170+", v: "Dedicated tools" },
-  { k: "80+", v: "Country hubs" },
+  { k: "430+", v: "Dedicated tools" },
+  { k: "140+", v: "Country hubs" },
   { k: "0", v: "Server uploads" },
-  { k: "8", v: "World regions" },
+  { k: "9", v: "World regions" },
 ];
 
 export default function Home() {
@@ -127,7 +127,7 @@ export default function Home() {
             { href: "/tools/compress-bank-statement", t: "Bank statement", d: "PDF under 2 MB" },
             { href: "/tools/compress-pdf-to-2mb", t: "Compress PDF", d: "Visa pack file cap" },
             { href: "/countries/united-states", t: "US hub", d: "All United States tools" },
-            { href: "/regions", t: "Regions", d: "Eight world hubs" },
+            { href: "/regions", t: "Regions", d: "Nine world hubs" },
           ].map((item) => (
             <Link key={item.href} href={item.href} className="card card-hover p-6 no-underline">
               <p className="label">Spec</p>

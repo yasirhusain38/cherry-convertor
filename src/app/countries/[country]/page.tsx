@@ -5,7 +5,13 @@ import { ToolCard } from "@/components/ToolCard";
 import { COUNTRIES, getCountry } from "@/data/countries";
 import { specsForCountry } from "@/data/photo-specs";
 import { regionSlugFromName } from "@/data/regions";
-import { getRelated } from "@/lib/tools";
+import {
+  bankingToolsForCountry,
+  nearbyCountries,
+  photoToolsForCountry,
+  supportingToolsForCountry,
+} from "@/lib/country-tools";
+import type { ToolDef } from "@/lib/tools";
 
 export function generateStaticParams() {
   return COUNTRIES.map((country) => ({ country: country.slug }));
@@ -28,6 +34,17 @@ export async function generateMetadata({
   };
 }
 
+function ToolGrid({ tools }: { tools: ToolDef[] }) {
+  if (!tools.length) return null;
+  return (
+    <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {tools.map((tool, index) => (
+        <ToolCard key={tool.slug} tool={tool} index={index} />
+      ))}
+    </div>
+  );
+}
+
 export default async function CountryPage({
   params,
 }: {
@@ -36,8 +53,11 @@ export default async function CountryPage({
   const { country: slug } = await params;
   const country = getCountry(slug);
   if (!country) notFound();
-  const tools = getRelated(country.toolSlugs);
-  const specs = specsForCountry(country.slug);
+  const photos = photoToolsForCountry(country.slug);
+  const banking = bankingToolsForCountry(country);
+  const supporting = supportingToolsForCountry(country);
+  const specs = [...specsForCountry(country.slug)].sort((a, b) => a.document.localeCompare(b.document));
+  const nearby = nearbyCountries(country);
   const regionSlug = regionSlugFromName(country.region);
 
   return (
@@ -70,6 +90,7 @@ export default async function CountryPage({
       {specs.length ? (
         <section className="container-page py-10">
           <p className="label">Official sizes</p>
+          <h2 className="display mt-2 text-3xl">Photo specs for {country.name}</h2>
           <div className="mt-4 overflow-x-auto">
             <table className="w-full min-w-[640px] text-left text-sm">
               <thead className="label text-[var(--ink-faint)]">
@@ -100,11 +121,65 @@ export default async function CountryPage({
           </div>
         </section>
       ) : null}
-      <section className="container-page grid gap-4 pb-16 md:grid-cols-2 lg:grid-cols-3">
-        {tools.map((tool, index) => (
-          <ToolCard key={tool.slug} tool={tool} index={index} />
-        ))}
-      </section>
+      {photos.length ? (
+        <section className="container-page pb-12">
+          <p className="label">Photo tools</p>
+          <h2 className="display mt-2 text-3xl">{country.name} photos</h2>
+          <p className="mt-2 max-w-2xl text-sm text-[var(--ink-soft)]">
+            Only {country.name} photo sizes. Other countries live on their own hubs.
+          </p>
+          <ToolGrid tools={photos} />
+        </section>
+      ) : null}
+      {banking.length ? (
+        <section className="container-page pb-12">
+          <p className="label">Banking, tax &amp; accounts</p>
+          <h2 className="display mt-2 text-3xl">{country.name} finance documents</h2>
+          <p className="mt-2 max-w-2xl text-sm text-[var(--ink-soft)]">
+            No portrait. Bank statements, payslips, tax certificates, and KYC scans — rebuilt in this browser.
+          </p>
+          <ToolGrid tools={banking} />
+        </section>
+      ) : null}
+      {supporting.length ? (
+        <section className="container-page pb-12">
+          <p className="label">Civil &amp; academic PDFs</p>
+          <h2 className="display mt-2 text-3xl">Other {country.name} documents</h2>
+          <p className="mt-2 max-w-2xl text-sm text-[var(--ink-soft)]">
+            Birth and marriage certificates, PCC, marksheets, tenancy, and utility bills. No photo required.
+          </p>
+          <ToolGrid tools={supporting} />
+        </section>
+      ) : null}
+      {nearby.length ? (
+        <section className="border-t border-[var(--line)]">
+          <div className="container-page py-12">
+            <p className="label">{country.region}</p>
+            <h2 className="display mt-2 text-3xl">Other countries in {country.region}</h2>
+            <p className="mt-2 max-w-2xl text-sm text-[var(--ink-soft)]">
+              Each hub lists only that country’s photo sizes.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-2">
+              {nearby.map((item) => (
+                <Link
+                  key={item.slug}
+                  href={`/countries/${item.slug}`}
+                  className="rounded-full border border-[var(--line)] px-4 py-2 text-sm no-underline hover:border-brand hover:text-brand"
+                >
+                  {item.name}
+                </Link>
+              ))}
+            </div>
+            {regionSlug ? (
+              <p className="mt-6 text-sm">
+                <Link href={`/regions/${regionSlug}`} className="text-brand">
+                  All of {country.region} →
+                </Link>
+              </p>
+            ) : null}
+          </div>
+        </section>
+      ) : null}
     </>
   );
 }

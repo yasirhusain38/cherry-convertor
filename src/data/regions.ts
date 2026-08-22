@@ -47,6 +47,11 @@ export const REGIONS: RegionHub[] = [
     name: "Oceania",
     blurb: "Australia, New Zealand, Fiji, PNG, and Samoa 35×45 mm photos.",
   },
+  {
+    slug: "central-asia",
+    name: "Central Asia",
+    blurb: "Kazakhstan, Uzbekistan, Kyrgyzstan, and Mongolia ID and passport portraits.",
+  },
 ];
 
 export function getRegion(slug: string): RegionHub | undefined {
@@ -58,5 +63,7 @@ export function regionSlugFromName(name: string): string | undefined {
 }
 
 export function countriesInRegion(regionName: string): CountryHub[] {
-  return COUNTRIES.filter((country) => country.region === regionName);
+  return COUNTRIES.filter((country) => country.region === regionName).sort((a, b) =>
+    a.name.localeCompare(b.name),
+  );
 }

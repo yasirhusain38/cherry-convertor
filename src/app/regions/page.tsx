@@ -5,7 +5,7 @@ import { countriesInRegion, REGIONS } from "@/data/regions";
 export const metadata: Metadata = {
   title: "Document Photo Tools by Region",
   description:
-    "Passport, visa, and ID photo tools grouped by region: North America, Europe, Middle East, South Asia, East & Southeast Asia, Africa, Latin America, and Oceania. Processed in your browser.",
+    "Passport, visa, and ID photo tools grouped by region: North America, Europe, Middle East, South Asia, East & Southeast Asia, Central Asia, Africa, Latin America, and Oceania. Processed in your browser.",
   alternates: { canonical: "/regions" },
 };
 
