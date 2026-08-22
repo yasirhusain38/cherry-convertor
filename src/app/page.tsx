@@ -4,10 +4,10 @@ import { SITE } from "@/lib/site";
 import { CATEGORIES, popularTools } from "@/lib/tools";
 
 const STATS = [
-  { k: "430+", v: "Dedicated tools" },
+  { k: "730+", v: "Dedicated tools" },
   { k: "140+", v: "Country hubs" },
+  { k: "300+", v: "Finance calculators" },
   { k: "0", v: "Server uploads" },
-  { k: "9", v: "World regions" },
 ];
 
 export default function Home() {
@@ -124,10 +124,10 @@ export default function Home() {
             { href: "/tools/uk-passport-photo", t: "UK / Schengen", d: "35×45 mm biometric" },
             { href: "/tools/emirates-id-photo", t: "UAE", d: "Emirates ID + 100 KB visa" },
             { href: "/tools/aadhaar-photo-resizer", t: "India", d: "Aadhaar, PAN, 20–50 KB" },
-            { href: "/tools/compress-bank-statement", t: "Bank statement", d: "PDF under 2 MB" },
-            { href: "/tools/compress-pdf-to-2mb", t: "Compress PDF", d: "Visa pack file cap" },
-            { href: "/countries/united-states", t: "US hub", d: "All United States tools" },
-            { href: "/regions", t: "Regions", d: "Nine world hubs" },
+            { href: "/finance/india-emi-calculator", t: "India EMI", d: "Home, car, personal loan" },
+            { href: "/finance/us-401k-calculator", t: "US 401(k)", d: "Retirement on this device" },
+            { href: "/finance/uk-stamp-duty-calculator", t: "UK stamp duty", d: "England & NI SDLT" },
+            { href: "/finance", t: "Finance by country", d: "GST, VAT, tax, mortgage" },
           ].map((item) => (
             <Link key={item.href} href={item.href} className="card card-hover p-6 no-underline">
               <p className="label">Spec</p>

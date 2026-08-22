@@ -47,6 +47,7 @@ export function Footer() {
             <Link href="/contact">Contact</Link>
             <Link href="/blog">Journal</Link>
             <Link href="/countries">Countries</Link>
+            <Link href="/finance">Finance</Link>
             <Link href="/regions">Regions</Link>
             <Link href="/tools">All tools</Link>
           </div>

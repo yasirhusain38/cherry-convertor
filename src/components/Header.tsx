@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { Logo } from "./Logo";
+import { FINANCE_TOOLS } from "@/data/finance-tools";
 import { CATEGORIES, TOOLS } from "@/lib/tools";
 
 const NAV = [
@@ -12,6 +13,7 @@ const NAV = [
   { href: "/tools/convert", label: "Convert" },
   { href: "/tools/passport-photo-maker", label: "Documents" },
   { href: "/countries", label: "Countries" },
+  { href: "/finance", label: "Finance" },
   { href: "/regions", label: "Regions" },
   { href: "/tools", label: "All tools" },
 ];
@@ -40,6 +42,26 @@ export function Header() {
       if (!q) return true;
       return [tool.name, tool.slug, tool.lede, ...tool.keywords].join(" ").toLowerCase().includes(q);
     });
+  }, [query]);
+
+  const financeHits = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    const featured = [
+      "india-emi-calculator",
+      "india-sip-calculator",
+      "gst-calculator-india",
+      "us-mortgage-calculator",
+      "us-401k-calculator",
+      "uk-stamp-duty-calculator",
+    ];
+    const list = q
+      ? FINANCE_TOOLS.filter((tool) =>
+          [tool.name, tool.slug, tool.lede, tool.country, ...tool.keywords].join(" ").toLowerCase().includes(q),
+        )
+      : featured
+          .map((slug) => FINANCE_TOOLS.find((tool) => tool.slug === slug))
+          .filter((tool): tool is (typeof FINANCE_TOOLS)[number] => Boolean(tool));
+    return list.slice(0, 18);
   }, [query]);
 
   return (
@@ -97,7 +119,7 @@ export function Header() {
             <input
               className="field bg-[#221F1F] text-[#F5F5F1]"
               value={query}
-              placeholder="Search compress, 50KB, watermark, Aadhaar…"
+              placeholder="Search EMI, GST, 401k, stamp duty, 50KB…"
               autoFocus
               onChange={(event) => setQuery(event.target.value)}
             />
@@ -129,6 +151,27 @@ export function Header() {
                   </section>
                 );
               })}
+              {financeHits.length ? (
+                <section>
+                  <p className="label mb-3 text-[#F2013F]">Finance</p>
+                  <ul className="grid gap-1 sm:grid-cols-2 lg:grid-cols-3">
+                    {financeHits.map((tool) => (
+                      <li key={tool.slug}>
+                        <Link
+                          href={`/finance/${tool.slug}`}
+                          className="block rounded-xl border border-[#F5F5F1]/15 px-4 py-3 text-[#F5F5F1] no-underline hover:border-[#F2013F] hover:bg-[#F2013F]"
+                        >
+                          <span className="block text-base tracking-tight">{tool.name}</span>
+                          <span className="mt-1 block text-xs leading-5 text-[#F5F5F1]/70">{tool.country}</span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                  <Link href="/finance" className="mt-3 inline-block text-sm text-[#F2013F] no-underline">
+                    All finance calculators →
+                  </Link>
+                </section>
+              ) : null}
               <section className="border-t border-[#F5F5F1]/15 pt-6">
                 <p className="label mb-3 text-[#F2013F]">Site</p>
                 <div className="flex flex-wrap gap-3">

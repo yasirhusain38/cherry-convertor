@@ -1,12 +1,13 @@
 import type { MetadataRoute } from "next";
 import { COUNTRIES } from "@/data/countries";
+import { FINANCE_TOOLS } from "@/data/finance-tools";
 import { REGIONS } from "@/data/regions";
 import { absoluteUrl } from "@/lib/site";
 import { TOOLS } from "@/lib/tools";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
-  const staticRoutes = ["", "/tools", "/countries", "/regions", "/about", "/privacy", "/contact", "/blog"].map(
+  const staticRoutes = ["", "/tools", "/countries", "/regions", "/finance", "/about", "/privacy", "/contact", "/blog"].map(
     (path) => ({
       url: absoluteUrl(path || "/"),
       lastModified: now,
@@ -42,5 +43,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.82,
   }));
 
-  return [...staticRoutes, ...toolRoutes, ...countryRoutes, ...regionRoutes];
+  const financeRoutes = FINANCE_TOOLS.map((tool) => ({
+    url: absoluteUrl(`/finance/${tool.slug}`),
+    lastModified: now,
+    changeFrequency: "weekly" as const,
+    priority: 0.86,
+  }));
+
+  return [...staticRoutes, ...toolRoutes, ...countryRoutes, ...regionRoutes, ...financeRoutes];
 }

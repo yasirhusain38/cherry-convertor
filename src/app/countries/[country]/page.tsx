@@ -5,6 +5,7 @@ import { ToolCard } from "@/components/ToolCard";
 import { COUNTRIES, getCountry } from "@/data/countries";
 import { specsForCountry } from "@/data/photo-specs";
 import { regionSlugFromName } from "@/data/regions";
+import { financeToolsForCountry } from "@/data/finance-tools";
 import {
   bankingToolsForCountry,
   nearbyCountries,
@@ -56,6 +57,7 @@ export default async function CountryPage({
   const photos = photoToolsForCountry(country.slug);
   const banking = bankingToolsForCountry(country);
   const supporting = supportingToolsForCountry(country);
+  const finance = financeToolsForCountry(country.slug);
   const specs = [...specsForCountry(country.slug)].sort((a, b) => a.document.localeCompare(b.document));
   const nearby = nearbyCountries(country);
   const regionSlug = regionSlugFromName(country.region);
@@ -129,6 +131,24 @@ export default async function CountryPage({
             Only {country.name} photo sizes. Other countries live on their own hubs.
           </p>
           <ToolGrid tools={photos} />
+        </section>
+      ) : null}
+      {finance.length ? (
+        <section className="container-page pb-12">
+          <p className="label">Finance calculators</p>
+          <h2 className="display mt-2 text-3xl">{country.name} calculators</h2>
+          <p className="mt-2 max-w-2xl text-sm text-[var(--ink-soft)]">
+            EMI, tax, VAT/GST, and retirement maths for {country.name}. Runs in this browser.
+          </p>
+          <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {finance.map((tool) => (
+              <Link key={tool.slug} href={`/finance/${tool.slug}`} className="card card-hover p-6 no-underline">
+                <p className="label">{tool.kicker}</p>
+                <h3 className="mt-3 text-xl tracking-tight">{tool.name}</h3>
+                <p className="mt-2 text-sm text-[var(--ink-soft)]">{tool.lede}</p>
+              </Link>
+            ))}
+          </div>
         </section>
       ) : null}
       {banking.length ? (

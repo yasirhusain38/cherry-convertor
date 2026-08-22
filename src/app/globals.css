@@ -46,6 +46,10 @@ html {
   scroll-behavior: smooth;
 }
 
+html {
+  color-scheme: dark;
+}
+
 html,
 body {
   background: var(--bg);
@@ -192,6 +196,53 @@ a {
   transform: translateY(-2px);
 }
 
+.finance-draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: finance-draw 900ms ease forwards;
+}
+
+.finance-fill {
+  opacity: 0;
+  animation: finance-fade 700ms ease 160ms forwards;
+}
+
+.finance-bar {
+  transform-origin: left center;
+  animation: finance-bar 700ms ease;
+}
+
+@keyframes finance-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes finance-fade {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes finance-bar {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .finance-draw,
+  .finance-fill,
+  .finance-bar {
+    animation: none;
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
 .hero-grid {
   background-image:
     linear-gradient(to right, color-mix(in srgb, var(--paper) 8%, transparent) 1px, transparent 1px),
@@ -228,6 +279,12 @@ a {
 .field:focus {
   outline: none;
   border-color: var(--brand);
+}
+
+select.field,
+select.field option {
+  background: var(--charcoal);
+  color: var(--paper);
 }
 
 input[type="range"] {
