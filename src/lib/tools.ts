@@ -21,7 +21,11 @@ export type ToolMode =
   | "bulk-compress"
   | "universal-convert"
   | "enhance"
-  | "document-compress";
+  | "document-compress"
+  | "color-grade"
+  | "heal"
+  | "video-studio"
+  | "photo-studio";
 
 export type FaqItem = { q: string; a: string };
 
@@ -73,7 +77,7 @@ export const CATEGORIES: Array<{
   {
     id: "edit",
     label: "Edit",
-    description: "Crop, DPI, and a basic background cleaner.",
+    description: "Color grade, heal, cut out, crop, and grade video — on this device.",
   },
   {
     id: "bulk",
@@ -7100,16 +7104,20 @@ export const TOOLS: ToolDef[] = [
     category: "edit",
     mode: "enhance",
     kicker: "Edit  /  Rotate",
-    h1: "Rotate an image 90°, 180°, or 270°",
-    lede: "Spin a photo in the browser, then search any output format — JPG, PNG, WebP, PDF, ICO, SVG, and more.",
+    h1: "Rotate an image any angle — 0° to 360°",
+    lede: "Type 36.6°, drag a 0–360 slider, or snap 90°. Then search any output format — JPG, PNG, WebP, PDF, ICO, SVG, and more.",
     metaTitle: "Rotate Image Online Free – Cherry Converter",
     metaDescription:
-      "Rotate JPG, PNG, and HEIC photos 90, 180, or 270 degrees in your browser. Export any supported format. No upload.",
-    keywords: ["rotate image", "rotate photo 90 degrees", "rotate jpg online"],
+      "Rotate JPG, PNG, and HEIC photos any angle from 0 to 360 degrees in your browser. Type 36.6° or snap 90°. No upload.",
+    keywords: ["rotate image", "rotate photo 90 degrees", "rotate jpg online", "rotate image 36 degrees"],
     faqs: [
       {
+        q: "Can I rotate 36.6 degrees?",
+        a: "Yes. Type the exact angle or drag the 0–360° slider. 90° steps stay pixel-perfect; in-between angles resample.",
+      },
+      {
         q: "Does rotate reduce quality?",
-        a: "90° steps keep every pixel. Export as PNG if you want a lossless file.",
+        a: "90°, 180°, and 270° keep every pixel. Other angles resample. Export as PNG if you want a lossless file.",
       },
     ],
     related: ["flip-image", "photo-cropper", "convert"],
@@ -7180,7 +7188,7 @@ export const TOOLS: ToolDef[] = [
         a: "Yes. It is drawn onto the pixels before download. We do not store a copy.",
       },
     ],
-    related: ["compress-image", "convert", "bulk-image-compressor"],
+    related: ["compress-image", "convert", "remove-watermark"],
   },
   {
     slug: "image-to-base64",
@@ -7228,23 +7236,297 @@ export const TOOLS: ToolDef[] = [
     category: "edit",
     mode: "bg-remove",
     kicker: "Edit  /  Background",
-    h1: "Background remover — basic, on-device",
-    lede: "A corner-sampled chroma key. Best on studio-style portraits with a flat wall. An AI model can be added later without changing this page’s privacy promise.",
+    h1: "Background remover — on-device cutout",
+    lede: "Flood-fill from the corners, magic-wand a click, or chroma-key a green screen. Feather the edge and download a transparent PNG. Best on a flat wall — not a busy street.",
     metaTitle: "Background Remover Online Free – Cherry Converter",
     metaDescription:
-      "Remove a flat photo background in your browser. Basic chroma-key tool — private, no upload. AI version can be added later.",
-    keywords: ["background remover", "remove photo background", "transparent background"],
+      "Remove a photo background in your browser with corner flood-fill, magic wand, or chroma key. Private, no upload.",
+    keywords: ["background remover", "remove photo background", "transparent background", "magic wand background"],
     faqs: [
       {
-        q: "Is this AI background removal?",
-        a: "Not yet. This version samples the corners and fades similar pixels. It works well on white or coloured studio walls. A WASM AI model can be layered on later and would still run locally.",
+        q: "Is this Photoshop-style generative fill?",
+        a: "No. It is a local cutout: corner flood-fill, a click wand, or chroma distance. It shines on studio walls and green screens. Hair on a cluttered room still needs a desktop editor.",
       },
       {
         q: "What format do I download?",
-        a: "PNG with transparency, so you can drop the subject onto a passport-white field afterwards.",
+        a: "PNG with transparency by default, or replace the hole with white / another image for a passport field.",
+      },
+      {
+        q: "Do you upload my photo?",
+        a: "No. Pixels stay in this tab.",
       },
     ],
-    related: ["passport-photo-maker", "photo-cropper", "png-to-jpg"],
+    related: ["replace-background", "chroma-key", "passport-photo-maker", "photo-editor"],
+  },
+  {
+    slug: "photo-editor",
+    name: "Photo Editor",
+    category: "edit",
+    mode: "photo-studio",
+    kicker: "Edit  /  Studio",
+    h1: "Photo editor — grade, cut out, heal",
+    lede: "A local studio: Resolve-style colour sliders, Photoshop-style wand cutout, GIMP-style heal brush. Drop a photo, pick a tab, download. Nothing leaves this browser.",
+    metaTitle: "Photo Editor Online Free – Cherry Converter",
+    metaDescription:
+      "Edit photos in your browser: color grade, background cutout, and object heal. No upload, no account.",
+    keywords: ["photo editor", "online photoshop", "edit photo in browser", "gimp online"],
+    faqs: [
+      {
+        q: "Is this Photoshop, Resolve, or After Effects?",
+        a: "No. It borrows the useful moves — colour wheels as sliders, wand cutout, heal from neighbours, chroma key — and runs them on a canvas in your tab. Use Adobe or DaVinci when you need layers, tracking, and plugins.",
+      },
+      {
+        q: "Does AI run in the cloud?",
+        a: "No. There is no image API. Heal copies nearby pixels; grade is colour math; cutout is flood-fill and chroma.",
+      },
+    ],
+    related: ["color-grading", "object-remover", "background-remover", "video-color-grading"],
+  },
+  {
+    slug: "color-correction",
+    name: "Color Correction",
+    category: "edit",
+    mode: "color-grade",
+    kicker: "Edit  /  Color",
+    h1: "Color correction — exposure, white balance, contrast",
+    lede: "Fix a photo the way a colourist starts: exposure, temperature, tint, auto white balance, auto contrast. Then export JPEG, PNG, or WebP.",
+    metaTitle: "Color Correction Online Free – Cherry Converter",
+    metaDescription:
+      "Correct exposure, white balance, and contrast in your browser. Histogram, auto WB, private, no upload.",
+    keywords: ["color correction", "white balance photo", "fix exposure online", "auto contrast"],
+    faqs: [
+      {
+        q: "Correction or grading?",
+        a: "This page is primary correction (make it true). Open Color Grading for cinematic looks, split tone, and film fade.",
+      },
+      {
+        q: "What does auto white balance do?",
+        a: "Gray-world: it scales RGB so the average of the frame is neutral. Bake it, then fine-tune temperature.",
+      },
+    ],
+    related: ["color-grading", "photo-editor", "vintage-photo"],
+  },
+  {
+    slug: "color-grading",
+    name: "Color Grading",
+    category: "edit",
+    mode: "color-grade",
+    kicker: "Edit  /  Grade",
+    h1: "Color grading — cinematic looks in the browser",
+    lede: "Lift, gamma, gain, teal-and-orange split tone, film grain, vignette. Looks for portrait, night, bleach bypass, and vintage. A local colourist, not a Resolve project file.",
+    metaTitle: "Color Grading Online Free – Cherry Converter",
+    metaDescription:
+      "Grade photos like a colourist in your browser: lift/gamma/gain, split tone, film looks. No upload.",
+    keywords: ["color grading", "cinematic lut", "teal orange grade", "lift gamma gain", "davinci resolve online"],
+    faqs: [
+      {
+        q: "Can I load a .cube LUT?",
+        a: "Not yet. Use the built-in looks (cinematic, teal & orange, film print) or ride the sliders. Files never leave the tab.",
+      },
+      {
+        q: "Is this DaVinci Resolve?",
+        a: "It is inspired by Resolve wheels and Photoshop curves, implemented as canvas colour math. Use Resolve for nodes, HDR, and timeline grades.",
+      },
+    ],
+    related: ["color-correction", "video-color-grading", "photo-editor", "vintage-photo"],
+  },
+  {
+    slug: "vintage-photo",
+    name: "Vintage Photo",
+    category: "edit",
+    mode: "color-grade",
+    kicker: "Edit  /  Look",
+    h1: "Vintage photo look — fade, grain, warm print",
+    lede: "One look: faded blacks, warm highlights, film grain. Tweak or reset. Processed on this device.",
+    metaTitle: "Vintage Photo Filter Online Free – Cherry Converter",
+    metaDescription: "Apply a vintage film look in your browser. Fade, grain, warmth. Private, no upload.",
+    keywords: ["vintage photo filter", "film look", "retro photo editor"],
+    faqs: [
+      {
+        q: "Can I tone it down?",
+        a: "Yes. Lower fade and grain, or pick Neutral in Looks.",
+      },
+    ],
+    related: ["color-grading", "black-and-white", "photo-editor"],
+  },
+  {
+    slug: "object-remover",
+    name: "Object Remover",
+    category: "edit",
+    mode: "heal",
+    kicker: "Edit  /  Heal",
+    h1: "Object remover — paint and heal",
+    lede: "Brush a wire, a bin, a photobomb. Nearby pixels fill the hole. Works on small marks; large crowds will smear. Entirely local.",
+    metaTitle: "Object Remover Online Free – Cherry Converter",
+    metaDescription:
+      "Remove objects from a photo in your browser. Paint a mask, heal from nearby pixels. No upload.",
+    keywords: ["object remover", "remove object from photo", "heal brush online", "content aware fill"],
+    faqs: [
+      {
+        q: "Is this Photoshop generative fill?",
+        a: "No. It samples neighbours around the brush, like a fast heal/clone. Small objects and sensors work. A person covering half the frame needs a real compositor.",
+      },
+      {
+        q: "Can I undo?",
+        a: "Yes. Heal stacks an undo of the last fill.",
+      },
+    ],
+    related: ["remove-watermark", "photo-editor", "photo-cropper"],
+  },
+  {
+    slug: "remove-watermark",
+    name: "Remove Visible Watermark",
+    category: "edit",
+    mode: "heal",
+    kicker: "Edit  /  Heal",
+    h1: "Remove a visible watermark or logo",
+    lede: "Paint over a stamp, URL, or Gemini/Imagen overlay. The healer copies nearby texture. Invisible Google SynthID, C2PA, and content credentials are left intact — we do not strip provenance.",
+    metaTitle: "Remove Watermark from Image Free – Cherry Converter",
+    metaDescription:
+      "Heal a visible logo or stamp in your browser. Does not strip SynthID or C2PA. Private, no upload.",
+    keywords: [
+      "remove watermark",
+      "remove logo from photo",
+      "remove google watermark",
+      "heal watermark",
+      "remove visible stamp",
+    ],
+    faqs: [
+      {
+        q: "Will this remove a Google AI / SynthID watermark?",
+        a: "Visible overlays (a logo in the corner) can be painted and healed. Invisible SynthID, C2PA manifests, and content credentials stay in the file. Cherry Converter will not add a tool whose job is to hide that a picture was generated.",
+      },
+      {
+        q: "What about a repeating tiled watermark?",
+        a: "Heal each patch, or crop it out. A full-frame tile usually means you need the original unmarked file.",
+      },
+    ],
+    related: ["object-remover", "add-watermark", "video-remove-watermark", "photo-editor"],
+  },
+  {
+    slug: "replace-background",
+    name: "Replace Background",
+    category: "edit",
+    mode: "bg-remove",
+    kicker: "Edit  /  Background",
+    h1: "Replace a photo background",
+    lede: "Cut the subject free, then drop in white, a solid, or another image. Built for passport fields and product shots on a clean wall.",
+    metaTitle: "Replace Background Online Free – Cherry Converter",
+    metaDescription:
+      "Replace a photo background in your browser. Cut out, then fill with colour or another image. No upload.",
+    keywords: ["replace background", "change photo background", "white background photo"],
+    faqs: [
+      {
+        q: "Passport white?",
+        a: "Cut out, pick Solid fill, set #ffffff, export JPEG. Confirm the form’s millimetres on the matching document-photo page.",
+      },
+    ],
+    related: ["background-remover", "passport-photo-maker", "chroma-key"],
+  },
+  {
+    slug: "chroma-key",
+    name: "Chroma Key",
+    category: "edit",
+    mode: "bg-remove",
+    kicker: "Edit  /  Key",
+    h1: "Chroma key — green screen stills",
+    lede: "Click the screen, ride tolerance and feather, export PNG. After Effects-style keying without a timeline.",
+    metaTitle: "Chroma Key Green Screen Online Free – Cherry Converter",
+    metaDescription: "Key a green or blue screen photo in your browser. Click to sample, feather the edge, download PNG.",
+    keywords: ["chroma key", "green screen remover", "blue screen keyer"],
+    faqs: [
+      {
+        q: "Green or blue?",
+        a: "Click the backdrop. The sampler reads whatever you pointed at.",
+      },
+    ],
+    related: ["background-remover", "video-chroma-key", "replace-background"],
+  },
+  {
+    slug: "video-color-grading",
+    name: "Video Color Grading",
+    category: "edit",
+    mode: "video-studio",
+    kicker: "Edit  /  Video",
+    h1: "Grade a video in the browser",
+    lede: "Drop an MP4 or WebM, ride the same colourist sliders as stills, export a graded clip. Records in this tab. No upload.",
+    metaTitle: "Video Color Grading Online Free – Cherry Converter",
+    metaDescription:
+      "Color grade MP4 and WebM in your browser. Lift, gamma, gain, looks. Private, no upload.",
+    keywords: ["video color grading", "grade mp4 online", "davinci resolve alternative browser"],
+    faqs: [
+      {
+        q: "What do I download?",
+        a: "WebM (VP8/VP9) or MP4 if the browser can record it. Audio is kept when captureStream allows. Long clips record in real time.",
+      },
+      {
+        q: "4K timeline?",
+        a: "Preview and export cap at 1280 px wide so a laptop stays alive. Finish in Resolve for 4K delivery.",
+      },
+    ],
+    related: ["color-grading", "video-chroma-key", "video-background-remover"],
+  },
+  {
+    slug: "video-background-remover",
+    name: "Video Background Remover",
+    category: "edit",
+    mode: "video-studio",
+    kicker: "Edit  /  Video",
+    h1: "Remove a video background — chroma key",
+    lede: "Key a green or blue screen on every frame, optionally grade, then record the result. Not a rotoscope of a busy street.",
+    metaTitle: "Video Background Remover Online Free – Cherry Converter",
+    metaDescription: "Chroma-key a video background in your browser. Green screen to transparency-style WebM. No upload.",
+    keywords: ["video background remover", "green screen video", "remove video background"],
+    faqs: [
+      {
+        q: "Will it cut me out of a bedroom?",
+        a: "No. This is chroma key, like After Effects Keylight on a screen. For a natural room you still need a desktop Roto Brush.",
+      },
+    ],
+    related: ["video-chroma-key", "background-remover", "video-color-grading"],
+  },
+  {
+    slug: "video-chroma-key",
+    name: "Video Chroma Key",
+    category: "edit",
+    mode: "video-studio",
+    kicker: "Edit  /  Video",
+    h1: "Video chroma key — green screen clips",
+    lede: "Pick the key colour, set tolerance and feather, export. After Effects-style keying, recorded locally.",
+    metaTitle: "Video Chroma Key Online Free – Cherry Converter",
+    metaDescription: "Key green-screen video in your browser. Sample the screen, feather, download WebM. No upload.",
+    keywords: ["video chroma key", "green screen video editor", "after effects keyer online"],
+    faqs: [
+      {
+        q: "Spill suppression?",
+        a: "Feather helps the edge. Heavy green spill on blonde hair still wants Keylight or Resolve.",
+      },
+    ],
+    related: ["chroma-key", "video-background-remover", "video-color-grading"],
+  },
+  {
+    slug: "video-remove-watermark",
+    name: "Remove Visible Video Watermark",
+    category: "edit",
+    mode: "video-studio",
+    kicker: "Edit  /  Video",
+    h1: "Heal a visible corner mark on video",
+    lede: "Paint a fixed logo, timestamp, or AI overlay. Each frame heals that region from neighbours. Invisible SynthID / C2PA is not stripped.",
+    metaTitle: "Remove Video Watermark Free – Cherry Converter",
+    metaDescription:
+      "Heal a visible video logo in your browser. Does not strip SynthID. Private, no upload.",
+    keywords: ["remove video watermark", "remove logo from video", "heal video watermark"],
+    faqs: [
+      {
+        q: "Google AI video watermark?",
+        a: "If it is a visible badge in a corner, paint it. If it is SynthID or a content credential, it stays. We will not ship a provenance stripper.",
+      },
+      {
+        q: "Moving watermarks?",
+        a: "This mask is static. A bouncing bug needs After Effects tracking.",
+      },
+    ],
+    related: ["remove-watermark", "object-remover", "video-color-grading"],
   },
 ];
 
@@ -7283,6 +7565,10 @@ export function popularTools(): ToolDef[] {
     "signature-resizer",
     "png-to-jpg",
     "photo-cropper",
+    "photo-editor",
+    "color-grading",
+    "background-remover",
+    "object-remover",
     "pan-card-photo-resizer",
     "resize-image",
   ];

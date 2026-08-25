@@ -1,3 +1,4 @@
+import { cutOut } from "./cutout";
 import { clamp } from "./format";
 
 export type OutputMime = "image/jpeg" | "image/png" | "image/webp";
@@ -341,39 +342,11 @@ export function removeBackground(
   tolerance = 48,
   feather = 18,
 ): HTMLCanvasElement {
-  const canvas = drawExact(source, source.width, source.height);
-  const ctx = canvas.getContext("2d");
-  if (!ctx) throw new Error("Canvas is not supported in this browser.");
-  const image = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  const { data, width, height } = image;
-  const sample = (x: number, y: number) => {
-    const i = (y * width + x) * 4;
-    return [data[i], data[i + 1], data[i + 2]] as const;
-  };
-
-  const corners = [
-    sample(2, 2),
-    sample(width - 3, 2),
-    sample(2, height - 3),
-    sample(width - 3, height - 3),
-  ];
-  const bg = [0, 1, 2].map((c) =>
-    Math.round(corners.reduce((sum, px) => sum + px[c], 0) / corners.length),
-  );
-
-  for (let i = 0; i < data.length; i += 4) {
-    const dr = data[i] - bg[0];
-    const dg = data[i + 1] - bg[1];
-    const db = data[i + 2] - bg[2];
-    const dist = Math.sqrt(dr * dr + dg * dg + db * db);
-    if (dist <= tolerance) {
-      data[i + 3] = 0;
-    } else if (dist < tolerance + feather) {
-      data[i + 3] = Math.round(((dist - tolerance) / feather) * 255);
-    }
-  }
-  ctx.putImageData(image, 0, 0);
-  return canvas;
+  return cutOut(source, source.width, source.height, {
+    mode: "corners",
+    tolerance,
+    feather,
+  });
 }
 
 export function inkSignature(source: ImageBitmap, threshold = 186, ink = "#141212"): HTMLCanvasElement {

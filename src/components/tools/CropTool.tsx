@@ -2,10 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import { DropZone } from "@/components/DropZone";
+import { UndoRedoBar } from "@/components/UndoRedoBar";
 import { FileStats } from "@/components/FileStats";
 import { FormatPicker } from "@/components/FormatPicker";
 import { OutputActions } from "@/components/OutputActions";
 import { clamp } from "@/lib/format";
+import { useEditHistory } from "./useEditHistory";
 import { canvasToFormat } from "@/lib/export";
 import { getFormat, type ConvertFormat } from "@/lib/formats";
 import {
@@ -32,7 +34,12 @@ export function CropTool() {
   const [file, setFile] = useState<File | null>(null);
   const [bitmap, setBitmap] = useState<ImageBitmap | null>(null);
   const [sourceUrl, setSourceUrl] = useState<string | null>(null);
-  const [crop, setCrop] = useState<Rect>({ x: 0.1, y: 0.1, w: 0.8, h: 0.8 });
+  const history = useEditHistory<Rect>(
+    { x: 0.1, y: 0.1, w: 0.8, h: 0.8 },
+    (rect) => ({ ...rect }),
+  );
+  const crop = history.present;
+  const setCrop = (next: Rect) => history.set(next, "gesture");
   const [aspect, setAspect] = useState<number | null>(null);
   const [format, setFormat] = useState<ConvertFormat>(getFormat("jpeg")!);
   const [result, setResult] = useState<ProcessResult | null>(null);
@@ -50,7 +57,7 @@ export function CropTool() {
     setFile(next);
     setBitmap(bmp);
     setSourceUrl(URL.createObjectURL(next));
-    setCrop({ x: 0.1, y: 0.1, w: 0.8, h: 0.8 });
+    history.reset({ x: 0.1, y: 0.1, w: 0.8, h: 0.8 });
   }
 
   useEffect(() => {
@@ -94,12 +101,15 @@ export function CropTool() {
       h = Math.min(1, crop.h);
       w = (h * nextAspect) / imgAspect;
     }
-    setCrop({
-      x: clamp(crop.x, 0, 1 - w),
-      y: clamp(crop.y, 0, 1 - h),
-      w,
-      h,
-    });
+    history.set(
+      {
+        x: clamp(crop.x, 0, 1 - w),
+        y: clamp(crop.y, 0, 1 - h),
+        w,
+        h,
+      },
+      "instant",
+    );
   }
 
   return (
@@ -107,16 +117,24 @@ export function CropTool() {
       {!file ? (
         <DropZone onFiles={load} label="Drop a photo to crop" />
       ) : (
-        <button type="button" className="btn btn-ghost justify-self-end" onClick={() => {
-          bitmap?.close();
-          if (sourceUrl) URL.revokeObjectURL(sourceUrl);
-          revokeResult(result);
-          setFile(null);
-          setBitmap(null);
-          setSourceUrl(null);
-        }}>
-          New file
-        </button>
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          <UndoRedoBar undo={history.undo} redo={history.redo} canUndo={history.canUndo} canRedo={history.canRedo} />
+          <button
+            type="button"
+            className="btn btn-ghost"
+            onClick={() => {
+              bitmap?.close();
+              if (sourceUrl) URL.revokeObjectURL(sourceUrl);
+              revokeResult(result);
+              setFile(null);
+              setBitmap(null);
+              setSourceUrl(null);
+              history.reset({ x: 0.1, y: 0.1, w: 0.8, h: 0.8 });
+            }}
+          >
+            New file
+          </button>
+        </div>
       )}
 
       {sourceUrl && bitmap ? (

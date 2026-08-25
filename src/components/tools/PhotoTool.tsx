@@ -3,11 +3,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { DropZone } from "@/components/DropZone";
 import { EnhanceBar } from "@/components/EnhanceBar";
+import { UndoRedoBar } from "@/components/UndoRedoBar";
 import { FileStats } from "@/components/FileStats";
 import { FormatPicker } from "@/components/FormatPicker";
 import { OutputActions } from "@/components/OutputActions";
 import { downloadBlob } from "@/lib/download";
-import { applyEnhance, DEFAULT_ENHANCE, type EnhanceSettings } from "@/lib/enhance";
+import { applyEnhance, cloneEnhance, DEFAULT_ENHANCE, type EnhanceSettings } from "@/lib/enhance";
 import { canvasToFormat } from "@/lib/export";
 import { getFormat, type ConvertFormat } from "@/lib/formats";
 import {
@@ -21,6 +22,8 @@ import {
 import { blobToDataUrl, makePhotoSheet } from "@/lib/pdf";
 import { PHOTO_SPECS, getPhotoSpec, photoPixels } from "@/data/photo-specs";
 import type { ToolDef } from "@/lib/tools";
+import { useEditHistory } from "./useEditHistory";
+import { useLookMatch } from "./useLookMatch";
 
 export function PhotoTool({ tool }: { tool: ToolDef }) {
   const [file, setFile] = useState<File | null>(null);
@@ -34,7 +37,14 @@ export function PhotoTool({ tool }: { tool: ToolDef }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [format, setFormat] = useState<ConvertFormat>(getFormat("jpeg")!);
-  const [enhance, setEnhance] = useState<EnhanceSettings>(DEFAULT_ENHANCE);
+  const look = useLookMatch(bitmap);
+  const history = useEditHistory(
+    { enhance: cloneEnhance(DEFAULT_ENHANCE), matchAmount: 80 },
+    (snap) => ({ enhance: cloneEnhance(snap.enhance), matchAmount: snap.matchAmount }),
+    { onRestore: (snap) => look.setAmount(snap.matchAmount) },
+  );
+  const enhance = history.present.enhance;
+  const setEnhance = (next: EnhanceSettings) => history.set({ enhance: next, matchAmount: look.amount });
   const [zoom, setZoom] = useState(1);
   const [offsetX, setOffsetX] = useState(0);
   const [offsetY, setOffsetY] = useState(0);
@@ -70,7 +80,7 @@ export function PhotoTool({ tool }: { tool: ToolDef }) {
     const handle = window.setTimeout(async () => {
       setBusy(true);
       try {
-        const staged = applyEnhance(bitmap, bitmap.width, bitmap.height, enhance);
+        const staged = applyEnhance(bitmap, bitmap.width, bitmap.height, enhance, look.match);
         const canvas = drawCover(
           staged,
           staged.width,
@@ -118,7 +128,7 @@ export function PhotoTool({ tool }: { tool: ToolDef }) {
       cancelled = true;
       window.clearTimeout(handle);
     };
-  }, [bg, bitmap, enhance, format, offsetX, offsetY, pixels.height, pixels.width, targetKb, useTarget, zoom]);
+  }, [bg, bitmap, enhance, format, look.match, offsetX, offsetY, pixels.height, pixels.width, targetKb, useTarget, zoom]);
 
   async function downloadSheet(pageSize: "a4" | "4x6") {
     if (!result) return;
@@ -142,7 +152,8 @@ export function PhotoTool({ tool }: { tool: ToolDef }) {
           hint="Face the camera, even lighting, then we crop to the official frame."
         />
       ) : (
-        <div className="flex justify-end">
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          <UndoRedoBar undo={history.undo} redo={history.redo} canUndo={history.canUndo} canRedo={history.canRedo} />
           <button
             type="button"
             className="btn btn-ghost"
@@ -152,6 +163,7 @@ export function PhotoTool({ tool }: { tool: ToolDef }) {
               setFile(null);
               setBitmap(null);
               setResult(null);
+              history.reset({ enhance: cloneEnhance(DEFAULT_ENHANCE), matchAmount: 80 });
             }}
           >
             New file
@@ -271,7 +283,17 @@ export function PhotoTool({ tool }: { tool: ToolDef }) {
             </label>
           ) : null}
           <FormatPicker value={format.id} onChange={setFormat} />
-          <EnhanceBar value={enhance} onChange={setEnhance} />
+          <EnhanceBar
+            value={enhance}
+            onChange={setEnhance}
+            matchAmount={look.amount}
+            hasReference={look.hasReference}
+            onMatchAmount={(n) => {
+              look.setAmount(n);
+              history.set({ enhance, matchAmount: n });
+            }}
+            onReference={look.loadReference}
+          />
         </div>
       </div>
 

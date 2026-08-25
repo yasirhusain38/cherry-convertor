@@ -9,7 +9,10 @@ import { FormatPicker } from "@/components/FormatPicker";
 import { OutputActions } from "@/components/OutputActions";
 import { TargetSizeField } from "@/components/TargetSizeField";
 import { WatermarkPanel } from "@/components/WatermarkPanel";
-import { applyEnhance, enhanceForSlug, type EnhanceSettings } from "@/lib/enhance";
+import { UndoRedoBar } from "@/components/UndoRedoBar";
+import { applyEnhance, cloneEnhance, enhanceForSlug, type EnhanceSettings } from "@/lib/enhance";
+import { useEditHistory } from "./useEditHistory";
+import { useLookMatch } from "./useLookMatch";
 import { parseTypedSize, type SizeUnit } from "@/lib/target-size";
 import { canvasToFormat, isLossyFormat } from "@/lib/export";
 import { getFormat, type ConvertFormat } from "@/lib/formats";
@@ -47,8 +50,19 @@ export function SingleImageTool({ tool }: { tool: ToolDef }) {
   const [fill, setFill] = useState("#ffffff");
   const [targetSize, setTargetSize] = useState("");
   const [targetUnit, setTargetUnit] = useState<SizeUnit>("KB");
-  const [enhance, setEnhance] = useState<EnhanceSettings>(() => enhanceForSlug(tool.slug));
+  const look = useLookMatch(bitmap);
   const [fileName, setFileName] = useState("");
+  const history = useEditHistory(
+    { enhance: enhanceForSlug(tool.slug), matchAmount: 80 },
+    (snap) => ({ enhance: cloneEnhance(snap.enhance), matchAmount: snap.matchAmount }),
+    {
+      onRestore: (snap) => {
+        look.setAmount(snap.matchAmount);
+      },
+    },
+  );
+  const enhance = history.present.enhance;
+  const setEnhance = (next: EnhanceSettings) => history.set({ enhance: next, matchAmount: look.amount });
 
   const parsedTarget = useMemo(
     () => parseTypedSize(targetSize, targetUnit),
@@ -69,7 +83,8 @@ export function SingleImageTool({ tool }: { tool: ToolDef }) {
     setSourceUrl(null);
     setResult(null);
     setError(null);
-  }, [bitmap, result, sourceUrl]);
+    history.reset({ enhance: enhanceForSlug(tool.slug), matchAmount: 80 });
+  }, [bitmap, history, result, sourceUrl, tool.slug]);
 
   const onFiles = useCallback(
     async (files: File[]) => {
@@ -103,7 +118,7 @@ export function SingleImageTool({ tool }: { tool: ToolDef }) {
       setBusy(true);
       setError(null);
       try {
-        const enhanced = applyEnhance(bitmap, bitmap.width, bitmap.height, enhance);
+        const enhanced = applyEnhance(bitmap, bitmap.width, bitmap.height, enhance, look.match);
         let work = enhanced;
         if (tool.mode === "resize") {
           work = drawExact(enhanced, width || enhanced.width, height || enhanced.height, fill);
@@ -157,6 +172,7 @@ export function SingleImageTool({ tool }: { tool: ToolDef }) {
     format,
     height,
     maxWidth,
+    look.match,
     quality,
     tool.mode,
     width,
@@ -175,9 +191,12 @@ export function SingleImageTool({ tool }: { tool: ToolDef }) {
         <>
           <div className="flex flex-wrap items-center justify-between gap-3">
             <p className="text-sm text-[var(--ink-soft)]">{file.name} · local only</p>
-            <button type="button" className="btn btn-ghost" onClick={reset}>
-              New file
-            </button>
+            <div className="flex flex-wrap items-center gap-2">
+              <UndoRedoBar undo={history.undo} redo={history.redo} canUndo={history.canUndo} canRedo={history.canRedo} />
+              <button type="button" className="btn btn-ghost" onClick={reset}>
+                New file
+              </button>
+            </div>
           </div>
 
           {sourceUrl && result && result.mime.startsWith("image/") ? (
@@ -207,7 +226,7 @@ export function SingleImageTool({ tool }: { tool: ToolDef }) {
             ) : null}
             {tool.slug === "rotate-image" ? (
               <p className="text-sm leading-6 text-[var(--ink-soft)] md:col-span-2">
-                This page starts at 90°. Use the rotate buttons below if you want 180° or 270°.
+                Type any angle (36.6°, 12°, 359°) or drag 0–360°. 90° steps are still one click.
               </p>
             ) : null}
             {tool.slug === "flip-image" ? (
@@ -361,6 +380,13 @@ export function SingleImageTool({ tool }: { tool: ToolDef }) {
               value={enhance}
               onChange={setEnhance}
               focus={tool.slug === "add-watermark" ? "watermark" : "all"}
+              matchAmount={look.amount}
+              hasReference={look.hasReference}
+              onMatchAmount={(n) => {
+                look.setAmount(n);
+                history.set({ enhance, matchAmount: n });
+              }}
+              onReference={look.loadReference}
             />
           </div>
 

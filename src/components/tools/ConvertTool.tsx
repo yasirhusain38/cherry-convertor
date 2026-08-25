@@ -1,12 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { CompareSlider } from "@/components/CompareSlider";
 import { DropZone } from "@/components/DropZone";
 import { EnhanceBar } from "@/components/EnhanceBar";
+import { UndoRedoBar } from "@/components/UndoRedoBar";
 import { FileStats } from "@/components/FileStats";
 import { FormatPicker } from "@/components/FormatPicker";
 import { OutputActions } from "@/components/OutputActions";
-import { applyEnhance, DEFAULT_ENHANCE, type EnhanceSettings } from "@/lib/enhance";
+import { applyEnhance, cloneEnhance, DEFAULT_ENHANCE, type EnhanceSettings } from "@/lib/enhance";
+import { useEditHistory } from "./useEditHistory";
+import { useLookMatch } from "./useLookMatch";
 import { canvasToFormat, isLossyFormat } from "@/lib/export";
 import { CONVERT_FORMATS, detectInputLabel, getFormat, type ConvertFormat } from "@/lib/formats";
 import { drawExact, fileToBitmap, revokeResult, type ProcessResult } from "@/lib/image";
@@ -24,16 +28,27 @@ export function ConvertTool() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [enhance, setEnhance] = useState<EnhanceSettings>(DEFAULT_ENHANCE);
+  const [bitmap, setBitmap] = useState<ImageBitmap | null>(null);
+  const look = useLookMatch(bitmap);
+  const history = useEditHistory(
+    { enhance: cloneEnhance(DEFAULT_ENHANCE), matchAmount: 80 },
+    (snap) => ({ enhance: cloneEnhance(snap.enhance), matchAmount: snap.matchAmount }),
+    { onRestore: (snap) => look.setAmount(snap.matchAmount) },
+  );
+  const enhance = history.present.enhance;
+  const setEnhance = (next: EnhanceSettings) => history.set({ enhance: next, matchAmount: look.amount });
   const lossy = isLossyFormat(format.id);
 
   function clear() {
     revokeResult(result);
     if (previewUrl) URL.revokeObjectURL(previewUrl);
+    bitmap?.close();
+    setBitmap(null);
     setFile(null);
     setResult(null);
     setPreviewUrl(null);
     setError(null);
+    history.reset({ enhance: cloneEnhance(DEFAULT_ENHANCE), matchAmount: 80 });
   }
 
   async function onFiles(files: File[]) {
@@ -45,6 +60,10 @@ export function ConvertTool() {
     setPreviewUrl(URL.createObjectURL(next));
     setResult(null);
     setError(null);
+    bitmap?.close();
+    fileToBitmap(next)
+      .then((bmp) => setBitmap(bmp))
+      .catch(() => setBitmap(null));
   }
 
   useEffect(() => {
@@ -55,7 +74,7 @@ export function ConvertTool() {
       setError(null);
       try {
         const bitmap = await fileToBitmap(file);
-        const enhanced = applyEnhance(bitmap, bitmap.width, bitmap.height, enhance);
+        const enhanced = applyEnhance(bitmap, bitmap.width, bitmap.height, enhance, look.match);
         bitmap.close();
         const canvas = drawExact(enhanced, enhanced.width, enhanced.height);
         const next = await canvasToFormat(canvas, format, quality);
@@ -83,7 +102,7 @@ export function ConvertTool() {
       cancelled = true;
       window.clearTimeout(handle);
     };
-  }, [enhance, file, format, quality]);
+  }, [enhance, file, format, look.match, quality]);
 
   return (
     <div className="grid gap-6">
@@ -99,9 +118,12 @@ export function ConvertTool() {
           <p className="text-sm text-[var(--ink-soft)]">
             {file.name} · detected {detectInputLabel(file)} · local only
           </p>
-          <button type="button" className="btn btn-ghost" onClick={clear}>
-            New file
-          </button>
+          <div className="flex flex-wrap items-center gap-2">
+            <UndoRedoBar undo={history.undo} redo={history.redo} canUndo={history.canUndo} canRedo={history.canRedo} />
+            <button type="button" className="btn btn-ghost" onClick={clear}>
+              New file
+            </button>
+          </div>
         </div>
       )}
 
@@ -129,14 +151,21 @@ export function ConvertTool() {
         {format.note ? (
           <p className="text-sm leading-6 text-[var(--ink-soft)] md:col-span-2">{format.note}</p>
         ) : null}
-        <EnhanceBar value={enhance} onChange={setEnhance} />
+        <EnhanceBar
+          value={enhance}
+          onChange={setEnhance}
+          matchAmount={look.amount}
+          hasReference={look.hasReference}
+          onMatchAmount={(n) => {
+            look.setAmount(n);
+            history.set({ enhance, matchAmount: n });
+          }}
+          onReference={look.loadReference}
+        />
       </div>
 
       {file && previewUrl && format.mime.startsWith("image/") && result ? (
-        <div className="overflow-hidden rounded-[16px] border border-[var(--line)] bg-[#221F1F]">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={result.url} alt="Converted preview" className="mx-auto max-h-[420px] object-contain" />
-        </div>
+        <CompareSlider beforeUrl={previewUrl} afterUrl={result.url} />
       ) : null}
 
       {file && result ? (
