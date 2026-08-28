@@ -1,7 +1,7 @@
 export const SITE = {
   name: "Cherry Converter",
   shortName: "Cherry",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://cherryconverter.com",
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.cherryconverter.com",
   locale: "en_IN",
   tagline: "Free tools. Processed in your browser.",
   description:
