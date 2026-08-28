@@ -68,7 +68,7 @@ function drawFrame(
       options.maskWidth === width && options.maskHeight === height
         ? options.mask
         : scaleMask(options.mask, options.maskWidth, options.maskHeight, width, height);
-    healImageData(image, mask, options.healRadius ?? 14);
+    healImageData(image, mask, options.healRadius ?? 8, "overlay");
   }
   ctx.putImageData(image, 0, 0);
 }

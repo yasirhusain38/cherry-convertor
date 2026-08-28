@@ -9,8 +9,10 @@ import { DpiTool, SignatureTool } from "./EditTools";
 import { PdfTool } from "./PdfTool";
 import { PhotoTool } from "./PhotoTool";
 import { SingleImageTool } from "./SingleImageTool";
+import { ExtraEditTools } from "./ExtraEditTools";
 import { ImageStudio } from "./ImageStudio";
 import { VideoStudio } from "./StudioTools";
+import { WatermarkStudio } from "./WatermarkStudio";
 
 export function ToolWorkspace({ tool }: { tool: ToolDef }) {
   switch (tool.mode) {
@@ -37,6 +39,10 @@ export function ToolWorkspace({ tool }: { tool: ToolDef }) {
     case "heal":
     case "photo-studio":
       return <ImageStudio tool={tool} />;
+    case "watermark-studio":
+      return <WatermarkStudio tool={tool} />;
+    case "extra-edit":
+      return <ExtraEditTools tool={tool} />;
     case "video-studio":
       return <VideoStudio tool={tool} />;
     default:

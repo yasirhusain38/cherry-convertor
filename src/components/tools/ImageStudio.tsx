@@ -419,7 +419,7 @@ export function ImageStudio({ tool }: { tool: ToolDef }) {
     const ctx = work.getContext("2d");
     if (!ctx) return;
     const before = takeSnap(true);
-    healCanvas(work, mask, Math.max(8, Math.round(brush * 0.55)));
+    healCanvas(work, mask, 8);
     maskRef.current = emptyMask(work.width, work.height);
     redrawHeal();
     history.record(before, takeSnap(true));

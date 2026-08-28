@@ -25,7 +25,9 @@ export type ToolMode =
   | "color-grade"
   | "heal"
   | "video-studio"
-  | "photo-studio";
+  | "photo-studio"
+  | "watermark-studio"
+  | "extra-edit";
 
 export type FaqItem = { q: string; a: string };
 
@@ -7377,7 +7379,7 @@ export const TOOLS: ToolDef[] = [
     slug: "remove-watermark",
     name: "Remove Visible Watermark",
     category: "edit",
-    mode: "heal",
+    mode: "watermark-studio",
     kicker: "Edit  /  Heal",
     h1: "Remove a visible watermark or logo",
     lede: "Paint over a stamp, URL, or Gemini/Imagen overlay. The healer copies nearby texture. Invisible Google SynthID, C2PA, and content credentials are left intact — we do not strip provenance.",
@@ -7401,7 +7403,7 @@ export const TOOLS: ToolDef[] = [
         a: "Heal each patch, or crop it out. A full-frame tile usually means you need the original unmarked file.",
       },
     ],
-    related: ["object-remover", "add-watermark", "video-remove-watermark", "photo-editor"],
+    related: ["gemini-watermark-remover", "grok-watermark-remover", "video-remove-watermark", "object-remover"],
   },
   {
     slug: "replace-background",
@@ -7526,7 +7528,103 @@ export const TOOLS: ToolDef[] = [
         a: "This mask is static. A bouncing bug needs After Effects tracking.",
       },
     ],
-    related: ["remove-watermark", "object-remover", "video-color-grading"],
+    related: ["remove-watermark", "gemini-watermark-remover", "video-color-grading"],
+  },
+  {
+    slug: "gemini-watermark-remover",
+    name: "Gemini Watermark Remover",
+    category: "edit",
+    mode: "watermark-studio",
+    kicker: "Edit  /  Gemini",
+    h1: "Remove a visible Gemini / Nano Banana badge",
+    lede: "Auto-detects the corner sparkle or stamp and heals nearby pixels. Invisible SynthID stays. Files never leave this tab.",
+    metaTitle: "Gemini Watermark Remover Free – Cherry Converter",
+    metaDescription:
+      "Remove a visible Gemini or Nano Banana badge in your browser. Does not strip SynthID. Private, no upload.",
+    keywords: ["gemini watermark remover", "nano banana watermark", "remove gemini logo"],
+    faqs: [
+      {
+        q: "SynthID too?",
+        a: "No. Only the visible overlay. Google’s invisible watermark and C2PA credentials remain.",
+      },
+    ],
+    related: ["remove-watermark", "grok-watermark-remover", "video-remove-watermark"],
+  },
+  {
+    slug: "grok-watermark-remover",
+    name: "Grok Watermark Remover",
+    category: "edit",
+    mode: "watermark-studio",
+    kicker: "Edit  /  Grok",
+    h1: "Remove a visible Grok / xAI stamp",
+    lede: "Target the export badge, then heal. Provenance watermarks are not stripped.",
+    metaTitle: "Grok Watermark Remover Free – Cherry Converter",
+    metaDescription: "Heal a visible Grok stamp in your browser. SynthID/C2PA stay. No upload.",
+    keywords: ["grok watermark remover", "xai watermark", "remove grok logo"],
+    faqs: [
+      {
+        q: "Does Grok always add a visible mark?",
+        a: "Not always. If there is no badge, Auto will say so. Paint the area if you still see one.",
+      },
+    ],
+    related: ["gemini-watermark-remover", "remove-watermark", "video-remove-watermark"],
+  },
+  {
+    slug: "image-upscaler",
+    name: "Image Upscaler",
+    category: "edit",
+    mode: "extra-edit",
+    kicker: "Edit  /  Upscale",
+    h1: "Upscale an image 2×, 3×, or 4×",
+    lede: "Canvas upscale plus unsharp. Local, no upload. Not a cloud ESRGAN — use it when you need more pixels without leaving the tab.",
+    metaTitle: "Image Upscaler Online Free – Cherry Converter",
+    metaDescription: "Upscale JPG and PNG 2×–4× in your browser. Private, no upload.",
+    keywords: ["image upscaler", "upscale image 4x", "enlarge photo online"],
+    faqs: [
+      {
+        q: "Is this AI super-resolution?",
+        a: "It is high-quality resampling and sharpen, on this device. For hallucinated detail you still want a trained upscaler.",
+      },
+    ],
+    related: ["image-enhancer", "image-extender", "photo-editor"],
+  },
+  {
+    slug: "image-enhancer",
+    name: "Image Enhancer",
+    category: "edit",
+    mode: "extra-edit",
+    kicker: "Edit  /  Enhance",
+    h1: "Enhance a photo — auto WB, contrast, sharpen",
+    lede: "One click: white balance, contrast stretch, unsharp. Then open Color Grading if you want a look.",
+    metaTitle: "Image Enhancer Online Free – Cherry Converter",
+    metaDescription: "Enhance photos in your browser: auto white balance, contrast, sharpen. No upload.",
+    keywords: ["image enhancer", "sharpen photo", "auto enhance image"],
+    faqs: [
+      {
+        q: "Can I tweak after?",
+        a: "Download, or open Color Grading for lift/gamma/gain and looks.",
+      },
+    ],
+    related: ["color-grading", "image-upscaler", "photo-editor"],
+  },
+  {
+    slug: "image-extender",
+    name: "Image Extender",
+    category: "edit",
+    mode: "extra-edit",
+    kicker: "Edit  /  Extend",
+    h1: "Extend / outpaint a photo",
+    lede: "Pad the frame with a blurred or solid fill so you can recrop. This is not generative outpaint — it will not invent a new city behind the subject.",
+    metaTitle: "Image Extender Outpaint Free – Cherry Converter",
+    metaDescription: "Extend a photo canvas in your browser. Blur or solid pad. Private, no upload.",
+    keywords: ["image extender", "outpaint photo", "expand image canvas"],
+    faqs: [
+      {
+        q: "Will it generate new scenery?",
+        a: "No. It stretches/blurs existing pixels. True generative outpaint needs a cloud model.",
+      },
+    ],
+    related: ["photo-cropper", "image-upscaler", "replace-background"],
   },
 ];
 

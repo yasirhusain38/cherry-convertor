@@ -159,98 +159,303 @@ export function growMask(mask: Uint8Array, width: number, height: number, radius
   }
 }
 
-/**
- * Content-aware heal for a painted mask. Samples unmasked neighbours around
- * each marked pixel, then blends. Meant for logos, stamps, sensors, and small
- * objects — not a generative fill.
- */
-export function healImageData(image: ImageData, mask: Uint8Array, radius = 12): void {
-  const { data, width, height } = image;
-  const bounds = maskBounds(mask, width, height);
-  if (!bounds) return;
+function maskArea(mask: Uint8Array): number {
+  let n = 0;
+  for (let i = 0; i < mask.length; i += 1) if (mask[i]) n += 1;
+  return n;
+}
 
-  const src = new Uint8ClampedArray(data);
-  const r = Math.max(4, Math.round(radius));
-  const pad = r + 2;
-  const x0 = Math.max(0, bounds.x - pad);
-  const y0 = Math.max(0, bounds.y - pad);
-  const x1 = Math.min(width, bounds.x + bounds.w + pad);
-  const y1 = Math.min(height, bounds.y + bounds.h + pad);
-
-  const dirs: Array<[number, number]> = [];
-  for (let k = 0; k < 24; k += 1) {
-    const a = (k / 24) * Math.PI * 2;
-    dirs.push([Math.cos(a), Math.sin(a)]);
-  }
-
-  for (let y = bounds.y; y < bounds.y + bounds.h; y += 1) {
-    for (let x = bounds.x; x < bounds.x + bounds.w; x += 1) {
-      const mi = y * width + x;
-      if (!mask[mi]) continue;
-      let rs = 0;
-      let gs = 0;
-      let bs = 0;
-      let as = 0;
-      let wsum = 0;
-      for (const [dx, dy] of dirs) {
-        for (const dist of [r, r * 1.6, r * 2.2]) {
-          const px = Math.round(x + dx * dist);
-          const py = Math.round(y + dy * dist);
-          if (px < 0 || py < 0 || px >= width || py >= height) continue;
-          if (mask[py * width + px]) continue;
-          const pi = (py * width + px) * 4;
-          const w = 1 / dist;
-          rs += src[pi] * w;
-          gs += src[pi + 1] * w;
-          bs += src[pi + 2] * w;
-          as += src[pi + 3] * w;
-          wsum += w;
-        }
-      }
-      if (wsum < 1e-4) {
-        const px = clamp(x < bounds.x + bounds.w / 2 ? bounds.x - 2 : bounds.x + bounds.w + 1, 0, width - 1);
-        const py = clamp(y < bounds.y + bounds.h / 2 ? bounds.y - 2 : bounds.y + bounds.h + 1, 0, height - 1);
-        const pi = (py * width + px) * 4;
-        rs = src[pi];
-        gs = src[pi + 1];
-        bs = src[pi + 2];
-        as = src[pi + 3];
-        wsum = 1;
-      }
-      const i = mi * 4;
-      data[i] = rs / wsum;
-      data[i + 1] = gs / wsum;
-      data[i + 2] = bs / wsum;
-      data[i + 3] = as / wsum;
+function downsample(image: ImageData, mask: Uint8Array, scale: number): {
+  image: ImageData;
+  mask: Uint8Array;
+} {
+  const w = Math.max(2, Math.round(image.width / scale));
+  const h = Math.max(2, Math.round(image.height / scale));
+  const canvas = document.createElement("canvas");
+  canvas.width = image.width;
+  canvas.height = image.height;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return { image, mask };
+  ctx.putImageData(image, 0, 0);
+  const small = document.createElement("canvas");
+  small.width = w;
+  small.height = h;
+  const sctx = small.getContext("2d");
+  if (!sctx) return { image, mask };
+  sctx.imageSmoothingEnabled = true;
+  sctx.drawImage(canvas, 0, 0, w, h);
+  const nextImage = sctx.getImageData(0, 0, w, h);
+  const nextMask = emptyMask(w, h);
+  for (let y = 0; y < h; y += 1) {
+    for (let x = 0; x < w; x += 1) {
+      const sx = Math.min(image.width - 1, Math.round(x * scale));
+      const sy = Math.min(image.height - 1, Math.round(y * scale));
+      if (mask[sy * image.width + sx]) nextMask[y * w + x] = 255;
     }
   }
+  return { image: nextImage, mask: nextMask };
+}
 
-  for (let pass = 0; pass < 2; pass += 1) {
-    const copy = new Uint8ClampedArray(data);
-    for (let y = y0 + 1; y < y1 - 1; y += 1) {
-      for (let x = x0 + 1; x < x1 - 1; x += 1) {
-        const mi = y * width + x;
-        if (!mask[mi]) continue;
-        const i = mi * 4;
-        for (let c = 0; c < 4; c += 1) {
-          let s = 0;
-          for (let dy = -1; dy <= 1; dy += 1) {
-            for (let dx = -1; dx <= 1; dx += 1) {
-              s += copy[((y + dy) * width + (x + dx)) * 4 + c];
-            }
+function upsampleFill(small: ImageData, image: ImageData, mask: Uint8Array): void {
+  const canvas = document.createElement("canvas");
+  canvas.width = small.width;
+  canvas.height = small.height;
+  canvas.getContext("2d")?.putImageData(small, 0, 0);
+  const big = document.createElement("canvas");
+  big.width = image.width;
+  big.height = image.height;
+  const ctx = big.getContext("2d");
+  if (!ctx) return;
+  ctx.imageSmoothingEnabled = true;
+  ctx.drawImage(canvas, 0, 0, image.width, image.height);
+  const up = ctx.getImageData(0, 0, image.width, image.height);
+  for (let i = 0; i < mask.length; i += 1) {
+    if (!mask[i]) continue;
+    const p = i * 4;
+    image.data[p] = up.data[p];
+    image.data[p + 1] = up.data[p + 1];
+    image.data[p + 2] = up.data[p + 2];
+    image.data[p + 3] = up.data[p + 3];
+  }
+}
+
+/** Telea-style fill: process the hole from the boundary inward. */
+function telea(image: ImageData, mask: Uint8Array, radius: number): void {
+  const { data, width, height } = image;
+  const known = new Uint8Array(width * height);
+  for (let i = 0; i < mask.length; i += 1) known[i] = mask[i] ? 0 : 1;
+
+  const dist = new Int32Array(width * height);
+  dist.fill(1_000_000);
+  const q: number[] = [];
+  for (let i = 0; i < known.length; i += 1) {
+    if (!known[i]) continue;
+    dist[i] = 0;
+    q.push(i);
+  }
+  const step = (i: number, ni: number) => {
+    if (ni < 0 || ni >= dist.length) return;
+    if (dist[i] + 1 < dist[ni]) {
+      dist[ni] = dist[i] + 1;
+      q.push(ni);
+    }
+  };
+  for (let qi = 0; qi < q.length; qi += 1) {
+    const i = q[qi];
+    const x = i % width;
+    if (x > 0) step(i, i - 1);
+    if (x + 1 < width) step(i, i + 1);
+    if (i >= width) step(i, i - width);
+    if (i + width < dist.length) step(i, i + width);
+  }
+
+  const holes: number[] = [];
+  for (let i = 0; i < mask.length; i += 1) if (mask[i]) holes.push(i);
+  holes.sort((a, b) => dist[a] - dist[b]);
+
+  const r = Math.max(3, Math.round(radius));
+  const r2 = r * r;
+  for (const i of holes) {
+    const x = i % width;
+    const y = (i - x) / width;
+    let wr = 0;
+    let wg = 0;
+    let wb = 0;
+    let wa = 0;
+    let ws = 0;
+    const x0 = Math.max(0, x - r);
+    const x1 = Math.min(width - 1, x + r);
+    const y0 = Math.max(0, y - r);
+    const y1 = Math.min(height - 1, y + r);
+    for (let py = y0; py <= y1; py += 1) {
+      for (let px = x0; px <= x1; px += 1) {
+        const d2 = (px - x) * (px - x) + (py - y) * (py - y);
+        if (d2 === 0 || d2 > r2) continue;
+        const ni = py * width + px;
+        if (!known[ni]) continue;
+        const w = (1 / d2) * (1 / (1 + dist[ni]));
+        const pi = ni * 4;
+        wr += data[pi] * w;
+        wg += data[pi + 1] * w;
+        wb += data[pi + 2] * w;
+        wa += data[pi + 3] * w;
+        ws += w;
+      }
+    }
+    const pi = i * 4;
+    if (ws > 0) {
+      data[pi] = wr / ws;
+      data[pi + 1] = wg / ws;
+      data[pi + 2] = wb / ws;
+      data[pi + 3] = wa / ws;
+    }
+    known[i] = 1;
+  }
+}
+
+function softenHole(image: ImageData, mask: Uint8Array): void {
+  const { data, width, height } = image;
+  const copy = new Uint8ClampedArray(data);
+  for (let y = 1; y < height - 1; y += 1) {
+    for (let x = 1; x < width - 1; x += 1) {
+      const i = y * width + x;
+      if (!mask[i]) continue;
+      const p = i * 4;
+      for (let c = 0; c < 3; c += 1) {
+        let s = 0;
+        let n = 0;
+        for (let dy = -1; dy <= 1; dy += 1) {
+          for (let dx = -1; dx <= 1; dx += 1) {
+            s += copy[((y + dy) * width + (x + dx)) * 4 + c];
+            n += 1;
           }
-          data[i + c] = s / 9;
         }
+        data[p + c] = s / n;
       }
     }
   }
 }
 
-export function healCanvas(canvas: HTMLCanvasElement, mask: Uint8Array, radius = 12): void {
+const OVERLAY_DIRS: Array<[number, number]> = Array.from({ length: 20 }, (_, k) => {
+  const a = (k / 20) * Math.PI * 2;
+  return [Math.cos(a), Math.sin(a)] as [number, number];
+});
+const OVERLAY_DISTANCES = [5, 10, 16, 24, 34, 48, 64, 88];
+
+function median(values: number[]): number {
+  if (!values.length) return 0;
+  values.sort((a, b) => a - b);
+  return values[values.length >> 1];
+}
+
+function sampleLocalBg(
+  src: Uint8ClampedArray,
+  mask: Uint8Array,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+): [number, number, number] | null {
+  const rs: number[] = [];
+  const gs: number[] = [];
+  const bs: number[] = [];
+  const take = (px: number, py: number) => {
+    if (px < 0 || py < 0 || px >= width || py >= height) return;
+    if (mask[py * width + px]) return;
+    const pi = (py * width + px) * 4;
+    rs.push(src[pi]);
+    gs.push(src[pi + 1]);
+    bs.push(src[pi + 2]);
+  };
+  for (const [dx, dy] of OVERLAY_DIRS) {
+    for (const dist of OVERLAY_DISTANCES) {
+      take(Math.round(x + dx * dist), Math.round(y + dy * dist));
+    }
+  }
+  if (rs.length < 8) {
+    const limit = Math.max(width, height);
+    for (const [dx, dy] of OVERLAY_DIRS) {
+      for (let dist = 6; dist < limit / 2 && rs.length < 16; dist += 8) {
+        take(Math.round(x + dx * dist), Math.round(y + dy * dist));
+      }
+    }
+  }
+  if (rs.length < 8) return null;
+  return [median(rs), median(gs), median(bs)];
+}
+
+/**
+ * Shrink a coarse mask to pixels that don't match the local photo
+ * (the overlay). Faces, captions, and products in the same corner are kept.
+ */
+export function tightenToOverlay(image: ImageData, mask: Uint8Array, keep = 12): Uint8Array {
+  const { data, width, height } = image;
+  const next = emptyMask(width, height);
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const i = y * width + x;
+      if (!mask[i]) continue;
+      const bg = sampleLocalBg(data, mask, x, y, width, height);
+      if (!bg) continue;
+      const p = i * 4;
+      const dr = data[p] - bg[0];
+      const dg = data[p + 1] - bg[1];
+      const db = data[p + 2] - bg[2];
+      if (Math.sqrt(dr * dr + dg * dg + db * db) >= keep) next[i] = 255;
+    }
+  }
+  return next;
+}
+
+/**
+ * Peel a stamp without punching a hole. Pixels that already match the local
+ * photo are left alone — so text/objects under a fat mask survive.
+ */
+export function peelOverlay(image: ImageData, mask: Uint8Array, keep = 12): void {
+  const { data, width, height } = image;
+  const src = new Uint8ClampedArray(data);
+  const replaced = emptyMask(width, height);
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const i = y * width + x;
+      if (!mask[i]) continue;
+      const bg = sampleLocalBg(src, mask, x, y, width, height);
+      if (!bg) continue;
+      const p = i * 4;
+      const dr = src[p] - bg[0];
+      const dg = src[p + 1] - bg[1];
+      const db = src[p + 2] - bg[2];
+      if (Math.sqrt(dr * dr + dg * dg + db * db) < keep) continue;
+      data[p] = bg[0];
+      data[p + 1] = bg[1];
+      data[p + 2] = bg[2];
+      replaced[i] = 255;
+    }
+  }
+  if (maskHasPaint(replaced)) softenHole(image, replaced);
+}
+
+export type HealMode = "object" | "overlay";
+
+/**
+ * overlay: peel a watermark off so content underneath remains.
+ * object: Telea fill of a painted hole (object remover).
+ */
+export function healImageData(
+  image: ImageData,
+  mask: Uint8Array,
+  radius = 8,
+  mode: HealMode = "object",
+): void {
+  const bounds = maskBounds(mask, image.width, image.height);
+  if (!bounds) return;
+  if (mode === "overlay") {
+    peelOverlay(image, mask);
+    return;
+  }
+  const area = maskArea(mask);
+  const adaptive = clamp(Math.round(Math.sqrt(area) * 0.22), 4, 12);
+  const r = clamp(radius, 3, 14);
+  const use = Math.min(adaptive, r + 2);
+  if (area > 14_000 && image.width > 480) {
+    const small = downsample(image, mask, 2);
+    telea(small.image, small.mask, Math.max(3, Math.round(use / 2)));
+    upsampleFill(small.image, image, mask);
+  }
+  telea(image, mask, use);
+  softenHole(image, mask);
+}
+
+export function healCanvas(
+  canvas: HTMLCanvasElement,
+  mask: Uint8Array,
+  radius = 12,
+  mode: HealMode = "object",
+): void {
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("Canvas is not supported in this browser.");
   const image = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  healImageData(image, mask, radius);
+  healImageData(image, mask, radius, mode);
   ctx.putImageData(image, 0, 0);
 }
 

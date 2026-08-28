@@ -8,6 +8,7 @@ import { UndoRedoBar } from "@/components/UndoRedoBar";
 import { downloadBlob } from "@/lib/download";
 import { cloneEnhance, DEFAULT_ENHANCE, type EnhanceSettings } from "@/lib/enhance";
 import { useEditHistory } from "./useEditHistory";
+import { buildWatermarkMask, type MarkPreset } from "@/lib/detect-mark";
 import { emptyMask, maskHasPaint, overlayMask, paintBrush } from "@/lib/heal";
 import type { ToolDef } from "@/lib/tools";
 import { previewVideoFrame, recordGradedVideo, videoExt, type VideoChroma } from "@/lib/video-studio";
@@ -32,6 +33,10 @@ export function VideoStudio({ tool }: { tool: ToolDef }) {
   const maskSize = useRef({ w: 0, h: 0 });
   const [brush, setBrush] = useState(36);
   const [healOn, setHealOn] = useState(tool.slug.includes("watermark") || tool.slug.includes("object"));
+  const [markPreset, setMarkPreset] = useState<MarkPreset>(
+    tool.slug.includes("grok") ? "grok" : tool.slug.includes("gemini") ? "gemini" : "auto",
+  );
+  const autoFilled = useRef(false);
   const [busy, setBusy] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -62,6 +67,7 @@ export function VideoStudio({ tool }: { tool: ToolDef }) {
     setVideoUrl(URL.createObjectURL(next));
     setError(null);
     maskRef.current = null;
+    autoFilled.current = false;
   }
 
   async function refreshPreview() {
@@ -72,6 +78,18 @@ export function VideoStudio({ tool }: { tool: ToolDef }) {
     if (!maskRef.current || maskSize.current.w !== canvas.width || maskSize.current.h !== canvas.height) {
       maskRef.current = emptyMask(canvas.width, canvas.height);
       maskSize.current = { w: canvas.width, h: canvas.height };
+      autoFilled.current = false;
+    }
+    if (healOn && !autoFilled.current && maskRef.current) {
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        const image = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const built = buildWatermarkMask(image, markPreset);
+        if (built.count) {
+          maskRef.current = built.mask;
+          autoFilled.current = true;
+        }
+      }
     }
     if (healOn && maskRef.current && maskHasPaint(maskRef.current)) {
       const ctx = canvas.getContext("2d");
@@ -94,7 +112,7 @@ export function VideoStudio({ tool }: { tool: ToolDef }) {
     }, 80);
     return () => window.clearTimeout(handle);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [enhance, useChroma, chroma, healOn, videoUrl]);
+  }, [enhance, useChroma, chroma, healOn, videoUrl, markPreset]);
 
   async function exportClip() {
     if (!file) return;
@@ -255,10 +273,29 @@ export function VideoStudio({ tool }: { tool: ToolDef }) {
           </div>
         ) : null}
         {healOn ? (
-          <label className="grid gap-2 text-sm">
-            Heal brush · {brush}px
-            <input type="range" min={8} max={140} value={brush} onChange={(e) => setBrush(Number(e.target.value))} />
-          </label>
+          <>
+            <p className="label">Visible mark target</p>
+            <div className="flex flex-wrap gap-2">
+              {(["auto", "gemini", "grok", "tiktok", "banner", "subtitle", "corners"] as MarkPreset[]).map((id) => (
+                <button
+                  key={id}
+                  type="button"
+                  className={`btn min-h-10 px-3 ${markPreset === id ? "btn-primary" : "btn-ghost"}`}
+                  onClick={() => {
+                    setMarkPreset(id);
+                    autoFilled.current = false;
+                    void refreshPreview();
+                  }}
+                >
+                  {id}
+                </button>
+              ))}
+            </div>
+            <label className="grid gap-2 text-sm">
+              Heal brush · {brush}px
+              <input type="range" min={8} max={140} value={brush} onChange={(e) => setBrush(Number(e.target.value))} />
+            </label>
+          </>
         ) : null}
         <GradeControls value={enhance} onChange={setEnhance} />
         <button type="button" className="btn btn-primary" disabled={!file || busy} onClick={() => void exportClip()}>
