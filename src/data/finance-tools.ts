@@ -47,7 +47,90 @@ const CORE_FINANCE_TOOLS: FinanceTool[] = [
     { key: "principal", label: "Amount invested", def: "10000" },
     { key: "final", label: "Value today", def: "18500" },
     { key: "years", label: "Years held", def: "5" },
-  ], ["compound-interest-calculator", "india-sip-calculator"]),
+  ], ["compound-interest-calculator", "india-sip-calculator", "simple-interest-calculator"]),
+  t("discount-calculator", "Discount Calculator", "Global", "global", "Finance  /  Retail", "Discount calculator", "Sale price and amount saved from a list price and percent off.", ["discount calculator", "sale price calculator"], "discount", "USD", [
+    { key: "amount", label: "List price", def: "199" },
+    { key: "percent", label: "Discount", suffix: "%", def: "20" },
+  ], ["profit-margin-calculator", "markup-calculator", "percentage-calculator"]),
+  t("profit-margin-calculator", "Profit Margin Calculator", "Global", "global", "Finance  /  Margin", "Profit margin calculator", "Profit, margin %, and markup % from cost and selling price.", ["profit margin calculator", "margin calculator"], "profit-margin", "USD", [
+    { key: "cost", label: "Cost", def: "80" },
+    { key: "price", label: "Selling price", def: "120" },
+  ], ["markup-calculator", "break-even-calculator", "discount-calculator"]),
+  t("markup-calculator", "Markup Calculator", "Global", "global", "Finance  /  Markup", "Markup calculator", "Selling price from cost and markup percent.", ["markup calculator", "cost plus markup"], "markup", "USD", [
+    { key: "cost", label: "Cost", def: "80" },
+    { key: "percent", label: "Markup", suffix: "%", def: "50" },
+  ], ["profit-margin-calculator", "discount-calculator", "break-even-calculator"]),
+  t("break-even-calculator", "Break-even Calculator", "Global", "global", "Finance  /  Break-even", "Break-even calculator", "Units you need to sell to cover fixed costs.", ["break even calculator", "breakeven point"], "break-even", "USD", [
+    { key: "fixed", label: "Fixed costs", def: "25000" },
+    { key: "price", label: "Price per unit", def: "40" },
+    { key: "variable", label: "Variable cost per unit", def: "18" },
+  ], ["profit-margin-calculator", "markup-calculator", "gst-invoice-calculator"]),
+  t("gst-invoice-calculator", "GST Invoice Calculator", "Global", "global", "Finance  /  GST invoice", "GST invoice calculator", "Taxable value, CGST/SGST or IGST, and invoice total. India rates as a starting point.", ["gst invoice calculator", "gst bill calculator"], "gst-invoice", "₹", [
+    { key: "amount", label: "Taxable amount (per unit)", def: "1000" },
+    { key: "qty", label: "Quantity", def: "1" },
+    { key: "rate", label: "GST rate", kind: "select", def: "18", options: [
+      { value: "5", label: "5%" }, { value: "12", label: "12%" }, { value: "18", label: "18%" }, { value: "28", label: "28%" },
+    ] },
+    { key: "supply", label: "Supply", kind: "select", def: "intra", options: [
+      { value: "intra", label: "Intra-state (CGST + SGST)" }, { value: "inter", label: "Inter-state (IGST)" },
+    ] },
+  ], ["gst-calculator-india", "profit-margin-calculator", "percentage-calculator"]),
+  t("simple-interest-calculator", "Simple Interest Calculator", "Global", "global", "Finance  /  Interest", "Simple interest calculator", "P × R × T ÷ 100. Maturity = principal + interest.", ["simple interest calculator", "si calculator"], "simple-interest", "USD", [
+    { key: "principal", label: "Principal", def: "10000" },
+    { key: "rate", label: "Annual rate", suffix: "%", def: "8" },
+    { key: "years", label: "Time (years)", def: "3" },
+  ], ["compound-interest-calculator", "investment-return-calculator", "loan-emi-calculator"]),
+  t("loan-to-value-calculator", "Loan-to-Value Calculator", "Global", "global", "Finance  /  LTV", "Loan-to-value calculator", "Loan amount divided by property value. Lenders often cap LTV.", ["ltv calculator", "loan to value"], "ltv", "USD", [
+    { key: "principal", label: "Loan amount", def: "400000" },
+    { key: "value", label: "Property value", def: "500000" },
+  ], ["debt-to-income-calculator", "loan-emi-calculator", "rent-vs-buy-calculator"]),
+  t("debt-to-income-calculator", "Debt-to-Income Ratio", "Global", "global", "Finance  /  DTI", "Debt-to-income ratio calculator", "Monthly debt payments ÷ monthly gross income. A common underwriting screen.", ["dti calculator", "debt to income ratio"], "dti", "USD", [
+    { key: "debt", label: "Monthly debt payments", def: "1800" },
+    { key: "income", label: "Monthly gross income", def: "6000" },
+  ], ["loan-to-value-calculator", "budget-calculator", "net-worth-calculator"]),
+  t("net-worth-calculator", "Net Worth Calculator", "Global", "global", "Finance  /  Net worth", "Net worth calculator", "Assets minus liabilities. Figures stay in this tab.", ["net worth calculator", "assets minus liabilities"], "net-worth", "USD", [
+    { key: "cash", label: "Cash / bank", def: "15000" },
+    { key: "investments", label: "Investments", def: "80000" },
+    { key: "property", label: "Home / property", def: "350000" },
+    { key: "other", label: "Other assets", def: "10000" },
+    { key: "mortgage", label: "Mortgage balance", def: "220000" },
+    { key: "loans", label: "Other loans", def: "12000" },
+    { key: "cards", label: "Credit cards", def: "2500" },
+  ], ["budget-calculator", "debt-to-income-calculator", "savings-goal-calculator"]),
+  t("savings-goal-calculator", "Savings Goal Calculator", "Global", "global", "Finance  /  Savings", "Savings goal calculator", "Months to hit a target with a monthly deposit and optional return.", ["savings goal calculator", "how long to save"], "savings-goal", "USD", [
+    { key: "target", label: "Goal", def: "20000" },
+    { key: "principal", label: "Already saved", def: "2500" },
+    { key: "monthly", label: "Monthly save", def: "400" },
+    { key: "rate", label: "Annual return", suffix: "%", def: "4" },
+  ], ["retirement-calculator", "compound-interest-calculator", "budget-calculator"]),
+  t("retirement-calculator", "Retirement Calculator", "Global", "global", "Finance  /  Retirement", "Retirement calculator", "Corpus from current savings plus monthly contributions, then a withdrawal rule of thumb.", ["retirement calculator", "retirement corpus calculator"], "retirement", "USD", [
+    { key: "principal", label: "Current savings", def: "50000" },
+    { key: "monthly", label: "Monthly contribution", def: "500" },
+    { key: "rate", label: "Expected return", suffix: "%", def: "7" },
+    { key: "years", label: "Years to retirement", def: "25" },
+    { key: "withdraw", label: "Withdrawal rate", suffix: "%", def: "4" },
+  ], ["savings-goal-calculator", "us-401k-calculator", "india-nps-calculator"]),
+  t("rent-vs-buy-calculator", "Rent vs Buy Calculator", "Global", "global", "Finance  /  Housing", "Rent vs buy calculator", "Compare renting with investing the down payment vs buying on a mortgage over a horizon. Prices assumed flat.", ["rent vs buy", "rent or buy calculator"], "rent-vs-buy", "USD", [
+    { key: "rent", label: "Monthly rent", def: "1800" },
+    { key: "price", label: "Home price", def: "400000" },
+    { key: "principal", label: "Down payment", def: "80000" },
+    { key: "rate", label: "Mortgage rate", suffix: "%", def: "6.5" },
+    { key: "tenure", label: "Loan tenure", suffix: "years", def: "30" },
+    { key: "years", label: "Horizon", suffix: "years", def: "7" },
+    { key: "taxRate", label: "Property tax", suffix: "% / yr", def: "1.1" },
+    { key: "maintain", label: "Maintenance", suffix: "% / yr", def: "1" },
+    { key: "invest", label: "If renting, invest down payment at", suffix: "%", def: "7" },
+  ], ["loan-to-value-calculator", "loan-emi-calculator", "us-mortgage-calculator"]),
+  t("fuel-cost-calculator", "Fuel Cost Calculator", "Global", "global", "Finance  /  Fuel", "Fuel cost calculator", "Trip fuel from distance, economy, and price. Kilometres/litres or miles/MPG.", ["fuel cost calculator", "gas cost calculator", "trip fuel calculator"], "fuel-cost", "USD", [
+    { key: "distance", label: "Distance (one way)", def: "120" },
+    { key: "trips", label: "Trips (1 = one way, 2 = return)", def: "2" },
+    { key: "economy", label: "Economy", def: "14" },
+    { key: "price", label: "Fuel price", def: "1.4" },
+    { key: "unit", label: "Units", kind: "select", def: "kml", options: [
+      { value: "kml", label: "Kilometres, km per litre" },
+      { value: "mpg", label: "Miles per gallon" },
+    ] },
+  ], ["budget-calculator", "percentage-calculator", "discount-calculator"]),
 
   t("india-emi-calculator", "India EMI Calculator", "India", "india", "India  /  EMI", "EMI calculator (India)", "Home, car, and personal loan EMI in rupees. Principal, rate, tenure.", ["emi calculator india", "home loan emi"], "emi", "₹", emiFields("4000000", "8.5"), ["india-home-loan-emi", "india-fd-calculator", "loan-emi-calculator"]),
   t("india-home-loan-emi", "India Home Loan EMI Calculator", "India", "india", "India  /  Home loan", "Home loan EMI calculator", "Housing-loan instalment with total interest over the full tenure.", ["home loan emi calculator", "housing loan emi"], "emi", "₹", emiFields("7500000", "8.4"), ["india-emi-calculator", "india-income-tax-calculator"]),

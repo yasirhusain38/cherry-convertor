@@ -13,7 +13,7 @@ export default function PrivacyPage() {
     <article className="container-page prose-site max-w-3xl py-16">
       <p className="label">Legal</p>
       <h1 className="display mt-3 text-5xl">Privacy policy</h1>
-      <p className="mt-6">Last updated 18 August 2026.</p>
+      <p className="mt-6">Last updated 29 August 2026.</p>
       <h2>Images never leave your browser</h2>
       <p>
         Compress, resize, convert, crop, DPI, document photo, signature, and PDF
@@ -37,8 +37,12 @@ export default function PrivacyPage() {
       </p>
       <h2>Third-party code</h2>
       <p>
-        HEIC decoding uses heic2any. PDF export uses jsPDF. ZIP export uses JSZip.
-        Those libraries execute in your browser. They are not a file-upload API.
+        HEIC decoding uses heic2any. PDF export uses jsPDF. PDF merge/split uses
+        pdf-lib. ZIP export uses JSZip. OCR uses Tesseract.js in WebAssembly and
+        may download a public English language model; your photo or PDF is not
+        uploaded. QR/barcode tools use qrcode, jsQR, JsBarcode, and ZXing in
+        this tab. Those libraries execute in your browser. They are not a
+        file-upload API.
       </p>
       <h2>Children</h2>
       <p>

@@ -5,7 +5,7 @@ import { SITE } from "@/lib/site";
 export const metadata: Metadata = {
   title: "About",
   description:
-    "Cherry Converter is a free, privacy-first image tools studio. Compress, resize, and prepare Indian document photos entirely in the browser.",
+    "Cherry Converter is a free, privacy-first tools studio. Compress images, merge PDFs, run OCR, and prepare Indian document photos entirely in the browser.",
   alternates: { canonical: "/about" },
 };
 
@@ -29,7 +29,8 @@ export default function AboutPage() {
       <p>
         Almost every tool uses the HTML5 Canvas API and the File API. HEIC files
         are decoded with a lightweight in-browser library (heic2any / libheif).
-        PDFs are assembled with jsPDF. ZIPs are packed with JSZip. None of those
+        PDFs are assembled with jsPDF and merged with pdf-lib. OCR uses
+        Tesseract.js in this tab. ZIPs are packed with JSZip. None of those
         steps require a Cherry Converter server.
       </p>
       <h2>What is next</h2>

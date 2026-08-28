@@ -13,6 +13,7 @@ const NAV = [
   { href: "/tools/compress-image", label: "Compress" },
   { href: "/tools/resize-image", label: "Resize" },
   { href: "/tools/convert", label: "Convert" },
+  { href: "/tools/pdf-merger", label: "PDF" },
   { href: "/tools/passport-photo-maker", label: "Documents" },
   { href: "/countries", label: "Countries" },
   { href: "/finance", label: "Finance" },

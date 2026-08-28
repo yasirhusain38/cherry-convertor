@@ -25,7 +25,7 @@ export default function Home() {
             100% Privacy.
           </h1>
           <p className="mt-8 max-w-xl text-base leading-7 text-[#F5F5F1]/80 md:text-lg">
-            Compress to any KB, search any output format, watermark, rotate, or
+            Compress to any KB, merge PDFs, generate a QR code, run OCR, or
             make an Indian passport photo — entirely in the browser. {SITE.name}{" "}
             never sees the file.
           </p>

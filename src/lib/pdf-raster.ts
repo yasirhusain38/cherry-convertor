@@ -1,8 +1,8 @@
 import { drawExact, fileToBitmap } from "./image";
 
-type PageCanvas = { canvas: HTMLCanvasElement; width: number; height: number };
+export type PageCanvas = { canvas: HTMLCanvasElement; width: number; height: number };
 
-async function rasterPdf(file: File, scale = 1.4): Promise<PageCanvas[]> {
+export async function rasterPdfPages(file: File, scale = 1.4): Promise<PageCanvas[]> {
   const pdfjs = await import("pdfjs-dist");
   pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
   const data = new Uint8Array(await file.arrayBuffer());
@@ -27,7 +27,7 @@ export async function filesToPageCanvases(files: File[]): Promise<PageCanvas[]> 
   for (const file of files) {
     const isPdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
     if (isPdf) {
-      pages.push(...(await rasterPdf(file)));
+      pages.push(...(await rasterPdfPages(file)));
     } else {
       const bitmap = await fileToBitmap(file);
       const canvas = drawExact(bitmap, bitmap.width, bitmap.height, "#ffffff");

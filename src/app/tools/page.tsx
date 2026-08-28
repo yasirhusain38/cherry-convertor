@@ -3,9 +3,9 @@ import { ToolsExplorer } from "@/components/ToolsExplorer";
 import { TOOLS } from "@/lib/tools";
 
 export const metadata: Metadata = {
-  title: "All Image Tools",
+  title: "All Tools",
   description:
-    "Browse every Cherry Converter tool: compress, resize, convert any format, watermark, rotate, and Indian document photo makers.",
+    "Browse every Cherry Converter tool: compress, PDF merge/split, OCR, QR codes, text formatters, and Indian document photo makers.",
   alternates: { canonical: "/tools" },
 };
 

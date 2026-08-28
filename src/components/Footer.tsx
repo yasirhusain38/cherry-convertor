@@ -9,7 +9,7 @@ export function Footer() {
         <div className="container-page flex flex-col gap-2 py-5 sm:flex-row sm:items-center sm:justify-between">
           <p className="label label-light">Privacy</p>
           <p className="text-sm tracking-tight">
-            Images are processed in your browser — we never upload your photos.
+            Files are processed in your browser — we never upload your photos or PDFs.
           </p>
         </div>
       </div>

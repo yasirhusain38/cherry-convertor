@@ -335,5 +335,40 @@ export function buildFinanceChart(engine: string, input: CalcInput, result: Calc
     return { title: "Repayment vs income", slices: slices([["Repayment", repay], ["Take-home rest", Math.max(0, income - repay)]]) };
   }
 
+  if (engine === "discount") {
+    const list = n(input, "amount");
+    const percent = n(input, "percent");
+    const off = list * (percent / 100);
+    return { title: "Discount", slices: slices([["Sale price", list - off], ["Saved", off]]) };
+  }
+
+  if (engine === "profit-margin" || engine === "markup") {
+    return fromRows(result, "Price mix", /margin|markup/i);
+  }
+
+  if (engine === "break-even") {
+    return fromRows(result, "Break-even", /units|contribution/i);
+  }
+
+  if (engine === "gst-invoice") {
+    return fromRows(result, "Invoice", /rate/i);
+  }
+
+  if (engine === "simple-interest") {
+    return fromRows(result, "Interest vs principal");
+  }
+
+  if (engine === "net-worth") {
+    return fromRows(result, "Balance sheet");
+  }
+
+  if (engine === "rent-vs-buy") {
+    return fromRows(result, "Rent vs buy", /remaining|horizon/i);
+  }
+
+  if (engine === "fuel-cost") {
+    return fromRows(result, "Trip fuel", /per /i);
+  }
+
   return fromRows(result, "Breakdown");
 }

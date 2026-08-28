@@ -13,6 +13,12 @@ import { ExtraEditTools } from "./ExtraEditTools";
 import { ImageStudio } from "./ImageStudio";
 import { VideoStudio } from "./StudioTools";
 import { WatermarkStudio } from "./WatermarkStudio";
+import { PdfStudio } from "./PdfStudio";
+import { OcrTool } from "./OcrTool";
+import { CodeTool } from "./CodeTool";
+import { TextTool } from "./TextTool";
+import { ImageFxTool } from "./ImageFxTool";
+import { ExifTool } from "./ExifTool";
 
 export function ToolWorkspace({ tool }: { tool: ToolDef }) {
   switch (tool.mode) {
@@ -45,6 +51,18 @@ export function ToolWorkspace({ tool }: { tool: ToolDef }) {
       return <ExtraEditTools tool={tool} />;
     case "video-studio":
       return <VideoStudio tool={tool} />;
+    case "pdf-studio":
+      return <PdfStudio tool={tool} />;
+    case "ocr":
+      return <OcrTool tool={tool} />;
+    case "codes":
+      return <CodeTool tool={tool} />;
+    case "text":
+      return <TextTool tool={tool} />;
+    case "image-fx":
+      return <ImageFxTool tool={tool} />;
+    case "exif":
+      return <ExifTool tool={tool} />;
     default:
       if (tool.slug === "rotate-image" || tool.slug === "flip-image" || tool.slug === "black-and-white") {
         return <ImageStudio tool={tool} />;

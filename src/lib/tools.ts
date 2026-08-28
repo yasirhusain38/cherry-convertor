@@ -1,10 +1,15 @@
+import { UTILITY_TOOLS } from "./utility-tools";
+
 export type ToolCategory =
   | "compress"
   | "resize"
   | "convert"
   | "documents"
   | "edit"
-  | "bulk";
+  | "bulk"
+  | "pdf"
+  | "text"
+  | "codes";
 
 export type ToolMode =
   | "compress"
@@ -27,7 +32,13 @@ export type ToolMode =
   | "video-studio"
   | "photo-studio"
   | "watermark-studio"
-  | "extra-edit";
+  | "extra-edit"
+  | "pdf-studio"
+  | "ocr"
+  | "codes"
+  | "text"
+  | "image-fx"
+  | "exif";
 
 export type FaqItem = { q: string; a: string };
 
@@ -85,6 +96,21 @@ export const CATEGORIES: Array<{
     id: "bulk",
     label: "Bulk",
     description: "Process a whole folder, then download a ZIP.",
+  },
+  {
+    id: "pdf",
+    label: "PDF",
+    description: "Merge, split, extract, and convert PDFs on this device.",
+  },
+  {
+    id: "text",
+    label: "Text",
+    description: "Count, clean, format, and encode text. OCR for photos and scans.",
+  },
+  {
+    id: "codes",
+    label: "QR & barcodes",
+    description: "Generate and scan QR codes and 1D barcodes in this tab.",
   },
 ];
 
@@ -7626,6 +7652,7 @@ export const TOOLS: ToolDef[] = [
     ],
     related: ["photo-cropper", "image-upscaler", "replace-background"],
   },
+  ...UTILITY_TOOLS,
 ];
 
 const bySlug = new Map(TOOLS.map((tool) => [tool.slug, tool]));
@@ -7667,6 +7694,13 @@ export function popularTools(): ToolDef[] {
     "color-grading",
     "background-remover",
     "object-remover",
+    "pdf-merger",
+    "pdf-to-word",
+    "ocr-image-to-text",
+    "qr-code-generator",
+    "word-counter",
+    "json-formatter",
+    "exif-metadata-remover",
     "pan-card-photo-resizer",
     "resize-image",
   ];

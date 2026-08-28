@@ -940,12 +940,20 @@ function computeFinance(engine: string, input: CalcInput): CalcResult {
     const years = n(input, "years");
     const start = n(input, "principal");
     const corpus = start * Math.pow(1 + rate / 100, years) + futureSip(monthly, rate, years);
+    const withdraw = n(input, "withdraw");
+    const contributed = start + monthly * years * 12;
+    const rows: CalcRow[] = [
+      { label: "Estimated corpus", value: money(corpus, c), emphasize: true },
+      { label: "Your contributions", value: money(contributed, c) },
+      { label: "Assumed growth", value: money(corpus - contributed, c) },
+    ];
+    if (withdraw > 0) {
+      rows.push({ label: `Annual withdrawal (${withdraw}%)`, value: money(corpus * (withdraw / 100), c) });
+      rows.push({ label: "Monthly withdrawal", value: money((corpus * (withdraw / 100)) / 12, c) });
+    }
     return {
-      rows: [
-        { label: "Estimated corpus", value: money(corpus, c), emphasize: true },
-        { label: "Your contributions", value: money(start + monthly * years * 12, c) },
-      ],
-      note: "Constant return assumption. Fees, tax, and market swings are not modelled.",
+      rows,
+      note: "Constant return assumption. Fees, tax, sequence-of-returns risk, and inflation are not modelled. A 4% withdrawal is a rule of thumb, not advice.",
     };
   }
 
@@ -1357,6 +1365,216 @@ function computeFinance(engine: string, input: CalcInput): CalcResult {
         { label: "Monthly", value: money(repay / 12, c) },
       ],
       note: "9% of income above the plan threshold. Confirm your plan on gov.uk.",
+    };
+  }
+
+  if (engine === "discount") {
+    const amount = n(input, "amount");
+    const percent = n(input, "percent");
+    const off = amount * (percent / 100);
+    return {
+      rows: [
+        { label: "You save", value: money(off, c) },
+        { label: "Sale price", value: money(amount - off, c), emphasize: true },
+      ],
+    };
+  }
+
+  if (engine === "profit-margin") {
+    const cost = n(input, "cost");
+    const price = n(input, "price");
+    const profit = price - cost;
+    return {
+      rows: [
+        { label: "Profit", value: money(profit, c), emphasize: true },
+        { label: "Margin (profit ÷ price)", value: pct(price ? (profit / price) * 100 : 0) },
+        { label: "Markup (profit ÷ cost)", value: pct(cost ? (profit / cost) * 100 : 0) },
+      ],
+      note: "Margin is profit over selling price. Markup is profit over cost. They are not the same number.",
+    };
+  }
+
+  if (engine === "markup") {
+    const cost = n(input, "cost");
+    const percent = n(input, "percent");
+    const price = cost * (1 + percent / 100);
+    return {
+      rows: [
+        { label: "Selling price", value: money(price, c), emphasize: true },
+        { label: "Profit", value: money(price - cost, c) },
+        { label: "Margin", value: pct(price ? ((price - cost) / price) * 100 : 0) },
+      ],
+    };
+  }
+
+  if (engine === "break-even") {
+    const fixed = n(input, "fixed");
+    const price = n(input, "price");
+    const variable = n(input, "variable");
+    const contrib = price - variable;
+    const units = contrib > 0 ? Math.ceil(fixed / contrib) : 0;
+    return {
+      rows: [
+        { label: "Contribution per unit", value: money(contrib, c) },
+        { label: "Break-even units", value: String(units), emphasize: true },
+        { label: "Break-even revenue", value: money(units * price, c) },
+      ],
+      note: contrib <= 0 ? "Price is not above variable cost — there is no break-even." : "Ignores tax, inventory, and changing prices.",
+    };
+  }
+
+  if (engine === "gst-invoice") {
+    const amount = n(input, "amount");
+    const qty = Math.max(0, n(input, "qty") || 1);
+    const rate = n(input, "rate");
+    const taxable = amount * qty;
+    const gst = taxable * (rate / 100);
+    const intra = String(input.supply ?? "intra") !== "inter";
+    const rows: CalcRow[] = [
+      { label: "Taxable value", value: money(taxable, c) },
+    ];
+    if (intra) {
+      rows.push({ label: "CGST", value: money(gst / 2, c) });
+      rows.push({ label: "SGST", value: money(gst / 2, c) });
+    } else {
+      rows.push({ label: "IGST", value: money(gst, c) });
+    }
+    rows.push({ label: "Invoice total", value: money(taxable + gst, c), emphasize: true });
+    return { rows, note: "Estimate only. Confirm HSN/SAC and place of supply before you invoice." };
+  }
+
+  if (engine === "simple-interest") {
+    const p = n(input, "principal");
+    const rate = n(input, "rate");
+    const years = n(input, "years");
+    const si = (p * rate * years) / 100;
+    return {
+      rows: [
+        { label: "Simple interest", value: money(si, c) },
+        { label: "Maturity", value: money(p + si, c), emphasize: true },
+      ],
+      note: "SI = P × R × T ÷ 100. Compounding is not applied — use the compound-interest page for that.",
+    };
+  }
+
+  if (engine === "ltv") {
+    const loan = n(input, "principal");
+    const value = n(input, "value");
+    const ltv = value ? (loan / value) * 100 : 0;
+    return {
+      rows: [
+        { label: "Loan-to-value", value: pct(ltv), emphasize: true },
+        { label: "Equity", value: money(value - loan, c) },
+      ],
+      note: "Many lenders cap LTV. This is the ratio only — not an approval.",
+    };
+  }
+
+  if (engine === "dti") {
+    const debt = n(input, "debt");
+    const income = n(input, "income");
+    const dti = income ? (debt / income) * 100 : 0;
+    return {
+      rows: [
+        { label: "Debt-to-income", value: pct(dti), emphasize: true },
+        { label: "Left after debts", value: money(income - debt, c) },
+      ],
+      note: "US underwriting often looks for DTI under ~43%. Rules vary by lender and country.",
+    };
+  }
+
+  if (engine === "net-worth") {
+    const assets = n(input, "cash") + n(input, "investments") + n(input, "property") + n(input, "other");
+    const debts = n(input, "mortgage") + n(input, "loans") + n(input, "cards");
+    return {
+      rows: [
+        { label: "Assets", value: money(assets, c) },
+        { label: "Liabilities", value: money(debts, c) },
+        { label: "Net worth", value: money(assets - debts, c), emphasize: true },
+      ],
+    };
+  }
+
+  if (engine === "savings-goal") {
+    const target = n(input, "target");
+    const start = n(input, "principal");
+    const monthly = n(input, "monthly");
+    const rate = n(input, "rate");
+    const monthlyRate = rate / 12 / 100;
+    let bal = start;
+    let months = 0;
+    const cap = 12 * 80;
+    while (bal < target && months < cap) {
+      months += 1;
+      bal = bal * (1 + monthlyRate) + monthly;
+    }
+    return {
+      rows: [
+        { label: "Months to goal", value: months >= cap && bal < target ? "80+ years at this rate" : String(months), emphasize: true },
+        { label: "Years", value: (months / 12).toFixed(1) },
+        { label: "Projected balance", value: money(bal, c) },
+      ],
+      note: monthly <= 0 && start < target ? "Add a monthly amount, or the goal is never reached if returns are low." : "Constant return; deposits at month-end.",
+    };
+  }
+
+  if (engine === "rent-vs-buy") {
+    const rent = n(input, "rent");
+    const price = n(input, "price");
+    const down = n(input, "principal");
+    const rate = n(input, "rate");
+    const tenure = Math.max(1, n(input, "tenure") || 30);
+    const years = Math.max(1, n(input, "years"));
+    const taxPct = n(input, "taxRate");
+    const maintPct = n(input, "maintain");
+    const invest = n(input, "invest");
+    const loan = Math.max(0, price - down);
+    const emi = emiMonthly(loan, rate, tenure);
+    const months = Math.round(years * 12);
+    const r = rate / 12 / 100;
+    let bal = loan;
+    for (let m = 0; m < months && bal > 0; m += 1) {
+      const interest = r === 0 ? 0 : bal * r;
+      bal = Math.max(0, bal - (emi - interest));
+    }
+    const taxMaint = ((price * (taxPct + maintPct)) / 100 / 12) * months;
+    const buyCash = down + emi * months + taxMaint;
+    const equity = price - bal;
+    const buyNet = equity - 0;
+    const rentPaid = rent * months;
+    const investedDown = down * Math.pow(1 + invest / 100, years);
+    const extra = Math.max(0, emi + (price * (taxPct + maintPct)) / 100 / 12 - rent);
+    const extraFv = extra * months; // simple; not compounded monthly to keep honest-ish
+    const renterWealth = investedDown + extra * ((Math.pow(1 + invest / 12 / 100, months) - 1) / Math.max(invest / 12 / 100, 1e-9));
+    return {
+      rows: [
+        { label: "Buy: cash spent", value: money(buyCash, c) },
+        { label: "Buy: remaining loan", value: money(bal, c) },
+        { label: "Buy: home equity (price − loan, no appreciation)", value: money(equity, c), emphasize: true },
+        { label: "Rent: rent paid", value: money(rentPaid, c) },
+        { label: "Rent: down payment invested", value: money(investedDown, c) },
+        { label: "Rent: wealth if monthly gap is also invested", value: money(renterWealth, c), emphasize: true },
+      ],
+      note: "Home price is held flat. No selling costs, tax relief, or rent inflation. Compare equity vs renter investments — not a recommendation.",
+    };
+  }
+
+  if (engine === "fuel-cost") {
+    const distance = n(input, "distance");
+    const trips = Math.max(1, n(input, "trips") || 1);
+    const economy = n(input, "economy");
+    const price = n(input, "price");
+    const mpg = String(input.unit ?? "kml") === "mpg";
+    const totalDist = distance * trips;
+    const volume = economy > 0 ? totalDist / economy : 0;
+    const cost = volume * price;
+    return {
+      rows: [
+        { label: mpg ? "Miles" : "Kilometres", value: totalDist.toFixed(1) },
+        { label: mpg ? "Gallons" : "Litres", value: volume.toFixed(2) },
+        { label: "Fuel cost", value: money(cost, c), emphasize: true },
+        { label: mpg ? "Per mile" : "Per km", value: money(totalDist ? cost / totalDist : 0, c) },
+      ],
     };
   }
 
