@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
+import { SearchPopular } from "@/components/SearchPopular";
 import { searchKindLabel, searchSite, type SearchKind } from "@/lib/search-index";
 
 const FILTERS: Array<{ id: SearchKind | "all"; label: string }> = [
@@ -62,19 +63,25 @@ export function SearchResults() {
         </label>
       </form>
       <p className="container-page pb-4 text-sm text-[var(--ink-soft)]">
-        {query.trim() ? `${hits.length} result${hits.length === 1 ? "" : "s"}` : "Type to search the whole site."}
+        {query.trim() ? `${hits.length} result${hits.length === 1 ? "" : "s"}` : "Shortcuts below follow local time. Type to search the whole site."}
       </p>
-      <section className="container-page grid gap-4 pb-20 md:grid-cols-2 lg:grid-cols-3">
-        {hits.map((hit) => (
-          <Link key={hit.id} href={hit.href} className="card card-hover p-6 no-underline">
-            <p className="label">
-              {searchKindLabel(hit.kind)} · {hit.group}
-            </p>
-            <h2 className="mt-3 text-2xl tracking-tight">{hit.title}</h2>
-            <p className="mt-2 text-sm leading-6 text-[var(--ink-soft)]">{hit.lede}</p>
-          </Link>
-        ))}
-      </section>
+      {!query.trim() ? (
+        <div className="container-page pb-20">
+          <SearchPopular dark={false} />
+        </div>
+      ) : (
+        <section className="container-page grid gap-4 pb-20 md:grid-cols-2 lg:grid-cols-3">
+          {hits.map((hit) => (
+            <Link key={hit.id} href={hit.href} className="card card-hover p-6 no-underline">
+              <p className="label">
+                {searchKindLabel(hit.kind)} · {hit.group}
+              </p>
+              <h2 className="mt-3 text-2xl tracking-tight">{hit.title}</h2>
+              <p className="mt-2 text-sm leading-6 text-[var(--ink-soft)]">{hit.lede}</p>
+            </Link>
+          ))}
+        </section>
+      )}
     </>
   );
 }

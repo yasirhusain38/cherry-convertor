@@ -5,35 +5,25 @@ import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { LiveSpeedBar } from "./LiveSpeed";
 import { Logo } from "./Logo";
+import { NavDropdown } from "./NavDropdown";
+import { SearchPopular } from "./SearchPopular";
 import { SiteSearch } from "./SiteSearch";
 import { FINANCE_TOOLS } from "@/data/finance-tools";
+import { NAV_GROUPS } from "@/lib/nav";
 import { searchSite } from "@/lib/search-index";
-import { CATEGORIES, TOOLS } from "@/lib/tools";
-
-const NAV = [
-  { href: "/tools/compress-image", label: "Compress" },
-  { href: "/tools/resize-image", label: "Resize" },
-  { href: "/tools/convert", label: "Convert" },
-  { href: "/tools/pdf-merger", label: "PDF" },
-  { href: "/tools/color-picker", label: "Color" },
-  { href: "/tools/time-zone-converter", label: "Time" },
-  { href: "/tools/passport-photo-maker", label: "Documents" },
-  { href: "/countries", label: "Countries" },
-  { href: "/finance", label: "Finance" },
-  { href: "/regions", label: "Regions" },
-  { href: "/tools", label: "All tools" },
-];
 
 export function Header() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [desk, setDesk] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const home = pathname === "/";
 
   useEffect(() => {
     setOpen(false);
     setSearchOpen(false);
+    setDesk(null);
     setQuery("");
   }, [pathname]);
 
@@ -62,14 +52,6 @@ export function Header() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [open, searchOpen]);
-
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return TOOLS.filter((tool) => {
-      if (!q) return true;
-      return [tool.name, tool.slug, tool.lede, ...tool.keywords].join(" ").toLowerCase().includes(q);
-    });
-  }, [query]);
 
   const siteHits = useMemo(() => (query.trim() ? searchSite(query, 24) : []), [query]);
 
@@ -106,11 +88,16 @@ export function Header() {
       {home ? null : <div className="h-1 bg-[#F2013F]" aria-hidden />}
       <div className="container-page flex h-16 items-center justify-between gap-4">
         <Logo inverted />
-        <nav className="hidden items-center gap-8 lg:flex" aria-label="Primary">
-          {NAV.map((item) => (
-            <Link key={item.href} href={item.href} className={`label no-underline transition-colors ${linkClass}`}>
-              {item.label}
-            </Link>
+        <nav className="hidden items-center gap-6 lg:flex" aria-label="Primary">
+          {NAV_GROUPS.map((group) => (
+            <NavDropdown
+              key={group.id}
+              group={group}
+              open={desk === group.id}
+              onOpen={() => setDesk(group.id)}
+              onClose={() => setDesk((id) => (id === group.id ? null : id))}
+              linkClass={linkClass}
+            />
           ))}
         </nav>
         <div className="flex items-center gap-2">
@@ -198,31 +185,25 @@ export function Header() {
                 </>
               ) : (
                 <>
-                  {CATEGORIES.map((category) => {
-                    const tools = filtered.filter((tool) => tool.category === category.id);
-                    if (!tools.length) return null;
-                    return (
-                      <section key={category.id}>
-                        <p className="label mb-3 text-[#F2013F]">{category.label}</p>
-                        <ul className="grid gap-1 sm:grid-cols-2 lg:grid-cols-3">
-                          {tools.slice(0, 12).map((tool) => (
-                            <li key={tool.slug}>
-                              <Link
-                                href={`/tools/${tool.slug}`}
-                                className="block rounded-xl border border-[#F5F5F1]/15 px-4 py-3 text-[#F5F5F1] no-underline hover:border-[#F2013F] hover:bg-[#F2013F]"
-                              >
-                                <span className="block text-base tracking-tight">{tool.name}</span>
-                                <span className="mt-1 block text-xs leading-5 text-[#F5F5F1]/70">
-                                  {tool.lede.slice(0, 72)}
-                                  {tool.lede.length > 72 ? "…" : ""}
-                                </span>
-                              </Link>
-                            </li>
-                          ))}
-                        </ul>
-                      </section>
-                    );
-                  })}
+                  <SearchPopular onPick={() => setOpen(false)} />
+                  {NAV_GROUPS.map((group) => (
+                    <section key={group.id}>
+                      <p className="label mb-3 text-[#F2013F]">{group.label}</p>
+                      <ul className="grid gap-1 sm:grid-cols-2 lg:grid-cols-3">
+                        {group.items.map((item) => (
+                          <li key={item.href}>
+                            <Link
+                              href={item.href}
+                              className="block rounded-xl border border-[#F5F5F1]/15 px-4 py-3 text-[#F5F5F1] no-underline hover:border-[#F2013F] hover:bg-[#F2013F]"
+                              onClick={() => setOpen(false)}
+                            >
+                              <span className="block text-base tracking-tight">{item.label}</span>
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </section>
+                  ))}
                   {financeHits.length ? (
                     <section>
                       <p className="label mb-3 text-[#F2013F]">Finance</p>

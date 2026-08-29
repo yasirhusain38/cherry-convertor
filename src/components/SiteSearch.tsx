@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { SearchPopular } from "@/components/SearchPopular";
 import { searchKindLabel, searchSite, type SearchHit } from "@/lib/search-index";
 
 const KIND_ORDER = ["country", "finance", "tool", "region", "page"] as const;
@@ -79,7 +80,7 @@ export function SiteSearch({
           ref={input}
           className="field bg-[#221F1F] text-[#F5F5F1]"
           value={query}
-          placeholder="Search India, EMI, 50KB, UAE, stamp duty, passport…"
+          placeholder="50KB, EMI, QR, speed test, wheel, India…"
           onChange={(event) => setQuery(event.target.value)}
           onKeyDown={(event) => {
             if (event.key === "Escape") onClose();
@@ -93,27 +94,7 @@ export function SiteSearch({
       </form>
       <div className="min-h-0 flex-1 overflow-y-auto pb-12">
         <div className="container-page grid gap-8">
-          {!query.trim() ? (
-            <section>
-              <p className="label mb-3 text-[#F2013F]">Jump to</p>
-              <div className="flex flex-wrap gap-3">
-                {[
-                  ["/finance/currency-converter", "Currency"],
-                  ["/finance/loan-emi-calculator", "EMI"],
-                  ["/countries/india", "India"],
-                  ["/countries/united-states", "United States"],
-                  ["/countries/uae", "UAE"],
-                  ["/tools/resize-image-to-50kb", "50KB"],
-                  ["/finance", "All finance"],
-                  ["/countries", "All countries"],
-                ].map(([href, label]) => (
-                  <Link key={href} href={href} className="btn btn-ghost text-[#F5F5F1]" onClick={onClose}>
-                    {label}
-                  </Link>
-                ))}
-              </div>
-            </section>
-          ) : null}
+          {!query.trim() ? <SearchPopular onPick={onClose} /> : null}
           {grouped.map(({ kind, items }) => (
             <section key={kind}>
               <p className="label mb-3 text-[#F2013F]">{searchKindLabel(kind)}</p>
