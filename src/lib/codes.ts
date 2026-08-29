@@ -1,18 +1,59 @@
+export type QrEcc = "L" | "M" | "Q" | "H";
+
 export async function makeQrPng(
   text: string,
   size = 512,
   dark = "#221F1F",
   light = "#F5F5F1",
+  ecc: QrEcc = "M",
+  logo?: HTMLImageElement | ImageBitmap | null,
 ): Promise<Blob> {
   const QRCode = (await import("qrcode")).default;
   const dataUrl = await QRCode.toDataURL(text, {
     width: size,
     margin: 2,
-    errorCorrectionLevel: "M",
+    errorCorrectionLevel: ecc,
     color: { dark, light },
   });
-  const res = await fetch(dataUrl);
-  return res.blob();
+  if (!logo) {
+    const res = await fetch(dataUrl);
+    return res.blob();
+  }
+  const img = new Image();
+  await new Promise<void>((resolve, reject) => {
+    img.onload = () => resolve();
+    img.onerror = () => reject(new Error("Could not draw QR."));
+    img.src = dataUrl;
+  });
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("Canvas is not supported.");
+  ctx.drawImage(img, 0, 0, size, size);
+  const box = Math.round(size * 0.18);
+  const x = (size - box) / 2;
+  ctx.fillStyle = light;
+  ctx.fillRect(x - 4, x - 4, box + 8, box + 8);
+  ctx.drawImage(logo, x, x, box, box);
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("Could not encode QR."))), "image/png");
+  });
+}
+
+export async function makeQrSvg(
+  text: string,
+  dark = "#221F1F",
+  light = "#F5F5F1",
+  ecc: QrEcc = "M",
+): Promise<string> {
+  const QRCode = (await import("qrcode")).default;
+  return QRCode.toString(text, {
+    type: "svg",
+    margin: 2,
+    errorCorrectionLevel: ecc,
+    color: { dark, light },
+  });
 }
 
 export type BarcodeFormatName = "CODE128" | "EAN13" | "EAN8" | "UPC" | "CODE39" | "ITF14" | "MSI" | "pharmacode";

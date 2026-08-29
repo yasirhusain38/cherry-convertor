@@ -6,6 +6,7 @@ import { downloadBlob } from "@/lib/download";
 import { canvasToBlob } from "@/lib/image";
 import { textToDocx, rowsToXlsx } from "@/lib/office";
 import { ocrCanvases } from "@/lib/ocr";
+import { stripPdfMetadata } from "@/lib/pdf-meta";
 import {
   extractPdfPages,
   extractPdfTables,
@@ -26,9 +27,11 @@ type Kind =
   | "png"
   | "text"
   | "word"
-  | "excel";
+  | "excel"
+  | "meta";
 
 function kindOf(slug: string): Kind {
+  if (slug.includes("metadata") || slug.includes("strip")) return "meta";
   if (slug.includes("merger") || slug.includes("merge")) return "merge";
   if (slug.includes("split")) return "split";
   if (slug.includes("extract")) return "extract";
@@ -87,6 +90,12 @@ export function PdfStudio({ tool }: { tool: ToolDef }) {
         return;
       }
       if (!file) return;
+      if (kind === "meta") {
+        const blob = await stripPdfMetadata(file);
+        downloadBlob(blob, `${baseName(file)}-no-meta.pdf`);
+        setStatus("Title, author, dates, and Info dictionary cleared in this tab. Encrypted files may fail.");
+        return;
+      }
       if (kind === "split") {
         const parts = await splitPdfToFiles(file);
         if (parts.length === 1) {
@@ -283,5 +292,6 @@ function actionLabel(kind: Kind) {
   if (kind === "png") return "Download PNG";
   if (kind === "word") return "Download Word";
   if (kind === "excel") return "Download Excel";
+  if (kind === "meta") return "Strip metadata";
   return "Download text";
 }

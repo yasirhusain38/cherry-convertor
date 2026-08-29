@@ -176,9 +176,12 @@ export const UTILITY_TOOLS: ToolDef[] = [
     "codes",
     "Codes  /  QR",
     "Generate a QR code",
-    "Type a URL or any text, download a PNG. Built in this tab so the payload is not logged on a server.",
-    ["qr code generator", "create qr code", "qr generator"],
-    [{ q: "Logo in the middle?", a: "Not on this page. High-contrast black modules on paper, sized 256 / 512 / 1024." }],
+    "URL, Wi-Fi, vCard, WhatsApp, email, SMS, geo, event. PNG, SVG, PDF. Payload stays in this tab.",
+    ["qr code generator", "wifi qr code", "vcard qr code", "qr svg"],
+    [
+      { q: "Wi-Fi and vCard?", a: "WIFI: and VCARD payloads are built locally. A centre logo forces error-correction H." },
+      { q: "Logo in the middle?", a: "Optional. Keep it small so scanners still read the code." },
+    ],
     ["qr-code-scanner", "barcode-generator", "url-encoder-decoder"],
   ),
   t(
@@ -621,7 +624,7 @@ export const UTILITY_TOOLS: ToolDef[] = [
     "Edit  /  Exif",
     "Remove EXIF metadata from a photo",
     "Strip camera, GPS, and other APP segments from a JPEG without recompressing when possible.",
-    ["exif remover", "remove gps from photo", "strip metadata"],
+    ["exif remover", "remove gps from photo", "strip metadata", "remove exif gps"],
     [
       {
         q: "PNG / WebP / HEIC?",

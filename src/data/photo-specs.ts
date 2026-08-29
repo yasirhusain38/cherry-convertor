@@ -1,3 +1,5 @@
+import { EXTRA_PHOTO_SPECS } from "./world-extra";
+
 export type PhotoSpec = {
   id: string;
   country: string;
@@ -1520,6 +1522,7 @@ export const PHOTO_SPECS: PhotoSpec[] = [
   { id: "uk-brp", country: "United Kingdom", countrySlug: "united-kingdom", document: "BRP / eVisa", label: "UK BRP Photo 35×45 mm", widthMm: 35, heightMm: 45, dpi: 300, widthPx: 413, heightPx: 531, minKB: 50, maxKB: 500, background: "#F4F4F4", backgroundLabel: "Light grey / cream", notes: "UKVI BRP / eVisa enrolment uses the same 35×45 mm family as a UK passport photo." },
   { id: "de-residence", country: "Germany", countrySlug: "germany", document: "Aufenthaltstitel", label: "Germany Residence Permit Photo", widthMm: 35, heightMm: 45, dpi: 300, widthPx: 413, heightPx: 531, maxKB: 200, background: "#D8D8D8", backgroundLabel: "Light grey", notes: "German residence-permit biometric 35×45 mm. Light grey background." },
   { id: "fr-residence", country: "France", countrySlug: "france", document: "Titre de séjour", label: "France Residence Permit Photo", widthMm: 35, heightMm: 45, dpi: 300, widthPx: 413, heightPx: 531, maxKB: 200, background: "#D8D8D8", backgroundLabel: "Light grey", notes: "French titre de séjour 35×45 mm. Light grey — not pure white." },
+  ...EXTRA_PHOTO_SPECS,
 ];
 
 export function getPhotoSpec(id: string): PhotoSpec {

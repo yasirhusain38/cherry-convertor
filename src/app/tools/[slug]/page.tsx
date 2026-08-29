@@ -60,6 +60,17 @@ export default async function ToolSlugPage({
       description: tool.metaDescription,
       url: absoluteUrl(`/tools/${tool.slug}`),
     },
+    {
+      "@context": "https://schema.org",
+      "@type": "HowTo",
+      name: tool.h1,
+      description: tool.lede,
+      step: [
+        { "@type": "HowToStep", name: "Open this page", text: "The file or value stays in this browser tab." },
+        { "@type": "HowToStep", name: "Set the spec", text: tool.mode === "photo" ? "Confirm millimetres, background, and KB cap in the table." : "Adjust the controls for this tool." },
+        { "@type": "HowToStep", name: "Download", text: "Save the result from this device. Nothing is uploaded." },
+      ],
+    },
   ];
 
   return (

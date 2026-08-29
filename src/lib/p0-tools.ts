@@ -1,0 +1,72 @@
+import type { FaqItem, ToolDef } from "./tools";
+
+const local: FaqItem = {
+  q: "Is anything uploaded?",
+  a: "No. This tool runs in your browser tab. Close it and the data is gone.",
+};
+
+function t(
+  slug: string,
+  name: string,
+  category: ToolDef["category"],
+  mode: ToolDef["mode"],
+  kicker: string,
+  h1: string,
+  lede: string,
+  keywords: string[],
+  faqs: FaqItem[],
+  related: string[],
+): ToolDef {
+  return {
+    slug,
+    name,
+    category,
+    mode,
+    kicker,
+    h1,
+    lede,
+    metaTitle: `${name} Free – Cherry Converter`,
+    metaDescription: `${lede} On your device. No account.`,
+    keywords,
+    faqs: [...faqs, local],
+    related,
+  };
+}
+
+export const P0_TOOLS: ToolDef[] = [
+  t("color-picker", "Color Picker", "color", "color-studio", "Color  /  Picker", "Color picker in your browser", "Eyedrop from the screen or an image. HEX, RGB, HSL, HSV, CMYK (approx), OKLCH. File stays on this device.", ["color picker", "color picker from image", "hex color picker"], [{ q: "Screen dropper?", a: "Chromium EyeDropper API. Elsewhere, paste hex or click a dropped image." }], ["hex-to-rgb", "contrast-checker", "color-palette-from-image"]),
+  t("hex-to-rgb", "HEX to RGB", "color", "color-studio", "Color  /  HEX", "Convert HEX to RGB in your browser", "Paste #F2013F and get RGB, HSL, HSV, approximate CMYK, and OKLCH. No upload.", ["hex to rgb", "hex to rgb converter", "convert hex to rgb"], [{ q: "3-digit hex?", a: "Yes. #f20 expands to #ff2200." }], ["rgb-to-hex", "color-picker", "contrast-checker"]),
+  t("rgb-to-hex", "RGB to HEX", "color", "color-studio", "Color  /  RGB", "Convert RGB to HEX in your browser", "Type rgb(242, 1, 63) or components. Copy CSS, Tailwind, Swift, Android.", ["rgb to hex", "rgb to hex converter"], [{ q: "HSL too?", a: "hsl() strings parse. Output is always #rrggbb." }], ["hex-to-rgb", "color-picker", "gradient-generator"]),
+  t("contrast-checker", "WCAG Contrast Checker", "color", "color-studio", "Color  /  WCAG", "WCAG 2.2 contrast checker", "Normal text, large text, UI components. AA / AAA. Suggests a nearby passing color. Local.", ["contrast checker WCAG", "wcag contrast", "accessible contrast checker"], [{ q: "WCAG 2.2?", a: "Text uses 4.5:1 AA and 7:1 AAA. UI non-text uses 3:1. Not a full audit." }], ["color-picker", "color-palette-from-image", "hex-to-rgb"]),
+  t("color-palette-from-image", "Color Palette from Image", "color", "color-studio", "Color  /  Palette", "Build a color palette from an image", "Samples pixels in this tab. Complementary, analogous, monochrome, Tailwind-like scale.", ["color palette from image", "accessible color palette", "extract colors from photo"], [{ q: "Is this Adobe Color?", a: "No. It buckets pixel colours locally. Not a generative brand system." }], ["color-picker", "contrast-checker", "gradient-generator"]),
+  t("gradient-generator", "CSS Gradient Generator", "color", "color-studio", "Color  /  Gradient", "CSS gradient generator", "Two stops, live preview, copy CSS. Runs here.", ["css gradient generator", "linear gradient generator"], [{ q: "Mesh?", a: "Linear two-stop only." }], ["color-picker", "hex-to-rgb", "color-palette-from-image"]),
+
+  t("time-zone-converter", "Time Zone Converter", "time", "time-studio", "Time  /  Zones", "Convert EST to GMT and any IANA zone", "DST-aware conversion for US, UK, India, UAE, AU and more. Timestamp stays in this tab.", ["est to gmt", "time zone converter", "pst to ist", "gmt to est"], [{ q: "EST or America/New_York?", a: "We use IANA IDs. New York follows US DST. EST as a fixed offset is not used." }], ["meeting-planner", "world-clock", "unix-timestamp-converter"]),
+  t("meeting-planner", "Meeting Planner", "time", "time-studio", "Time  /  Meeting", "Meeting planner across time zones", "Pick 2–8 cities. Hours that sit in 09:00–18:00 locally are listed. Best slot this week.", ["meeting time US UK India", "meeting planner time zones", "what time in dubai now"], [{ q: "Work hours?", a: "Fixed 09:00–18:00 local. No calendar API." }], ["time-zone-converter", "world-clock", "business-days-calculator"]),
+  t("world-clock", "World Clock", "time", "time-studio", "Time  /  Clock", "World clock for T1 and T2 cities", "New York, London, Dubai, Delhi, Sydney, Tokyo and more. Offsets from this browser.", ["world clock", "what time in dubai now", "time in singapore"], [{ q: "Live seconds?", a: "Refreshes about every 30 seconds." }], ["time-zone-converter", "meeting-planner", "unix-timestamp-converter"]),
+
+  t("age-calculator", "Age Calculator", "time", "date-studio", "Date  /  Age", "Age calculator from date of birth", "Years, months, days, and next birthday. Dates stay on this device.", ["age calculator", "age from date of birth"], [{ q: "Leap days?", a: "Uses calendar months, not 365.25." }], ["date-difference", "business-days-calculator", "unix-timestamp-converter"]),
+  t("date-difference", "Date Difference", "time", "date-studio", "Date  /  Diff", "Days between two dates", "Calendar span, ISO week number, add/subtract days months years.", ["date difference", "days between dates", "date calculator"], [{ q: "Inclusive?", a: "End minus start in midnights UTC. Same day is 0." }], ["age-calculator", "business-days-calculator", "unix-timestamp-converter"]),
+  t("business-days-calculator", "Business Days Calculator", "time", "date-studio", "Date  /  Business", "Business days calculator", "Skips Saturday and Sunday. Optional US / UK / UAE / India sample holidays — not a gazette.", ["business days calculator", "working days between dates"], [{ q: "Official holidays?", a: "Sample packs only. Confirm against the government calendar." }], ["date-difference", "meeting-planner", "age-calculator"]),
+  t("unix-timestamp-converter", "Unix Timestamp Converter", "time", "date-studio", "Date  /  Unix", "Unix timestamp to date", "Seconds since epoch ↔ ISO 8601. Local.", ["unix timestamp converter", "epoch converter"], [{ q: "Milliseconds?", a: "This page is seconds. Divide ms by 1000." }], ["time-zone-converter", "date-difference", "jwt-decoder"]),
+
+  t("uuid-generator", "UUID Generator", "developer", "dev-studio", "Dev  /  UUID", "UUID v4 and v7 generator", "Bulk 1–100. Crypto.getRandomValues in this tab.", ["uuid generator", "uuid v4", "uuid v7 generator"], [{ q: "v7?", a: "Unix-ms prefix plus random. Sortable. Not a database default." }], ["sha256-hash", "regex-tester", "jwt-decoder"]),
+  t("sha256-hash", "SHA-256 Hash", "developer", "dev-studio", "Dev  /  Hash", "SHA-256 of text or a file on your device", "SubtleCrypto SHA-256 and SHA-1. MD5 is labelled checksum only. Drop a PDF — it is not uploaded.", ["sha256 hash", "sha-256 of file", "hash file on device"], [{ q: "MD5?", a: "Shown as a checksum. Do not use MD5 for passwords." }], ["md5-checksum", "hmac-sha256", "uuid-generator"]),
+  t("md5-checksum", "MD5 Checksum", "developer", "dev-studio", "Dev  /  MD5", "MD5 checksum (not security)", "Checksum a string or file locally. Not for security.", ["md5 checksum", "md5 hash file"], [{ q: "Secure?", a: "No. Collision-prone. Use SHA-256." }], ["sha256-hash", "hmac-sha256", "uuid-generator"]),
+  t("hmac-sha256", "HMAC-SHA256", "developer", "dev-studio", "Dev  /  HMAC", "HMAC-SHA256 in the browser", "Key and message stay in this tab.", ["hmac sha256", "hmac generator"], [{ q: "Key uploaded?", a: "No." }], ["sha256-hash", "jwt-decoder", "uuid-generator"]),
+  t("regex-tester", "Regex Tester", "developer", "dev-studio", "Dev  /  Regex", "Regex tester in your browser", "Match, groups, replace. JavaScript RegExp. No server.", ["regex tester", "regexp tester", "regex replace online"], [{ q: "Flavor?", a: "JavaScript. Not PCRE or .NET." }], ["jwt-decoder", "uuid-generator", "json-formatter"]),
+  t("jwt-decoder", "JWT Decoder", "developer", "dev-studio", "Dev  /  JWT", "Decode a JWT header and payload", "Base64url decode only. Signature is not verified. There is no key server.", ["jwt decoder", "decode jwt", "jwt debugger"], [{ q: "Verify signature?", a: "No. Verification would need a key. We will not send the token anywhere to check it." }], ["regex-tester", "base64-encoder-decoder", "sha256-hash"]),
+
+  t(
+    "pdf-metadata-remover",
+    "PDF Metadata Remover",
+    "pdf",
+    "pdf-studio",
+    "PDF  /  Metadata",
+    "Strip PDF metadata and XMP in your browser",
+    "Clears title, author, dates, and the Info dictionary. Encrypted PDFs may fail. File never uploaded.",
+    ["strip pdf metadata", "remove pdf xmp", "pdf metadata remover"],
+    [{ q: "Hidden text?", a: "This is metadata only. Use a redaction tool for body text." }],
+    ["exif-metadata-remover", "pdf-merger", "compress-pdf"],
+  ),
+];

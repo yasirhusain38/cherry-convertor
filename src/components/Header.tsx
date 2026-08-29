@@ -14,6 +14,8 @@ const NAV = [
   { href: "/tools/resize-image", label: "Resize" },
   { href: "/tools/convert", label: "Convert" },
   { href: "/tools/pdf-merger", label: "PDF" },
+  { href: "/tools/color-picker", label: "Color" },
+  { href: "/tools/time-zone-converter", label: "Time" },
   { href: "/tools/passport-photo-maker", label: "Documents" },
   { href: "/countries", label: "Countries" },
   { href: "/finance", label: "Finance" },

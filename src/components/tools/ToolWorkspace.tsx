@@ -19,6 +19,10 @@ import { CodeTool } from "./CodeTool";
 import { TextTool } from "./TextTool";
 import { ImageFxTool } from "./ImageFxTool";
 import { ExifTool } from "./ExifTool";
+import { ColorStudio } from "./ColorStudio";
+import { TimeStudio } from "./TimeStudio";
+import { DateStudio } from "./DateStudio";
+import { DevStudio } from "./DevStudio";
 
 export function ToolWorkspace({ tool }: { tool: ToolDef }) {
   switch (tool.mode) {
@@ -63,6 +67,14 @@ export function ToolWorkspace({ tool }: { tool: ToolDef }) {
       return <ImageFxTool tool={tool} />;
     case "exif":
       return <ExifTool tool={tool} />;
+    case "color-studio":
+      return <ColorStudio tool={tool} />;
+    case "time-studio":
+      return <TimeStudio tool={tool} />;
+    case "date-studio":
+      return <DateStudio tool={tool} />;
+    case "dev-studio":
+      return <DevStudio tool={tool} />;
     default:
       if (tool.slug === "rotate-image" || tool.slug === "flip-image" || tool.slug === "black-and-white") {
         return <ImageStudio tool={tool} />;

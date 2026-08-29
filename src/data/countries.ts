@@ -21,6 +21,8 @@ const LA = "Latin America";
 const OC = "Oceania";
 const CA = "Central Asia";
 
+import { EXTRA_COUNTRIES } from "./world-extra";
+
 export const COUNTRIES: CountryHub[] = [
   // North America
   hub(
@@ -354,6 +356,7 @@ export const COUNTRIES: CountryHub[] = [
   hub("mongolia", "Mongolia", CA, "ID and passport photos at 35×45 mm."),
   hub("tajikistan", "Tajikistan", CA, "ID and passport photos at 35×45 mm."),
   hub("uzbekistan", "Uzbekistan", CA, "35×45 mm ID and passport photos."),
+  ...EXTRA_COUNTRIES,
 ];
 
 export function getCountry(slug: string): CountryHub | undefined {

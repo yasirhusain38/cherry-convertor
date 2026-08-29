@@ -22,6 +22,7 @@ import {
 import { blobToDataUrl, makePhotoSheet } from "@/lib/pdf";
 import { PHOTO_SPECS, getPhotoSpec, photoPixels } from "@/data/photo-specs";
 import type { ToolDef } from "@/lib/tools";
+import { adviceFromBitmap, checkCompliance, sampleCorners } from "@/lib/face-crop";
 import { useEditHistory } from "./useEditHistory";
 import { useLookMatch } from "./useLookMatch";
 
@@ -48,6 +49,9 @@ export function PhotoTool({ tool }: { tool: ToolDef }) {
   const [zoom, setZoom] = useState(1);
   const [offsetX, setOffsetX] = useState(0);
   const [offsetY, setOffsetY] = useState(0);
+  const [facePct, setFacePct] = useState<number | null>(null);
+  const [checks, setChecks] = useState<Array<{ label: string; pass: boolean; detail: string }>>([]);
+  const [faceNote, setFaceNote] = useState<string | null>(null);
 
   const pixels = photoPixels(spec);
 
@@ -67,6 +71,14 @@ export function PhotoTool({ tool }: { tool: ToolDef }) {
       const bmp = await fileToBitmap(next);
       setFile(next);
       setBitmap(bmp);
+      const advice = await adviceFromBitmap(bmp, spec);
+      setFacePct(advice.facePct);
+      setFaceNote(advice.note);
+      if (advice.found) {
+        setZoom(advice.zoom);
+        setOffsetX(advice.offsetX);
+        setOffsetY(advice.offsetY);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not read that image.");
     } finally {
@@ -118,6 +130,26 @@ export function PhotoTool({ tool }: { tool: ToolDef }) {
           revokeResult(prev);
           return next;
         });
+        const preview = document.createElement("canvas");
+        preview.width = next.width;
+        preview.height = next.height;
+        const pctx = preview.getContext("2d");
+        if (pctx) {
+          const img = await createImageBitmap(next.blob);
+          pctx.drawImage(img, 0, 0);
+          img.close();
+          setChecks(
+            checkCompliance({
+              spec,
+              width: next.width,
+              height: next.height,
+              bytes: next.bytes,
+              mime: next.mime,
+              facePct: facePct != null ? Math.round(facePct * zoom) : null,
+              cornerRgb: sampleCorners(preview),
+            }),
+          );
+        }
       } catch (err) {
         if (!cancelled) setError(err instanceof Error ? err.message : "Could not build the photo.");
       } finally {
@@ -146,11 +178,19 @@ export function PhotoTool({ tool }: { tool: ToolDef }) {
   return (
     <div className="grid gap-6">
       {!file ? (
-        <DropZone
-          onFiles={load}
-          label="Drop a portrait"
-          hint="Face the camera, even lighting, then we crop to the official frame."
-        />
+        <div className="grid gap-3">
+          <DropZone
+            onFiles={load}
+            label="Drop a portrait"
+            hint="Face the camera, even lighting, then we crop to the official frame. File stays on this device."
+          />
+          <DropZone
+            capture
+            onFiles={load}
+            label="Or use the phone camera"
+            hint="capture=user — still local, never uploaded."
+          />
+        </div>
       ) : (
         <div className="flex flex-wrap items-center justify-end gap-2">
           <UndoRedoBar undo={history.undo} redo={history.redo} canUndo={history.canUndo} canRedo={history.canRedo} />
@@ -229,6 +269,25 @@ export function PhotoTool({ tool }: { tool: ToolDef }) {
             Background
             <input className="field h-12" type="color" value={bg} onChange={(event) => setBg(event.target.value)} />
           </label>
+          {faceNote ? <p className="text-sm text-[var(--ink-soft)]">{faceNote}</p> : null}
+          <button
+            type="button"
+            className="btn btn-ghost"
+            disabled={!bitmap}
+            onClick={async () => {
+              if (!bitmap) return;
+              const advice = await adviceFromBitmap(bitmap, spec);
+              setFacePct(advice.facePct);
+              setFaceNote(advice.note);
+              if (advice.found) {
+                setZoom(advice.zoom);
+                setOffsetX(advice.offsetX);
+                setOffsetY(advice.offsetY);
+              }
+            }}
+          >
+            Auto face crop
+          </button>
           <label className="grid gap-2 text-sm">
             Face zoom {zoom.toFixed(2)}×
             <input
@@ -306,12 +365,24 @@ export function PhotoTool({ tool }: { tool: ToolDef }) {
             height={result.height}
           />
           <OutputActions result={result} fileName={file.name} format={format} busy={busy} />
+          {checks.length ? (
+            <ul className="card divide-y divide-[var(--line)]">
+              {checks.map((c) => (
+                <li key={c.label} className="flex justify-between gap-4 px-5 py-3 text-sm">
+                  <span>
+                    {c.pass ? "Pass" : "Check"} · {c.label}
+                  </span>
+                  <span className="text-[var(--ink-soft)]">{c.detail}</span>
+                </li>
+              ))}
+            </ul>
+          ) : null}
           <div className="flex flex-wrap gap-3">
             <button type="button" className="btn btn-ghost" onClick={() => downloadSheet("4x6")}>
-              4×6 sheet
+              4×6 / 4-up sheet
             </button>
             <button type="button" className="btn btn-ghost" onClick={() => downloadSheet("a4")}>
-              A4 sheet
+              A4 / 8-up sheet
             </button>
           </div>
         </>

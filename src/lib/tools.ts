@@ -1,3 +1,5 @@
+import { EXTRA_PHOTO_TOOLS } from "@/data/world-extra";
+import { P0_TOOLS } from "./p0-tools";
 import { UTILITY_TOOLS } from "./utility-tools";
 
 export type ToolCategory =
@@ -9,7 +11,10 @@ export type ToolCategory =
   | "bulk"
   | "pdf"
   | "text"
-  | "codes";
+  | "codes"
+  | "color"
+  | "time"
+  | "developer";
 
 export type ToolMode =
   | "compress"
@@ -38,7 +43,11 @@ export type ToolMode =
   | "codes"
   | "text"
   | "image-fx"
-  | "exif";
+  | "exif"
+  | "color-studio"
+  | "time-studio"
+  | "date-studio"
+  | "dev-studio";
 
 export type FaqItem = { q: string; a: string };
 
@@ -111,6 +120,21 @@ export const CATEGORIES: Array<{
     id: "codes",
     label: "QR & barcodes",
     description: "Generate and scan QR codes and 1D barcodes in this tab.",
+  },
+  {
+    id: "color",
+    label: "Color",
+    description: "HEX, contrast, palettes — WCAG math on this device.",
+  },
+  {
+    id: "time",
+    label: "Date & time",
+    description: "Zones, meetings, age, business days.",
+  },
+  {
+    id: "developer",
+    label: "Developer",
+    description: "UUID, hashes, regex, JWT decode. Local only.",
   },
 ];
 
@@ -7653,6 +7677,8 @@ export const TOOLS: ToolDef[] = [
     related: ["photo-cropper", "image-upscaler", "replace-background"],
   },
   ...UTILITY_TOOLS,
+  ...P0_TOOLS,
+  ...EXTRA_PHOTO_TOOLS,
 ];
 
 const bySlug = new Map(TOOLS.map((tool) => [tool.slug, tool]));
@@ -7696,6 +7722,10 @@ export function popularTools(): ToolDef[] {
     "object-remover",
     "pdf-merger",
     "pdf-to-word",
+    "color-picker",
+    "time-zone-converter",
+    "uuid-generator",
+    "contrast-checker",
     "ocr-image-to-text",
     "qr-code-generator",
     "word-counter",

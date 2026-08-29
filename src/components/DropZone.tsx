@@ -11,6 +11,7 @@ type DropZoneProps = {
   label?: string;
   hint?: string;
   media?: DropMedia;
+  capture?: boolean;
   onFiles: (files: File[]) => void;
 };
 
@@ -62,6 +63,7 @@ export function DropZone({
   accept = DEFAULT_ACCEPT[media],
   label = DEFAULT_LABEL[media],
   hint = DEFAULT_HINT[media],
+  capture = false,
   onFiles,
 }: DropZoneProps) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -109,6 +111,7 @@ export function DropZone({
         type="file"
         accept={accept}
         multiple={multiple}
+        capture={capture ? "user" : undefined}
         className="sr-only"
         onChange={(event) => {
           take(event.target.files);
