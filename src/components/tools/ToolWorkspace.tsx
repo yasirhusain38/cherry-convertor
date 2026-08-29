@@ -23,6 +23,7 @@ import { ColorStudio } from "./ColorStudio";
 import { TimeStudio } from "./TimeStudio";
 import { DateStudio } from "./DateStudio";
 import { DevStudio } from "./DevStudio";
+import { SpeedTest } from "./SpeedTest";
 
 export function ToolWorkspace({ tool }: { tool: ToolDef }) {
   switch (tool.mode) {
@@ -75,6 +76,8 @@ export function ToolWorkspace({ tool }: { tool: ToolDef }) {
       return <DateStudio tool={tool} />;
     case "dev-studio":
       return <DevStudio tool={tool} />;
+    case "speed-test":
+      return <SpeedTest tool={tool} />;
     default:
       if (tool.slug === "rotate-image" || tool.slug === "flip-image" || tool.slug === "black-and-white") {
         return <ImageStudio tool={tool} />;

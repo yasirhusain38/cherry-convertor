@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
+import { LiveSpeedBar } from "./LiveSpeed";
 import { Logo } from "./Logo";
 import { SiteSearch } from "./SiteSearch";
 import { FINANCE_TOOLS } from "@/data/finance-tools";
@@ -134,6 +135,7 @@ export function Header() {
           </button>
         </div>
       </div>
+      <LiveSpeedBar />
 
       <SiteSearch open={searchOpen} onClose={() => setSearchOpen(false)} />
 

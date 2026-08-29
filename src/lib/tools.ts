@@ -47,7 +47,8 @@ export type ToolMode =
   | "color-studio"
   | "time-studio"
   | "date-studio"
-  | "dev-studio";
+  | "dev-studio"
+  | "speed-test";
 
 export type FaqItem = { q: string; a: string };
 
