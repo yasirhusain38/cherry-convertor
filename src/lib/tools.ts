@@ -14,7 +14,8 @@ export type ToolCategory =
   | "codes"
   | "color"
   | "time"
-  | "developer";
+  | "developer"
+  | "utilities";
 
 export type ToolMode =
   | "compress"
@@ -48,7 +49,10 @@ export type ToolMode =
   | "time-studio"
   | "date-studio"
   | "dev-studio"
-  | "speed-test";
+  | "speed-test"
+  | "chance"
+  | "mouse-check"
+  | "status-check";
 
 export type FaqItem = { q: string; a: string };
 
@@ -136,6 +140,11 @@ export const CATEGORIES: Array<{
     id: "developer",
     label: "Developer",
     description: "UUID, hashes, regex, JWT decode. Local only.",
+  },
+  {
+    id: "utilities",
+    label: "Utilities",
+    description: "Wheel, coin toss, mouse tester, is-it-down.",
   },
 ];
 

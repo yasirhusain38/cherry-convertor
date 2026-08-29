@@ -24,6 +24,9 @@ import { TimeStudio } from "./TimeStudio";
 import { DateStudio } from "./DateStudio";
 import { DevStudio } from "./DevStudio";
 import { SpeedTest } from "./SpeedTest";
+import { ChanceStudio } from "./ChanceStudio";
+import { MouseChecker } from "./MouseChecker";
+import { ServerDown } from "./ServerDown";
 
 export function ToolWorkspace({ tool }: { tool: ToolDef }) {
   switch (tool.mode) {
@@ -78,6 +81,12 @@ export function ToolWorkspace({ tool }: { tool: ToolDef }) {
       return <DevStudio tool={tool} />;
     case "speed-test":
       return <SpeedTest tool={tool} />;
+    case "chance":
+      return <ChanceStudio tool={tool} />;
+    case "mouse-check":
+      return <MouseChecker tool={tool} />;
+    case "status-check":
+      return <ServerDown tool={tool} />;
     default:
       if (tool.slug === "rotate-image" || tool.slug === "flip-image" || tool.slug === "black-and-white") {
         return <ImageStudio tool={tool} />;

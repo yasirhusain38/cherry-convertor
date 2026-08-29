@@ -18,7 +18,7 @@ export type SearchHit = {
 
 const PAGES: Array<{ href: string; title: string; lede: string; keywords: string }> = [
   { href: "/", title: "Home", lede: "Free image tools. 100% Privacy.", keywords: "cherry converter compress resize" },
-  { href: "/tools", title: "All tools", lede: "Compress, PDF, OCR, QR, color, time zones, UUID, Wi‑Fi speed test, document photos.", keywords: "inventory tools pdf ocr qr wcag est gmt uuid wifi speed test" },
+  { href: "/tools", title: "All tools", lede: "Compress, PDF, OCR, QR, color, time zones, UUID, Wi‑Fi speed test, spin the wheel, mouse checker, document photos.", keywords: "inventory tools pdf ocr qr wcag est gmt uuid wifi speed test spin wheel coin toss mouse checker server down" },
   { href: "/finance", title: "Finance calculators", lede: "EMI, tax, GST, VAT, mortgage, currency.", keywords: "calculators money" },
   { href: "/countries", title: "Tools by country", lede: "Passport, visa, and ID photo hubs.", keywords: "india usa uk uae" },
   { href: "/regions", title: "Tools by region", lede: "Nine world regions.", keywords: "europe asia africa" },

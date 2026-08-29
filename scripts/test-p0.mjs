@@ -44,5 +44,10 @@ assert.match(uuid, /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-
 
 assert.equal("WIFI:T:WPA;S:Home;P:x;;".startsWith("WIFI:"), true);
 
+function parseWheelLines(raw) {
+  return raw.split(/\n/).map((l) => l.trim()).filter(Boolean).slice(0, 40);
+}
+assert.deepEqual(parseWheelLines("a\n\nb\n c "), ["a", "b", "c"]);
+assert.equal(new URL("https://example.com").origin, "https://example.com");
 console.log("p0 helper checks ok");
 void createRequire;
