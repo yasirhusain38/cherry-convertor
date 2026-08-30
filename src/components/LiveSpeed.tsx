@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import {
   createContext,
   useCallback,
@@ -11,7 +10,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { formatMbps, formatMs, liveSample } from "@/lib/speed-test";
+import { liveSample } from "@/lib/speed-test";
 
 export type LiveSpeedSnap = {
   pingMs: number | null;
@@ -163,39 +162,4 @@ export function LiveSpeedProvider({ children }: { children: ReactNode }) {
 
 export function useLiveSpeed() {
   return useContext(LiveSpeedContext);
-}
-
-export function LiveSpeedBar() {
-  const { snap, setPaused } = useLiveSpeed();
-  const ping = formatMs(snap.pingMs);
-  const down = formatMbps(snap.downloadMbps);
-  const up = formatMbps(snap.uploadMbps);
-
-  return (
-    <div className="border-t border-[#F5F5F1]/15 bg-black/20 text-[#F5F5F1]">
-      <div className="container-page flex h-9 items-center justify-between gap-3 text-[11px] tracking-[0.12em] uppercase">
-        <Link href="/tools/wifi-speed-test" className="flex min-w-0 items-center gap-3 no-underline hover:opacity-90">
-          <span className="relative flex h-2 w-2 shrink-0">
-            <span
-              className={`absolute inline-flex h-full w-full rounded-full ${
-                snap.paused ? "bg-[#F5F5F1]/40" : "animate-ping bg-[#F5F5F1]/70"
-              }`}
-            />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-[#F5F5F1]" />
-          </span>
-          <span className="hidden sm:inline">{snap.paused ? "Paused" : "Live"}</span>
-          <span className="truncate">
-            {ping} · ↓ {down} · ↑ {up}
-          </span>
-        </Link>
-        <button
-          type="button"
-          className="shrink-0 tracking-[0.14em] uppercase opacity-80 hover:opacity-100"
-          onClick={() => setPaused(!snap.paused)}
-        >
-          {snap.paused ? "Resume" : "Pause"}
-        </button>
-      </div>
-    </div>
-  );
 }

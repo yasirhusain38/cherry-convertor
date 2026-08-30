@@ -1,10 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { parseWheelLines, randomInt } from "@/lib/chance";
+import { useMemo, useState, type CSSProperties } from "react";
+import { parseWheelSlices, randomInt, sliceAngles, weightedIndex, type WheelSlice } from "@/lib/chance";
 import type { ToolDef } from "@/lib/tools";
 
-const WHEEL_COLORS = ["#F2013F", "#221F1F", "#B81D24", "#3a3737"];
+const WHEEL_COLORS = ["#F2013F", "#F5F5F1", "#B81D24", "#3a3737"];
 
 export function ChanceStudio({ tool }: { tool: ToolDef }) {
   return tool.slug.includes("toss") ? <CoinToss /> : <SpinWheel />;
@@ -15,19 +15,26 @@ function SpinWheel() {
   const [turn, setTurn] = useState(0);
   const [spinning, setSpinning] = useState(false);
   const [winner, setWinner] = useState<string | null>(null);
-  const options = useMemo(() => parseWheelLines(raw), [raw]);
-  const slice = options.length ? 360 / options.length : 360;
+  const slices = useMemo(() => parseWheelSlices(raw), [raw]);
+  const angles = useMemo(() => sliceAngles(slices.map((s) => s.weight)), [slices]);
+  const equal = slices.length > 0 && slices.every((s) => s.weight === slices[0]!.weight);
 
   function spin() {
-    if (spinning || options.length < 2) return;
-    const index = randomInt(options.length);
+    if (spinning || slices.length < 2) return;
+    const index = weightedIndex(slices.map((s) => s.weight));
+    const mid = angles[index]?.mid ?? 0;
     const extra = 360 * (5 + randomInt(3));
-    const target = extra + (360 - (index * slice + slice / 2));
     setSpinning(true);
     setWinner(null);
-    setTurn((prev) => prev + target);
+    setTurn((prev) => {
+      const current = ((prev % 360) + 360) % 360;
+      const desired = (360 - mid) % 360;
+      let delta = desired - current;
+      if (delta <= 0) delta += 360;
+      return prev + extra + delta;
+    });
     window.setTimeout(() => {
-      setWinner(options[index]!);
+      setWinner(slices[index]!.label);
       setSpinning(false);
     }, 4200);
   }
@@ -35,21 +42,19 @@ function SpinWheel() {
   return (
     <div className="grid gap-8 lg:grid-cols-[1fr_280px]">
       <div className="grid place-items-center gap-4">
-        <p className="text-sm text-[var(--ink-soft)]">crypto.getRandomValues in this tab. 0 uploads.</p>
         <div className="relative">
           <div className="absolute left-1/2 top-0 z-10 h-0 w-0 -translate-x-1/2 -translate-y-1 border-x-[10px] border-t-[16px] border-x-transparent border-t-[#F5F5F1]" />
           <div
             className="h-[min(72vw,320px)] w-[min(72vw,320px)] rounded-full border-4 border-[#F5F5F1] shadow-[0_0_0_6px_#F2013F]"
             style={{
-              background: conic(options),
               transform: `rotate(${turn}deg)`,
               transition: spinning ? "transform 4.2s cubic-bezier(0.12, 0.82, 0.08, 1)" : "none",
             }}
-            role="img"
-            aria-label="Decision wheel"
-          />
+          >
+            <WheelDisk slices={slices} angles={angles} />
+          </div>
         </div>
-        <button type="button" className="btn btn-primary" disabled={spinning || options.length < 2} onClick={spin}>
+        <button type="button" className="btn btn-primary" disabled={spinning || slices.length < 2} onClick={spin}>
           {spinning ? "Spinning…" : "Spin the wheel"}
         </button>
         {winner ? (
@@ -65,22 +70,74 @@ function SpinWheel() {
           value={raw}
           onChange={(e) => setRaw(e.target.value)}
         />
-        <span className="text-[var(--ink-soft)]">{options.length} slices (2–40)</span>
+        <span className="text-[var(--ink-soft)]">
+          {slices.length} slices (2–40) · {equal ? "equal parts" : "by ratio"}
+        </span>
+        <span className="text-xs text-[var(--ink-soft)]">
+          Equal by default. For a bigger slice write <code>Pizza x3</code> or <code>No:2</code>.
+        </span>
       </label>
     </div>
   );
 }
 
-function conic(options: string[]): string {
-  if (!options.length) return "#221F1F";
-  const parts = options.map((label, i) => {
-    const color = WHEEL_COLORS[i % WHEEL_COLORS.length]!;
-    const a = (i / options.length) * 360;
-    const b = ((i + 1) / options.length) * 360;
-    void label;
-    return `${color} ${a}deg ${b}deg`;
-  });
-  return `conic-gradient(from -90deg, ${parts.join(", ")})`;
+const CX = 160;
+const CY = 160;
+const R = 156;
+
+function polar(degFromTop: number, radius: number) {
+  const rad = ((degFromTop - 90) * Math.PI) / 180;
+  return { x: CX + radius * Math.cos(rad), y: CY + radius * Math.sin(rad) };
+}
+
+function slicePath(start: number, end: number): string {
+  const span = end - start;
+  const large = span > 180 ? 1 : 0;
+  const a = polar(start, R);
+  const b = polar(end, R);
+  if (span >= 359.9) {
+    return `M ${CX - R} ${CY} A ${R} ${R} 0 1 1 ${CX + R} ${CY} A ${R} ${R} 0 1 1 ${CX - R} ${CY} Z`;
+  }
+  return `M ${CX} ${CY} L ${a.x.toFixed(2)} ${a.y.toFixed(2)} A ${R} ${R} 0 ${large} 1 ${b.x.toFixed(2)} ${b.y.toFixed(2)} Z`;
+}
+
+function WheelDisk({
+  slices,
+  angles,
+}: {
+  slices: WheelSlice[];
+  angles: { start: number; end: number; mid: number }[];
+}) {
+  if (!slices.length) {
+    return <div className="h-full w-full rounded-full bg-[#221F1F]" />;
+  }
+  return (
+    <svg viewBox="0 0 320 320" className="h-full w-full" role="img" aria-label="Decision wheel">
+      {slices.map((slice, i) => {
+        const ang = angles[i]!;
+        const fill = WHEEL_COLORS[i % WHEEL_COLORS.length]!;
+        const light = fill === "#F5F5F1";
+        const p = polar(ang.mid, slices.length > 8 ? 78 : 88);
+        const label = slice.label.length > 14 ? `${slice.label.slice(0, 13)}…` : slice.label;
+        return (
+          <g key={`${slice.label}-${i}`}>
+            <path d={slicePath(ang.start, ang.end)} fill={fill} stroke="#F5F5F1" strokeWidth="1.5" />
+            <text
+              x={p.x}
+              y={p.y}
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fill={light ? "#221F1F" : "#F5F5F1"}
+              fontSize={slices.length > 10 ? 11 : 13}
+              fontWeight="600"
+            >
+              {label}
+            </text>
+          </g>
+        );
+      })}
+    </svg>
+  );
 }
 
 function CoinToss() {
@@ -107,18 +164,29 @@ function CoinToss() {
 
   return (
     <div className="grid place-items-center gap-6">
-      <p className="text-sm text-[var(--ink-soft)]">Fair coin. crypto.getRandomValues. Nothing is uploaded.</p>
       <button
         type="button"
-        className="grid h-40 w-40 place-items-center rounded-full border-4 border-[#F5F5F1] bg-[#F2013F] text-2xl text-[#F5F5F1]"
-        style={{
-          transform: `rotateY(${spin}deg)`,
-          transition: busy ? "transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1)" : "none",
-        }}
+        className="h-40 w-40 border-0 bg-transparent p-0"
+        style={{ perspective: 900 }}
         onClick={toss}
         disabled={busy}
+        aria-label={busy ? "Coin in the air" : face ? `Landed on ${face}` : "Flip the coin"}
       >
-        {busy ? "…" : face ?? "Toss"}
+        <span
+          className="relative block h-full w-full"
+          style={{
+            transformStyle: "preserve-3d",
+            transform: `rotateY(${spin}deg)`,
+            transition: busy ? "transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1)" : "none",
+          }}
+        >
+          <CoinFace legend="HEADS" rim className="bg-[#F2013F] text-[#F5F5F1]" />
+          <CoinFace
+            legend="TAILS"
+            className="bg-[#F5F5F1] text-[#221F1F]"
+            style={{ transform: "rotateY(180deg)" }}
+          />
+        </span>
       </button>
       <button type="button" className="btn btn-primary" disabled={busy} onClick={toss}>
         {busy ? "In the air…" : "Flip the coin"}
@@ -130,5 +198,28 @@ function CoinToss() {
       ) : null}
       <p className="text-sm text-[var(--ink-soft)]">{flips} toss{flips === 1 ? "" : "es"} this session</p>
     </div>
+  );
+}
+
+function CoinFace({
+  legend,
+  className,
+  style,
+  rim,
+}: {
+  legend: string;
+  className: string;
+  style?: CSSProperties;
+  rim?: boolean;
+}) {
+  return (
+    <span
+      className={`absolute inset-0 grid place-items-center rounded-full border-4 text-[1.35rem] font-semibold tracking-[0.2em] ${
+        rim ? "border-[#F5F5F1]" : "border-[#221F1F]"
+      } ${className}`}
+      style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden", ...style }}
+    >
+      {legend}
+    </span>
   );
 }

@@ -1,4 +1,4 @@
-/** Fair picks in this tab. crypto.getRandomValues — not Math.random. */
+export type WheelSlice = { label: string; weight: number };
 
 export function randomInt(n: number): number {
   if (n <= 0) throw new Error("Need at least one option.");
@@ -18,10 +18,40 @@ export function pickOne<T>(items: T[]): T {
   return items[randomInt(items.length)]!;
 }
 
-export function parseWheelLines(raw: string): string[] {
-  return raw
-    .split(/\n/)
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .slice(0, 40);
+/** One option per line. Equal parts unless a ratio is set: `Pizza x3`, `No:2`, `Later | 1`. */
+export function parseWheelSlices(raw: string): WheelSlice[] {
+  const out: WheelSlice[] = [];
+  for (const line of raw.split("\n")) {
+    const t = line.trim();
+    if (!t) continue;
+    const m = t.match(/^(.*?)(?:\s*[x×*:|]\s*|\s+x\s+)(\d+)\s*$/i);
+    const label = (m?.[1] ?? t).trim();
+    const weight = m ? Math.max(1, Math.min(99, Number(m[2]))) : 1;
+    if (label) out.push({ label, weight });
+    if (out.length >= 40) break;
+  }
+  return out;
+}
+
+export function weightedIndex(weights: number[]): number {
+  const total = weights.reduce((sum, w) => sum + w, 0);
+  if (total <= 0) return 0;
+  let r = randomInt(total);
+  for (let i = 0; i < weights.length; i += 1) {
+    r -= weights[i]!;
+    if (r < 0) return i;
+  }
+  return Math.max(0, weights.length - 1);
+}
+
+export function sliceAngles(weights: number[]): { start: number; end: number; mid: number }[] {
+  const total = weights.reduce((sum, w) => sum + w, 0) || 1;
+  let cursor = 0;
+  return weights.map((w) => {
+    const span = (w / total) * 360;
+    const start = cursor;
+    const end = cursor + span;
+    cursor = end;
+    return { start, end, mid: start + span / 2 };
+  });
 }

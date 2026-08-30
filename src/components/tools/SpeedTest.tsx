@@ -1,11 +1,19 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useLiveSpeed } from "@/components/LiveSpeed";
+import { LiveSpeedProvider, useLiveSpeed } from "@/components/LiveSpeed";
 import { connectionHint, formatMbps, formatMs, runSpeedTest, type SpeedProgress } from "@/lib/speed-test";
 import type { ToolDef } from "@/lib/tools";
 
 export function SpeedTest({ tool }: { tool: ToolDef }) {
+  return (
+    <LiveSpeedProvider>
+      <SpeedTestBody tool={tool} />
+    </LiveSpeedProvider>
+  );
+}
+
+function SpeedTestBody({ tool }: { tool: ToolDef }) {
   const { snap, setHot, setPaused } = useLiveSpeed();
   const [deep, setDeep] = useState<SpeedProgress>({ phase: "idle" });
   const [meta, setMeta] = useState<{ colo?: string; loc?: string; ipHint?: string }>({});
@@ -51,8 +59,8 @@ export function SpeedTest({ tool }: { tool: ToolDef }) {
   return (
     <div className="grid gap-6">
       <p className="text-sm leading-6 text-[var(--ink-soft)]">
-        Live readout is on every page. This view samples continuously (small probes). A full test
-        uses larger generated payloads. Photos and PDFs are never sent.
+        Live probes run on this page only. A full test uses larger generated payloads. Photos and
+        PDFs are never sent.
       </p>
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
