@@ -23,13 +23,16 @@ export default function OpenGraphImage() {
         <div style={{ display: "flex", alignItems: "center", gap: 16, fontSize: 22, letterSpacing: 6 }}>
           <div
             style={{
-              width: 36,
-              height: 36,
+              width: 48,
+              height: 48,
               background: "#F2013F",
-              borderRadius: 8,
+              borderRadius: 10,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
+              color: "#F5F5F1",
+              fontSize: 28,
+              fontWeight: 600,
             }}
           >
             C

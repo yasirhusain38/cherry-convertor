@@ -6,7 +6,8 @@ import { Header } from "@/components/Header";
 import { Intro } from "@/components/motion/Intro";
 import { PageCurtain } from "@/components/motion/PageCurtain";
 import { SiteCursor } from "@/components/motion/SiteCursor";
-import { SITE } from "@/lib/site";
+import { SiteJsonLd } from "@/components/SiteJsonLd";
+import { SITE, absoluteUrl } from "@/lib/site";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -53,20 +54,16 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  themeColor: "#F2013F",
   alternates: {
     canonical: "/",
   },
   icons: {
     icon: [
-      { url: "/favicon-48x48.png", sizes: "48x48", type: "image/png" },
-      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-      { url: "/favicon-192x192.png", sizes: "192x192", type: "image/png" },
-      { url: "/favicon-96x96.png", sizes: "96x96", type: "image/png" },
-      { url: "/favicon-512x512.png", sizes: "512x512", type: "image/png" },
-      { url: "/favicon.ico", sizes: "48x48", type: "image/x-icon" },
+      { url: absoluteUrl("/favicon-192x192.png"), sizes: "192x192", type: "image/png" },
+      { url: absoluteUrl("/favicon-48x48.png"), sizes: "48x48", type: "image/png" },
     ],
-    shortcut: "/favicon.ico",
-    apple: [{ url: "/apple-touch-icon.png", sizes: "192x192", type: "image/png" }],
+    apple: [{ url: absoluteUrl("/apple-touch-icon.png"), sizes: "192x192", type: "image/png" }],
   },
 };
 
@@ -77,6 +74,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} ${instrument.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-bg text-ink">
+        <SiteJsonLd />
         <GoogleAnalytics />
         <SiteCursor />
         <Intro />
