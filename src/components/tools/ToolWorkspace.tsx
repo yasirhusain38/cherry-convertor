@@ -27,6 +27,7 @@ import { SpeedTest } from "./SpeedTest";
 import { ChanceStudio } from "./ChanceStudio";
 import { MouseChecker } from "./MouseChecker";
 import { ServerDown } from "./ServerDown";
+import { UrlMediaTool } from "./UrlMediaTool";
 
 export function ToolWorkspace({ tool }: { tool: ToolDef }) {
   switch (tool.mode) {
@@ -87,6 +88,8 @@ export function ToolWorkspace({ tool }: { tool: ToolDef }) {
       return <MouseChecker tool={tool} />;
     case "status-check":
       return <ServerDown tool={tool} />;
+    case "url-media":
+      return <UrlMediaTool tool={tool} />;
     default:
       if (tool.slug === "rotate-image" || tool.slug === "flip-image" || tool.slug === "black-and-white") {
         return <ImageStudio tool={tool} />;

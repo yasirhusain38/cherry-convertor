@@ -52,7 +52,8 @@ export type ToolMode =
   | "speed-test"
   | "chance"
   | "mouse-check"
-  | "status-check";
+  | "status-check"
+  | "url-media";
 
 export type FaqItem = { q: string; a: string };
 

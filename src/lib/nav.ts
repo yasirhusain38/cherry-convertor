@@ -22,6 +22,7 @@ export const NAV_GROUPS: NavGroup[] = [
       { href: "/tools/qr-code-generator", label: "QR code" },
       { href: "/tools/color-picker", label: "Color picker" },
       { href: "/tools/ocr-image-to-text", label: "OCR" },
+      { href: "/tools/url-media-downloader", label: "URL downloader" },
       { href: "/tools", label: "All tools" },
     ],
   },
