@@ -9,19 +9,19 @@ export function RelatedTools({ slugs }: { slugs: string[] }) {
     <section className="border-t border-[var(--line)] bg-[#221F1F]">
       <div className="container-page py-20">
         <p className="label">Related systems</p>
-        <h2 className="display mt-3 text-4xl">Continue in the suite</h2>
+        <h2 className="display mt-3 text-4xl md:text-5xl">Continue in the suite</h2>
         <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {tools.map((tool, index) => (
             <Link
               key={tool.slug}
               href={`/tools/${tool.slug}`}
-              className="card card-hover p-6 no-underline"
+              className="card card-hover flex h-full flex-col p-6 no-underline"
             >
               <p className="label">
                 {String(index + 1).padStart(2, "0")}  /  {tool.category}
               </p>
-              <h3 className="mt-4 text-xl tracking-tight">{tool.name}</h3>
-              <p className="mt-2 text-sm leading-6 text-[var(--ink-soft)]">{tool.lede}</p>
+              <h3 className="display mt-6 text-2xl">{tool.name}</h3>
+              <p className="mt-3 text-sm leading-6 text-[var(--ink-soft)]">{tool.lede}</p>
             </Link>
           ))}
         </div>

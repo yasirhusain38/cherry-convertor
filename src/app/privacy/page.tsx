@@ -12,7 +12,7 @@ export default function PrivacyPage() {
   return (
     <article className="container-page prose-site max-w-3xl py-16">
       <p className="label">Legal</p>
-      <h1 className="display mt-3 text-5xl">Privacy policy</h1>
+      <h1 className="display mt-4 text-5xl md:text-7xl">Privacy policy</h1>
       <p className="mt-6">Last updated 29 August 2026.</p>
       <h2>Images never leave your browser</h2>
       <p>

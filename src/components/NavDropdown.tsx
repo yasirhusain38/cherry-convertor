@@ -71,7 +71,7 @@ export function NavDropdown({
         <div
           id={panelId}
           role="menu"
-          className="absolute left-0 top-[calc(100%+10px)] z-[80] min-w-56 rounded-xl border border-[#F5F5F1]/15 bg-[#221F1F] py-2 shadow-[0_16px_40px_rgba(0,0,0,0.45)]"
+          className="nav-panel absolute left-0 top-[calc(100%+10px)] z-[80] min-w-56 rounded-xl border border-[#F5F5F1]/15 bg-[#221F1F] py-2 shadow-[0_16px_40px_rgba(0,0,0,0.45)]"
         >
           <Link
             href={group.href}

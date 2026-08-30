@@ -8,14 +8,26 @@ export type SearchBrowse = {
   more: SearchChip[];
 };
 
+function uniqueChips(items: SearchChip[]): SearchChip[] {
+  const seen = new Set<string>();
+  const out: SearchChip[] = [];
+  for (const item of items) {
+    if (seen.has(item.href)) continue;
+    seen.add(item.href);
+    out.push(item);
+  }
+  return out;
+}
+
 function rotate(items: SearchChip[], take: number, offset: number): SearchChip[] {
-  if (!items.length) return [];
-  const n = items.length;
+  const list = uniqueChips(items);
+  if (!list.length) return [];
+  const n = list.length;
   const start = ((offset % n) + n) % n;
   const count = Math.min(take, n);
   const out: SearchChip[] = [];
-  for (let i = 0; i < count; i += 1) out.push(items[(start + i) % n]!);
-  return out;
+  for (let i = 0; i < count; i += 1) out.push(list[(start + i) % n]!);
+  return uniqueChips(out);
 }
 
 const MORNING: SearchChip[] = [

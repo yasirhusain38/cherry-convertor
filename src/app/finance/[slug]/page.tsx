@@ -65,16 +65,12 @@ export default async function FinanceSlugPage({
         }}
       />
       <section className="border-b border-[var(--line)]">
-        <div className="container-page py-12 md:py-16">
+        <div className="container-page py-14 md:py-20">
           <p className="label">{tool.kicker}</p>
-          <h1 className="display mt-4 max-w-4xl text-4xl md:text-6xl">{tool.h1}</h1>
-          <p className="mt-5 max-w-2xl text-base leading-7 text-[var(--ink-soft)]">{tool.lede}</p>
-          <p className="mt-6 inline-flex items-center gap-3 rounded-full bg-[#F2013F] px-4 py-2 text-xs tracking-[0.16em] text-[#F5F5F1] uppercase">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#F5F5F1]" />
-            {tool.engine === "currency"
-              ? "Live mid-market rates · amount never uploaded"
-              : "Maths in this browser · never uploaded"}
-          </p>
+          <h1 className="display mt-5 max-w-4xl text-4xl md:text-7xl">{tool.h1}</h1>
+          {tool.lede ? (
+            <p className="mt-6 max-w-xl text-base leading-7 text-[var(--ink-soft)]">{tool.lede}</p>
+          ) : null}
         </div>
       </section>
       <section className="container-page py-10 md:py-14">

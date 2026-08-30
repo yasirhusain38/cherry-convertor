@@ -4,7 +4,7 @@ export function Faq({ items }: { items: FaqItem[] }) {
   return (
     <section className="container-page py-20">
       <p className="label">FAQ</p>
-      <h2 className="display mt-3 text-4xl">Questions, answered</h2>
+      <h2 className="display mt-3 text-4xl md:text-5xl">Questions, answered</h2>
       <div className="mt-10 divide-y divide-[var(--line)] border-y border-[var(--line)]">
         {items.map((item) => (
           <details key={item.q} className="group py-5">

@@ -40,8 +40,8 @@ export default async function RegionPage({
       <section className="border-b border-[var(--line)]">
         <div className="container-page py-14">
           <p className="label">Region</p>
-          <h1 className="display mt-3 text-5xl md:text-6xl">{region.name}</h1>
-          <p className="mt-4 max-w-2xl text-[var(--ink-soft)]">{region.blurb}</p>
+          <h1 className="display mt-4 text-5xl md:text-7xl">{region.name}</h1>
+          <p className="mt-6 max-w-xl text-base leading-7 text-[var(--ink-soft)]">{region.blurb}</p>
           <p className="mt-6 flex flex-wrap gap-5 text-sm">
             <Link href="/regions" className="text-brand">
               All regions

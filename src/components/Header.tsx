@@ -86,7 +86,14 @@ export function Header() {
     >
       {home ? null : <div className="h-1 bg-[#F2013F]" aria-hidden />}
       <div className="container-page flex h-16 items-center justify-between gap-4">
-        <Logo inverted />
+        <div className="flex items-center gap-4">
+          <Logo inverted />
+          <p
+            className={`hidden text-[10px] tracking-[0.22em] uppercase md:block ${home ? "text-[#F5F5F1]/70" : "text-[#F5F5F1]/45"}`}
+          >
+            Est. 2026
+          </p>
+        </div>
         <nav className="hidden items-center gap-6 lg:flex" aria-label="Primary">
           {NAV_GROUPS.map((group) => (
             <NavDropdown

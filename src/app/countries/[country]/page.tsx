@@ -63,8 +63,8 @@ export default async function CountryPage({
               country.region
             )}
           </p>
-          <h1 className="display mt-3 text-5xl md:text-6xl">{country.name} document tools</h1>
-          <p className="mt-4 max-w-2xl text-[var(--ink-soft)]">{country.blurb}</p>
+          <h1 className="display mt-4 text-5xl md:text-7xl">{country.name} document tools</h1>
+          <p className="mt-6 max-w-xl text-base leading-7 text-[var(--ink-soft)]">{country.blurb}</p>
           <p className="mt-6 flex flex-wrap gap-5 text-sm">
             <Link href="/countries" className="text-brand">
               All countries

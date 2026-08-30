@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 import { Footer } from "@/components/Footer";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { Header } from "@/components/Header";
+import { Intro } from "@/components/motion/Intro";
+import { PageCurtain } from "@/components/motion/PageCurtain";
+import { SiteCursor } from "@/components/motion/SiteCursor";
 import { SITE } from "@/lib/site";
 import "./globals.css";
 
@@ -14,6 +17,14 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const instrument = Instrument_Serif({
+  variable: "--font-display",
+  subsets: ["latin"],
+  weight: "400",
+  style: ["normal", "italic"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -63,10 +74,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en-IN"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${instrument.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-bg text-ink">
         <GoogleAnalytics />
+        <SiteCursor />
+        <Intro />
+        <PageCurtain />
         <a className="skip-link" href="#main">
           Skip to content
         </a>

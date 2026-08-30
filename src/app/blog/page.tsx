@@ -31,21 +31,20 @@ const POSTS = [
 
 export default function BlogPage() {
   return (
-    <section className="container-page py-16">
+    <section className="container-page py-16 md:py-20">
       <p className="label">Journal</p>
-      <h1 className="display mt-3 text-5xl">Notes from the studio</h1>
-      <p className="mt-4 max-w-2xl text-[var(--ink-soft)]">
-        Long-form explainers will live here. For now, each note points at the tool
-        that already solves the problem.
+      <h1 className="display mt-4 text-5xl md:text-7xl">Notes from the studio</h1>
+      <p className="mt-6 max-w-xl text-base leading-7 text-[var(--ink-soft)]">
+        Long-form explainers will live here. For now, each note points at the tool that already solves the problem.
       </p>
-      <div className="mt-12 grid gap-4">
+      <div className="mt-14 grid gap-4">
         {POSTS.map((post, index) => (
-          <Link key={post.title} href={post.href} className="card card-hover p-8 no-underline">
+          <Link key={post.title} href={post.href} className="card card-hover p-8 no-underline md:p-10">
             <p className="label">
               {String(index + 1).padStart(2, "0")}  /  {post.kicker}
             </p>
-            <h2 className="mt-4 text-2xl tracking-tight">{post.title}</h2>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--ink-soft)]">{post.lede}</p>
+            <h2 className="display mt-5 text-3xl md:text-4xl">{post.title}</h2>
+            <p className="mt-4 max-w-2xl text-sm leading-6 text-[var(--ink-soft)]">{post.lede}</p>
           </Link>
         ))}
       </div>

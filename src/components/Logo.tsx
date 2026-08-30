@@ -3,7 +3,7 @@ import Link from "next/link";
 export function CherryMark({ className = "h-8 w-8" }: { className?: string }) {
   return (
     <svg
-      className={className}
+      className={`cherry-mark ${className}`}
       viewBox="0 0 32 32"
       fill="none"
       aria-hidden="true"

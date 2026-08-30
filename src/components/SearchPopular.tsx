@@ -70,8 +70,8 @@ function ChipRow({
     <section>
       <p className={className}>{title}</p>
       <div className="flex flex-wrap gap-3">
-        {items.map((item) => (
-          <Link key={`${title}-${item.href}-${item.label}`} href={item.href} className={btn} onClick={onPick}>
+        {items.map((item, i) => (
+          <Link key={`${title}-${i}-${item.href}`} href={item.href} className={btn} onClick={onPick}>
             {item.label}
           </Link>
         ))}
