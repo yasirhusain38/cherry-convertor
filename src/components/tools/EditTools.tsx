@@ -18,6 +18,13 @@ import {
   type ProcessResult,
 } from "@/lib/image";
 import { SIGNATURE_PRESETS, mmToPx } from "@/lib/presets";
+import type { ToolDef } from "@/lib/tools";
+
+type SignatureId = (typeof SIGNATURE_PRESETS)[number]["id"];
+
+function signatureId(raw?: string): SignatureId {
+  return SIGNATURE_PRESETS.some((item) => item.id === raw) ? (raw as SignatureId) : "std-6x2";
+}
 
 function useLocalImage() {
   const [file, setFile] = useState<File | null>(null);
@@ -47,10 +54,10 @@ function useLocalImage() {
   return { file, bitmap, error, load, clear, setError };
 }
 
-export function DpiTool() {
+export function DpiTool({ tool }: { tool?: ToolDef }) {
   const img = useLocalImage();
-  const [dpi, setDpi] = useState(300);
-  const [mode, setMode] = useState<"meta" | "resample">("meta");
+  const [dpi, setDpi] = useState(tool?.dpiDefault ?? 300);
+  const [mode, setMode] = useState<"meta" | "resample">(tool?.dpiMode ?? "meta");
   const [printW, setPrintW] = useState(2);
   const [result, setResult] = useState<ProcessResult | null>(null);
   const [busy, setBusy] = useState(false);
@@ -174,9 +181,9 @@ export function BgTool() {
   );
 }
 
-export function SignatureTool() {
+export function SignatureTool({ tool }: { tool?: ToolDef }) {
   const img = useLocalImage();
-  const [presetId, setPresetId] = useState<(typeof SIGNATURE_PRESETS)[number]["id"]>("std-6x2");
+  const [presetId, setPresetId] = useState<SignatureId>(signatureId(tool?.signaturePreset));
   const [threshold, setThreshold] = useState(186);
   const [ink, setInk] = useState("#141212");
   const [result, setResult] = useState<ProcessResult | null>(null);

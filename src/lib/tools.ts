@@ -1,4 +1,6 @@
 import { EXTRA_PHOTO_TOOLS } from "@/data/world-extra";
+import { GSC_INTENT_TOOLS } from "@/data/gsc-intent-tools";
+import { PDF_CAP_TOOLS } from "@/data/pdf-cap-tools";
 import { P0_TOOLS } from "./p0-tools";
 import { UTILITY_TOOLS } from "./utility-tools";
 
@@ -74,6 +76,10 @@ export type ToolDef = {
   outputMime?: "image/jpeg" | "image/png" | "image/webp";
   photoPreset?: string;
   documentSpecId?: string;
+  signaturePreset?: string;
+  dpiDefault?: number;
+  dpiMode?: "meta" | "resample";
+  grayscale?: boolean;
   faqs: FaqItem[];
   related: string[];
 };
@@ -153,11 +159,15 @@ export const CATEGORIES: Array<{
 const sizeFaqs = (kb: string, use: string): FaqItem[] => [
   {
     q: `How do I resize an image to ${kb} for free?`,
-    a: `Upload the photo on this page. Cherry Converter compresses it in your browser until the file is ${kb} or smaller, then you download the result. Nothing is uploaded to a server.`,
+    a: `Drop the photo on this page. Cherry Converter compresses it in your browser until the file is ${kb} or smaller, then you download the result. Nothing is uploaded to a server.`,
   },
   {
     q: `Will the photo stay clear at ${kb}?`,
     a: `We search for the highest JPEG quality that still fits ${kb}. If quality alone is not enough, the engine scales the image slightly and tries again so the file remains usable for ${use}.`,
+  },
+  {
+    q: `Can I increase a small file up to ${kb}?`,
+    a: `If the photo is already under ${kb}, the download stays at the real size. We do not pad junk bytes. To add pixels for print, use the DPI tool — portals still count the actual file size.`,
   },
   {
     q: "Is my photo uploaded?",
@@ -305,10 +315,23 @@ export const TOOLS: ToolDef[] = [
     metaTitle: "Resize Image to 20KB Online Free – Cherry Converter",
     metaDescription:
       "Resize any image to 20KB free in your browser. Used for SSC, IBPS, and government form photos. No upload, no watermark.",
-    keywords: ["resize image to 20kb", "compress photo 20kb", "ssc photo 20kb"],
+    keywords: [
+      "resize image to 20kb",
+      "20 kb photo size",
+      "how to convert 20 kb photo",
+      "image resizer less than 20 kb",
+      "resize photo jpg 20 kb online",
+      "how to make 20 kb photo",
+    ],
     targetBytes: 20 * 1024,
     outputMime: "image/jpeg",
-    faqs: sizeFaqs("20KB", "SSC, banking, and many government forms"),
+    faqs: [
+      ...sizeFaqs("20KB", "SSC, banking, and many government forms"),
+      {
+        q: "10 KB to 20 KB?",
+        a: "This page caps at 20 KB. If the form says 10–20 KB, stay here. If it says 4–12 KB, use Resize image to 10KB.",
+      },
+    ],
     related: ["resize-image-to-10kb", "resize-image-to-50kb", "exam-form-photo-resizer", "aadhaar-photo-resizer"],
   },
   {
@@ -322,10 +345,23 @@ export const TOOLS: ToolDef[] = [
     metaTitle: "Resize Image to 30KB Online Free – Cherry Converter",
     metaDescription:
       "Compress a photo to 30KB online, privately in your browser. Useful for university and state government uploads that sit between 20 and 50 KB.",
-    keywords: ["resize image to 30kb", "compress image 30kb"],
+    keywords: [
+      "resize image to 30kb",
+      "photo convert into 30kb",
+      "30 kb photo size",
+      "change photo size to 30 kb",
+      "resize image to 30kb to 70kb",
+      "image converter to 30kb",
+    ],
     targetBytes: 30 * 1024,
     outputMime: "image/jpeg",
-    faqs: sizeFaqs("30KB", "university and state government portals"),
+    faqs: [
+      ...sizeFaqs("30KB", "university and state government portals"),
+      {
+        q: "30 KB to 70 KB?",
+        a: "This page defaults to 30 KB. Type 50 or 70 in the size box, or use Resize image to 50KB / 100KB if the form allows it.",
+      },
+    ],
     related: ["resize-image-to-20kb", "resize-image-to-50kb", "college-admission-photo-resizer"],
   },
   {
@@ -368,7 +404,14 @@ export const TOOLS: ToolDef[] = [
     metaTitle: "Resize Image to 100KB Online Free – Cherry Converter",
     metaDescription:
       "Compress images to 100KB in your browser. Free tool for university forms, email, and portals that allow a higher quality JPEG.",
-    keywords: ["resize image to 100kb", "compress to 100kb"],
+    keywords: [
+      "resize image to 100kb",
+      "100 kb image size",
+      "jpg resize to 100 kb",
+      "100 kb photo size",
+      "make photo size less than 100kb",
+      "convert image to 100 kb",
+    ],
     targetBytes: 100 * 1024,
     outputMime: "image/jpeg",
     faqs: sizeFaqs("100KB", "university forms and higher-quality portal uploads"),
@@ -385,7 +428,13 @@ export const TOOLS: ToolDef[] = [
     metaTitle: "Resize Image to 200KB Online Free – Cherry Converter",
     metaDescription:
       "Reduce any photo to 200KB online without uploading it. Free JPEG compressor with live size comparison.",
-    keywords: ["resize image to 200kb", "compress photo 200kb"],
+    keywords: [
+      "resize image to 200kb",
+      "photo resizer 200kb",
+      "200kb photo size",
+      "200 kb photo size",
+      "resize image to 200 kb",
+    ],
     targetBytes: 200 * 1024,
     outputMime: "image/jpeg",
     faqs: sizeFaqs("200KB", "HR portals and email attachments"),
@@ -419,7 +468,14 @@ export const TOOLS: ToolDef[] = [
     metaTitle: "Resize Image to 500KB Online Free – Cherry Converter",
     metaDescription:
       "Compress an image to 500KB free in your browser. Keep more detail than strict 20–50 KB tools. No upload required.",
-    keywords: ["resize image to 500kb", "compress image 500kb"],
+    keywords: [
+      "resize image to 500kb",
+      "reduce image size to 500 kb",
+      "500kb photo size",
+      "how to make image 500kb",
+      "500 kb photo size",
+      "resize to 500 kb",
+    ],
     targetBytes: 500 * 1024,
     outputMime: "image/jpeg",
     faqs: sizeFaqs("500KB", "web listings and standard email"),
@@ -436,7 +492,14 @@ export const TOOLS: ToolDef[] = [
     metaTitle: "Resize Image to 1MB Online Free – Cherry Converter",
     metaDescription:
       "Compress any image to 1MB or less in your browser. Free, private, and built for high-quality web and form uploads.",
-    keywords: ["resize image to 1mb", "compress image to 1mb"],
+    keywords: [
+      "resize image to 1mb",
+      "image to 1 mb",
+      "make image 1mb",
+      "1 mb size image converter jpg",
+      "reduce image size to under 1mb",
+      "image resizer 1mb",
+    ],
     targetBytes: 1024 * 1024,
     outputMime: "image/jpeg",
     faqs: sizeFaqs("1MB", "high-quality web and ticket uploads"),
@@ -744,15 +807,36 @@ export const TOOLS: ToolDef[] = [
     metaTitle: "Signature Resizer / Signature Size Reducer Free – Cherry Converter",
     metaDescription:
       "Resize and compress a signature to 10–20 KB. Crop, ink cleanup, and exact centimetre sizes. Processed in your browser.",
-    keywords: ["signature resizer", "signature size reducer", "signature 20kb", "pan signature"],
+    keywords: [
+      "signature resizer",
+      "signature size reducer",
+      "signature 20kb",
+      "pan signature",
+      "compress signature",
+      "signature cropping",
+      "signature resize without losing quality",
+    ],
+    signaturePreset: "std-6x2",
     faqs: [
       {
         q: "What size should a form signature be?",
-        a: "A common Indian spec is 6 cm × 2 cm, black on white, 10–20 KB JPEG or JPG. Always match the form you are filling.",
+        a: "A common Indian spec is 6 cm × 2 cm, black on white, 10–20 KB JPEG. PAN, OCI, and many exams use that window. Always match the form.",
+      },
+      {
+        q: "Will quality drop at 10–20 KB?",
+        a: "Ink is thresholded to black on white, then compressed. A sharp scan stays usable. A phone photo of a faded sign may need a darker threshold.",
+      },
+      {
+        q: "20 KB vs 40–50 KB?",
+        a: "Use 20 KB for PAN / most exams. Use the 40–50 KB preset when the portal allows it. Switch presets on this page.",
       },
       {
         q: "Can you remove the paper background?",
         a: "The ink cleanup turns pale paper to white and darkens the pen stroke. For a transparent PNG, use the background remover after.",
+      },
+      {
+        q: "Cropping?",
+        a: "Shoot or scan with margin, then pick a preset. For a free crop first, use Photo cropper, then come back.",
       },
     ],
     related: ["pan-card-photo-resizer", "resize-image-to-20kb", "photo-cropper"],
@@ -916,6 +1000,10 @@ export const TOOLS: ToolDef[] = [
       {
         q: "Is the Green Card photo the same as a passport photo?",
         a: "Yes in size: 2×2 inch square. DV lottery uploads are stricter on the 240 KB JPEG cap.",
+      },
+      {
+        q: "Is this a green card maker or generator?",
+        a: "No. It only resizes a photo you already have. It does not issue a green card or any official ID.",
       },
     ],
     related: ["us-passport-photo", "us-visa-photo-ds-160", "compress-bank-statement"],
@@ -1225,7 +1313,13 @@ export const TOOLS: ToolDef[] = [
     metaTitle: "Bangladesh NID Photo Size Online Free – Cherry Converter",
     metaDescription:
       "Resize a Bangladesh national ID photo in your browser. White background, under 50KB. No upload.",
-    keywords: ["bangladesh nid photo", "voter id photo bangladesh", "nid photo size"],
+    keywords: [
+      "bangladesh nid photo",
+      "nid photocopy size editor",
+      "nid card resize",
+      "nid card photo size",
+      "voter id photo bangladesh",
+    ],
     photoPreset: "bd-nid",
     faqs: [
       {
@@ -1309,7 +1403,7 @@ export const TOOLS: ToolDef[] = [
     metaTitle: "Malaysia MyKad Photo Size Online Free – Cherry Converter",
     metaDescription:
       "Resize a MyKad photo in your browser. White background. No upload. Free.",
-    keywords: ["mykad photo", "malaysia ic photo", "jpn photo size"],
+    keywords: ["mykad size", "mykad photo", "malaysia ic photo", "jpn photo size"],
     photoPreset: "my-mykad",
     faqs: [
       {
@@ -3213,7 +3307,14 @@ export const TOOLS: ToolDef[] = [
     lede: "Provincial licence portrait. White background, often 20–50 KB.",
     metaTitle: "Pakistan Driving Licence Photo Free – Cherry Converter",
     metaDescription: "Resize a Pakistani driving licence photo in your browser. 35×45 mm, 50 KB cap. No upload.",
-    keywords: ["pakistan driving licence photo", "lahore licence photo size"],
+    keywords: [
+      "driving licence photo pakistan",
+      "pakistani driving license picture",
+      "license picture pakistan",
+      "driving license pic pakistan",
+      "driving license photo pakistan",
+      "pakistan driving licence photo",
+    ],
     photoPreset: "pk-driving",
     faqs: [{ q: "CNIC or licence?", a: "Both are 35×45 mm family portraits. This page is worded for the driving licence." }],
     related: ["pakistan-cnic-photo", "pakistan-passport-photo", "india-driving-licence-photo"],
@@ -5430,11 +5531,12 @@ export const TOOLS: ToolDef[] = [
     mode: "document-compress",
     kicker: "PDF  /  Compress",
     h1: "Compress PDF online free — no upload",
-    lede: "Drop a PDF or photos of pages. We rasterize and rebuild a smaller PDF in your browser. Type 500 KB, 1 MB, or 2 MB.",
+    lede:
+      "Drop a PDF or photos of pages. Type 500 KB, 1 MB, or 2 MB. Pages are rebuilt in this tab as a smaller PDF — a free online pdf compressor, no account.",
     metaTitle: "Compress PDF Online Free – Cherry Converter",
     metaDescription:
       "Compress a PDF in your browser. No upload. Type any target size (500KB, 1MB, 2MB). Free.",
-    keywords: ["compress pdf", "reduce pdf size", "pdf compressor no upload"],
+    keywords: ["compress pdf", "reduce pdf size", "pdf compressor no upload", "free online pdf compressor"],
     documentSpecId: "compress-pdf",
     faqs: [
       {
@@ -5445,8 +5547,24 @@ export const TOOLS: ToolDef[] = [
         q: "Will text stay selectable?",
         a: "No. This compressor rebuilds pages as images so the file gets small enough for portals. Keep the original if you need searchable text.",
       },
+      {
+        q: "Scanned vs born-digital?",
+        a: "Phone scans are already pictures and shrink well. A Word-exported PDF is rasterized too, so copy-paste goes away.",
+      },
+      {
+        q: "Still too big after one pass?",
+        a: "The engine retries JPEG quality, then shrinks page pixels. Drop fewer pages or split the file if it still misses the cap.",
+      },
+      {
+        q: "Which types?",
+        a: "Input: .pdf or photos of pages. Output is always .pdf.",
+      },
+      {
+        q: "Need a locked 2 MB / 1 MB / 500 KB page?",
+        a: "Use the matching intent page so the default cap matches the form.",
+      },
     ],
-    related: ["compress-pdf-to-2mb", "compress-bank-statement", "image-to-pdf"],
+    related: ["compress-pdf-to-2mb", "compress-pdf-to-1mb", "compress-pdf-to-500kb"],
   },
   {
     slug: "compress-pdf-to-2mb",
@@ -5454,20 +5572,48 @@ export const TOOLS: ToolDef[] = [
     category: "convert",
     mode: "document-compress",
     kicker: "PDF  /  2 MB",
-    h1: "Compress PDF to 2MB free",
-    lede: "Visa, university, and bank portals often stop at 2 MB. Drop the file; download a PDF at or under 2 MB.",
-    metaTitle: "Compress PDF to 2MB Online Free – Cherry Converter",
+    h1: "Compress PDF to 2MB online free",
+    lede:
+      "Visa, university, and bank portals often reject a file over 2 MB. Drop a PDF or page photos. This tab rebuilds a PDF at or under 2 MB — a free online pdf compressor to 2mb, no account.",
+    metaTitle: "Compress PDF to 2MB online free – Cherry Converter",
     metaDescription:
-      "Compress a PDF to 2MB in your browser. Built for visa and university uploads. No account, no upload to a server.",
-    keywords: ["compress pdf to 2mb", "pdf under 2mb", "reduce pdf 2mb"],
+      "Compress a PDF to 2MB in your browser. pdf compressor 2mb for visa and university uploads. No account, no server upload.",
+    keywords: [
+      "compress pdf to 2mb",
+      "pdf compressor 2mb",
+      "make pdf 2mb",
+      "2 mb file",
+      "free online pdf compressor to 2mb",
+      "pdf under 2mb",
+    ],
     documentSpecId: "compress-pdf-to-2mb",
     faqs: [
       {
         q: "Why 2 MB?",
-        a: "It is a common ceiling for embassy and admissions portals. You can type a different cap if yours is 1 MB or 500 KB.",
+        a: "Embassy, university, and bank portals often stop at 2 MB per file. This page defaults there. Type 1 MB or 500 KB if the form is tighter.",
+      },
+      {
+        q: "Will quality drop?",
+        a: "Pages are rebuilt as JPEG. A few scanned pages stay readable at 2 MB. A 40-page colour booklet may go soft — split it.",
+      },
+      {
+        q: "Scanned vs born-digital PDF?",
+        a: "Scans compress well because they are already pictures. A text PDF from Word is rasterized, so selectable text is lost. Keep the original if you still need to copy.",
+      },
+      {
+        q: "Still over 2 MB after one pass?",
+        a: "The engine retries quality, then shrinks page pixels. If it still misses, drop fewer pages or use two uploads.",
+      },
+      {
+        q: "Which file types?",
+        a: "Input: .pdf, or JPG/PNG/HEIC photos of pages. Output is always .pdf.",
+      },
+      {
+        q: "Need less than 2 MB, not equal to 2 MB?",
+        a: "Use PDF under 2MB. Same engine; copy is aimed at “less than 2MB” forms.",
       },
     ],
-    related: ["compress-pdf", "compress-bank-statement", "us-visa-photo-ds-160"],
+    related: ["compress-pdf-under-2mb", "compress-pdf-to-1mb", "compress-pdf-to-500kb"],
   },
   {
     slug: "compress-bank-statement",
@@ -5521,20 +5667,41 @@ export const TOOLS: ToolDef[] = [
     category: "convert",
     mode: "document-compress",
     kicker: "PDF  /  500 KB",
-    h1: "Compress PDF to 500KB online",
-    lede: "A common KYC and university attachment ceiling. Type another cap if yours differs.",
-    metaTitle: "Compress PDF to 500KB Online Free – Cherry Converter",
+    h1: "Compress PDF to 500KB online free",
+    lede:
+      "KYC and university forms often cap a file at 500 KB. Drop a PDF or page photos. This tab rebuilds a pdf 500kb file — no account.",
+    metaTitle: "Compress PDF to 500KB online free – Cherry Converter",
     metaDescription:
-      "Reduce a PDF to 500KB in your browser. No upload. Free compressor for KYC and university forms.",
-    keywords: ["compress pdf to 500kb", "pdf under 500kb"],
+      "Compress a PDF to 500KB in your browser. pdf 500kb for KYC and university forms. No upload, no account.",
+    keywords: ["compress pdf to 500kb", "pdf 500kb", "pdf under 500kb", "reduce pdf 500kb"],
     documentSpecId: "compress-pdf-to-500kb",
     faqs: [
       {
-        q: "Can I use photos instead of a PDF?",
-        a: "Yes. Drop each page in order; we build one 500 KB PDF.",
+        q: "Exact cap?",
+        a: "512,000 bytes. The download is at or under 500 KB. Type 200 KB if the portal is stricter.",
+      },
+      {
+        q: "Quality vs size?",
+        a: "500 KB is tight for long colour scans. A 2–4 page certificate usually stays readable. A 20-page statement may need splitting.",
+      },
+      {
+        q: "Scanned vs born-digital?",
+        a: "Scans fit 500 KB more easily. A dense exported PDF is rasterized; selectable text goes away.",
+      },
+      {
+        q: "Still over 500 KB?",
+        a: "After quality and page-shrink passes, drop fewer pages. Merge-then-cap lives on Merge PDF to 500KB.",
+      },
+      {
+        q: "Photos instead of a PDF?",
+        a: "Yes. Drop each page in order. Output is one .pdf.",
+      },
+      {
+        q: "Character certificate or resume?",
+        a: "Same cap, different copy. Use the matching document page so the FAQ matches the form.",
       },
     ],
-    related: ["compress-pdf-to-1mb", "compress-marksheet", "compress-pdf-to-200kb"],
+    related: ["merge-pdf-to-500kb", "compress-pdf-to-1mb", "compress-character-certificate"],
   },
   {
     slug: "compress-pdf-to-1mb",
@@ -5542,20 +5709,41 @@ export const TOOLS: ToolDef[] = [
     category: "convert",
     mode: "document-compress",
     kicker: "PDF  /  1 MB",
-    h1: "Compress PDF to 1MB online",
-    lede: "Email and many visa checklists stop at 1 MB per file.",
-    metaTitle: "Compress PDF to 1MB Online Free – Cherry Converter",
+    h1: "Compress PDF to 1MB free",
+    lede:
+      "Email and many visa checklists stop at 1 MB per file. Drop a PDF. This tab is a pdf size reducer 1 mb — processing stays on this device.",
+    metaTitle: "Compress PDF to 1MB free – Cherry Converter",
     metaDescription:
-      "Compress a PDF to 1MB in your browser. No upload. Free tool for visa and email attachments.",
-    keywords: ["compress pdf to 1mb", "pdf under 1mb", "reduce pdf 1mb"],
+      "Compress a PDF to 1MB free in your browser. PDF size reducer 1 mb for visa and email attachments. No upload.",
+    keywords: ["compress pdf to 1mb", "pdf size reducer 1 mb", "pdf under 1mb", "reduce pdf 1mb"],
     documentSpecId: "compress-pdf-to-1mb",
     faqs: [
       {
         q: "1 MB vs 2 MB?",
         a: "Use 2 MB when the portal allows it — more detail survives. Use this page when the checklist says 1 MB.",
       },
+      {
+        q: "Will quality drop?",
+        a: "A few pages stay readable at 1 MB. Long colour scans go softer. Split if names or stamps blur.",
+      },
+      {
+        q: "Scanned vs born-digital?",
+        a: "Scans shrink well. Exported text PDFs are rasterized so the file fits; copy-paste is lost.",
+      },
+      {
+        q: "Still over 1 MB?",
+        a: "The engine retries quality and page size. Drop fewer pages if it still misses.",
+      },
+      {
+        q: "Format?",
+        a: "Output is .pdf only. Photos of pages are accepted as input.",
+      },
+      {
+        q: "Need below 1 MB, not equal?",
+        a: "Use Compress PDF below 1MB for “less than 1MB” wording. Same engine.",
+      },
     ],
-    related: ["compress-pdf-to-2mb", "compress-pdf-to-500kb", "compress-payslip"],
+    related: ["compress-pdf-under-1mb", "compress-pdf-to-2mb", "compress-pdf-to-500kb"],
   },
   {
     slug: "compress-marksheet",
@@ -5596,8 +5784,12 @@ export const TOOLS: ToolDef[] = [
         q: "Phone photo of a bill?",
         a: "Yes. Shoot the full page, avoid glare, then drop it here.",
       },
+      {
+        q: "Gas bill specifically?",
+        a: "Use Compress gas bill PDF for address-proof / KYC wording. Same 500 KB engine.",
+      },
     ],
-    related: ["compress-bank-statement", "compress-payslip", "compress-pdf-to-500kb"],
+    related: ["compress-gas-bill-pdf", "compress-bank-statement", "compress-pdf-to-500kb"],
   },
   {
     slug: "compress-payslip",
@@ -5761,8 +5953,21 @@ export const TOOLS: ToolDef[] = [
       "Compress a resume or CV to 500KB in your browser. No upload. Free PDF compressor for job portals.",
     keywords: ["compress resume pdf", "cv under 500kb", "reduce cv size"],
     documentSpecId: "compress-resume",
-    faqs: [{ q: "Will text stay selectable?", a: "No. Pages are rasterized so the file fits. Keep the original DOCX if you still need to edit." }],
-    related: ["compress-offer-letter", "compress-employment-letter", "compress-pdf-to-500kb"],
+    faqs: [
+      {
+        q: "Will text stay selectable?",
+        a: "No. Pages are rasterized so the file fits. Keep the original DOCX if you still need to edit.",
+      },
+      {
+        q: "Resume vs CV URL?",
+        a: "Same 500 KB engine. Compress resume PDF and Compress CV PDF are intent pages with board-specific FAQs.",
+      },
+      {
+        q: "Still over 500 KB?",
+        a: "Two pages, no portfolio screenshots. Split extras into a second file if the board allows it.",
+      },
+    ],
+    related: ["compress-resume-pdf", "compress-cv-pdf", "compress-pdf-to-500kb"],
   },
   {
     slug: "compress-offer-letter",
@@ -5841,8 +6046,21 @@ export const TOOLS: ToolDef[] = [
       "Compress an Aadhaar card scan in your browser for KYC uploads. No upload to a server.",
     keywords: ["compress aadhaar", "aadhaar pdf size", "aadhaar 200kb"],
     documentSpecId: "compress-aadhaar",
-    faqs: [{ q: "QR code?", a: "If a scanner fails, raise the cap to 500 KB so the QR stays sharp." }],
-    related: ["aadhaar-photo-resizer", "compress-pan-card", "compress-passport-scan"],
+    faqs: [
+      {
+        q: "How can I compress my Aadhaar PDF for KYC?",
+        a: "Drop it here. Default 200 KB. For KYC-specific copy use Compress Aadhaar PDF — same engine.",
+      },
+      {
+        q: "QR code?",
+        a: "If a scanner fails, raise the cap to 500 KB so the QR stays sharp.",
+      },
+      {
+        q: "PAN instead?",
+        a: "PAN document uploads are often 100 KB. Use Compress PAN document.",
+      },
+    ],
+    related: ["compress-aadhaar-pdf", "aadhaar-photo-resizer", "compress-pan-document"],
   },
   {
     slug: "compress-pan-card",
@@ -5856,8 +6074,17 @@ export const TOOLS: ToolDef[] = [
     metaDescription: "Compress a PAN card scan in your browser for KYC and IT portals. No upload.",
     keywords: ["compress pan card", "pan card pdf size", "pan 100kb"],
     documentSpecId: "compress-pan-card",
-    faqs: [{ q: "Both sides?", a: "Drop front then back in order. We build one PDF under your cap." }],
-    related: ["pan-card-photo-resizer", "compress-aadhaar", "compress-form-16"],
+    faqs: [
+      {
+        q: "Both sides?",
+        a: "Drop front then back in order. We build one PDF under your cap.",
+      },
+      {
+        q: "NSDL / Protean document size?",
+        a: "Often 100 KB. This page defaults there. Compress PAN document has the NSDL-worded FAQ.",
+      },
+    ],
+    related: ["compress-pan-document", "pan-card-photo-resizer", "compress-aadhaar-pdf"],
   },
   {
     slug: "compress-character-certificate",
@@ -5865,15 +6092,46 @@ export const TOOLS: ToolDef[] = [
     category: "convert",
     mode: "document-compress",
     kicker: "Documents  /  Character",
-    h1: "Compress a character / police certificate",
-    lede: "Jobs, visas, and university admissions. Photos or PDF, rebuilt under 500 KB.",
-    metaTitle: "Compress Character Certificate PDF Free – Cherry Converter",
+    h1: "Compress a character certificate PDF",
+    lede:
+      "University, job, and visa forms often cap a character / police certificate at 500 KB. Drop the PDF or a photo of the stamped page. Rebuilt in this tab.",
+    metaTitle: "Compress Character Certificate PDF – Cherry Converter",
     metaDescription:
-      "Compress a character or police certificate in your browser. No upload.",
-    keywords: ["compress character certificate", "police character certificate pdf"],
+      "Compress a character certificate PDF to 500KB for jobs, visas, and university admissions. Browser-only, no account.",
+    keywords: [
+      "compress character certificate",
+      "compress character certificate pdf",
+      "police character certificate pdf",
+      "character certificate 500kb",
+    ],
     documentSpecId: "compress-character-certificate",
-    faqs: [{ q: "PCC instead?", a: "Same compressor family. Use the PCC page if the form says police clearance." }],
-    related: ["compress-pcc", "compress-employment-letter", "compress-pdf-to-500kb"],
+    faqs: [
+      {
+        q: "What size?",
+        a: "Default 500 KB, a common university and employer cap. Type 200 KB or 1 MB if the circular differs.",
+      },
+      {
+        q: "PCC instead of character certificate?",
+        a: "Same compressor family. Use Compress police clearance if the form says PCC / police clearance certificate.",
+      },
+      {
+        q: "Will stamps still read?",
+        a: "Photograph in good light, full page. If a seal is faint after one pass, raise the cap to 1 MB.",
+      },
+      {
+        q: "Still over 500 KB?",
+        a: "One page, not a booklet. The engine already retries quality and page pixels.",
+      },
+      {
+        q: "Format?",
+        a: "Output is .pdf. A phone photo of the certificate is accepted and wrapped as PDF.",
+      },
+      {
+        q: "Is this a police portal?",
+        a: "No. It only resizes a file you already have. It does not issue a certificate.",
+      },
+    ],
+    related: ["compress-pcc", "compress-pdf-to-500kb", "compress-employment-letter"],
   },
   {
     slug: "compress-invitation-letter",
@@ -7103,11 +7361,28 @@ export const TOOLS: ToolDef[] = [
     metaTitle: "Image DPI Changer Online Free – Cherry Converter",
     metaDescription:
       "Change image DPI to 72, 150, or 300 in your browser. Update metadata or resample for print. Free and private.",
-    keywords: ["dpi changer", "change image dpi", "300 dpi converter"],
+    keywords: [
+      "dpi changer",
+      "dpi converter",
+      "change image dpi",
+      "300 dpi converter",
+      "online dpi converter",
+      "change dpi of image online",
+    ],
+    dpiDefault: 300,
+    dpiMode: "meta",
     faqs: [
       {
         q: "Does changing DPI change how the photo looks on screen?",
-        a: "Metadata-only mode does not change pixels. Resample mode changes pixel count so the printed centimetres stay the same at the new DPI.",
+        a: "Metadata-only mode does not change pixels or file KB much. Resample mode changes pixel count so the printed centimetres stay the same at the new DPI.",
+      },
+      {
+        q: "DPI vs pixels vs file KB?",
+        a: "Pixels are the grid. DPI is how densely those pixels are labelled for print. File KB is JPEG compression. A portal that wants 50 KB needs the 50 KB tool, not a DPI rewrite.",
+      },
+      {
+        q: "72 to 300 DPI without changing size?",
+        a: "Use metadata-only mode on this page, or the dedicated “change DPI without changing pixel size” landing. The photo will not look sharper on screen.",
       },
       {
         q: "Which DPI do Indian forms want?",
@@ -7688,6 +7963,8 @@ export const TOOLS: ToolDef[] = [
     ],
     related: ["photo-cropper", "image-upscaler", "replace-background"],
   },
+  ...PDF_CAP_TOOLS,
+  ...GSC_INTENT_TOOLS,
   ...UTILITY_TOOLS,
   ...P0_TOOLS,
   ...EXTRA_PHOTO_TOOLS,

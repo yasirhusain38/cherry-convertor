@@ -180,7 +180,10 @@ const TAX_PACKS: Record<string, SlabPack> = {
       [50000, 35],
       [Infinity, 43],
     ],
-    note: "2025 IRPEF three-bracket sketch. Regional / municipal add-ons not included.",
+    extraRate: 2,
+    extraOn: "tax",
+    extraLabel: "Addizionali sketch (~2% of IRPEF)",
+    note: "2025 IRPEF three brackets plus a 2% addizionali sketch. Regional / municipal rates differ — confirm on the Agenzia delle Entrate.",
   },
   "netherlands-box1": {
     slabs: [
@@ -218,6 +221,17 @@ const TAX_PACKS: Record<string, SlabPack> = {
     extraOn: "income",
     extraLabel: "ACC levy (approx.)",
     note: "2025–26 PAYE bands plus a simplified ACC levy. Independent earner tax credit not modelled.",
+  },
+  "za-transfer-duty": {
+    slabs: [
+      [1_100_000, 0],
+      [1_512_500, 3],
+      [2_117_500, 6],
+      [7_262_500, 8],
+      [13_262_500, 11],
+      [Infinity, 13],
+    ],
+    note: "SARS transfer-duty bands (from 1 Mar 2020, still the published table). 0% to R1.1m, then 3 / 6 / 8 / 11 / 13% on slices. Not advice — confirm on SARS before you pay.",
   },
   "sa-2026": {
     slabs: [

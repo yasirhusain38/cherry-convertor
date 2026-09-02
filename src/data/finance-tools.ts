@@ -1,3 +1,4 @@
+import { GSC_FINANCE_TOOLS } from "./gsc-finance";
 import { WORLD_FINANCE_TOOLS } from "./finance-world";
 import { emiFields, t, type FinanceField, type FinanceTool } from "./finance-helpers";
 
@@ -349,7 +350,7 @@ const CORE_FINANCE_TOOLS: FinanceTool[] = [
   t("germany-mortgage-calculator", "Germany Mortgage Calculator", "Germany", "germany", "Germany  /  Mortgage", "Immobilienkredit calculator", "Monthly repayment on a euro mortgage.", ["immobilienkredit rechner", "germany mortgage calculator"], "emi", "€", emiFields("350000", "3.6"), ["germany-vat-calculator", "loan-emi-calculator"]),
 ];
 
-export const FINANCE_TOOLS: FinanceTool[] = [...CORE_FINANCE_TOOLS, ...WORLD_FINANCE_TOOLS];
+export const FINANCE_TOOLS: FinanceTool[] = [...CORE_FINANCE_TOOLS, ...WORLD_FINANCE_TOOLS, ...GSC_FINANCE_TOOLS];
 
 export function getFinanceTool(slug: string): FinanceTool | undefined {
   return FINANCE_TOOLS.find((item) => item.slug === slug);

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Faq, faqJsonLd } from "@/components/Faq";
+import { PresetTracker } from "@/components/PresetTracker";
 import { FinanceTool } from "@/components/tools/FinanceTool";
 import { FINANCE_TOOLS, getFinanceTool } from "@/data/finance-tools";
 import { absoluteUrl } from "@/lib/site";
@@ -46,6 +47,7 @@ export default async function FinanceSlugPage({
 
   return (
     <>
+      <PresetTracker slug={tool.slug} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

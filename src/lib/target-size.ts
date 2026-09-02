@@ -6,6 +6,26 @@ const MULTIPLIER: Record<SizeUnit, number> = {
   GB: 1024 * 1024 * 1024,
 };
 
+export function bytesToSizeInput(bytes: number): { value: string; unit: SizeUnit } {
+  if (bytes >= MULTIPLIER.MB && bytes % MULTIPLIER.MB === 0) {
+    return { value: String(bytes / MULTIPLIER.MB), unit: "MB" };
+  }
+  if (bytes >= MULTIPLIER.MB) {
+    return { value: String(Number((bytes / MULTIPLIER.MB).toFixed(2))), unit: "MB" };
+  }
+  return { value: String(Math.round(bytes / MULTIPLIER.KB)), unit: "KB" };
+}
+
+export function capLabel(bytes: number): string {
+  if (bytes >= MULTIPLIER.MB && bytes % MULTIPLIER.MB === 0) {
+    return `${bytes / MULTIPLIER.MB} MB`;
+  }
+  if (bytes >= MULTIPLIER.MB) {
+    return `${Number((bytes / MULTIPLIER.MB).toFixed(2))} MB`;
+  }
+  return `${Math.round(bytes / MULTIPLIER.KB)} KB`;
+}
+
 export function parseTypedSize(
   raw: string,
   fallbackUnit: SizeUnit,

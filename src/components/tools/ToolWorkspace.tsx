@@ -33,21 +33,21 @@ import { AtsResumeTool } from "./AtsResumeTool";
 export function ToolWorkspace({ tool }: { tool: ToolDef }) {
   switch (tool.mode) {
     case "document-compress":
-      return <DocumentCompressTool tool={tool} />;
+      return <DocumentCompressTool key={tool.slug} tool={tool} />;
     case "universal-convert":
       return <ConvertTool />;
     case "pdf":
-      return <PdfTool />;
+      return <PdfTool key={tool.slug} />;
     case "photo":
-      return <PhotoTool tool={tool} />;
+      return <PhotoTool key={tool.slug} tool={tool} />;
     case "crop":
       return <CropTool />;
     case "dpi":
-      return <DpiTool />;
+      return <DpiTool key={tool.slug} tool={tool} />;
     case "bg-remove":
       return <ImageStudio tool={tool} />;
     case "signature":
-      return <SignatureTool />;
+      return <SignatureTool key={tool.slug} tool={tool} />;
     case "bulk-resize":
     case "bulk-compress":
       return <BulkTool mode={tool.mode} />;
@@ -94,7 +94,12 @@ export function ToolWorkspace({ tool }: { tool: ToolDef }) {
     case "ats-resume":
       return <AtsResumeTool tool={tool} />;
     default:
-      if (tool.slug === "rotate-image" || tool.slug === "flip-image" || tool.slug === "black-and-white") {
+      if (
+        tool.grayscale ||
+        tool.slug === "rotate-image" ||
+        tool.slug === "flip-image" ||
+        tool.slug === "black-and-white"
+      ) {
         return <ImageStudio tool={tool} />;
       }
       return <SingleImageTool tool={tool} />;

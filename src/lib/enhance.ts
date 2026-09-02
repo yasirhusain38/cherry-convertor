@@ -65,7 +65,13 @@ export function cloneEnhance(settings: EnhanceSettings = DEFAULT_ENHANCE): Enhan
 
 export function enhanceForSlug(slug: string): EnhanceSettings {
   const base = cloneEnhance();
-  if (slug === "black-and-white") return { ...base, grayscale: true };
+  if (
+    slug === "black-and-white" ||
+    slug.includes("black-and-white") ||
+    slug.includes("grayscale")
+  ) {
+    return { ...base, grayscale: true };
+  }
   if (slug === "rotate-image") return { ...base, rotate: 90 };
   if (slug === "flip-image") return { ...base, flipH: true };
   if (slug === "vintage-photo") {

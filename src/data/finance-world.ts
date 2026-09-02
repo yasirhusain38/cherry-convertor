@@ -1,4 +1,5 @@
 import {
+  emiFields,
   makeCrypto,
   makeEos,
   makeFd,
@@ -149,7 +150,46 @@ export const WORLD_FINANCE_TOOLS: FinanceTool[] = [
   makeTakehome({ ...nl, slug: "netherlands-take-home-salary", incomeDef: "48000", taxRate: "37", socialRate: "0" }),
 
   makeVat({ ...ie, slug: "ireland-vat-calculator", rate: "23" }),
-  makeMortgage({ ...ie, slug: "ireland-mortgage-calculator", principal: "340000", rate: "3.9" }),
+  t(
+    "ireland-mortgage-calculator",
+    "Ireland Mortgage Calculator",
+    "Ireland",
+    "ireland",
+    "Ireland  /  Mortgage",
+    "Mortgage calculator Ireland",
+    "Monthly repayment, total interest, and a year-by-year table. Type loan, term, and rate. Not advice — rates change.",
+    [
+      "mortgage calculator ireland",
+      "mortgage calculator ie",
+      "mortgages calculator ireland",
+      "ireland mortgage calculator",
+      "mortgage ireland calculator",
+      "quick mortgage calculator ireland",
+      "house loan calculator ireland",
+    ],
+    "emi",
+    "€",
+    emiFields("340000", "3.9", "30"),
+    ["ireland-mortgage-repayment-calculator", "loan-repayment-calculator-ireland", "ireland-take-home-salary"],
+    [
+      {
+        q: "Repayments on a €150k mortgage in Ireland?",
+        a: "Type 150000 as the loan, then term and rate. Monthly EMI and total interest update in this tab. Not a lender quote.",
+      },
+      {
+        q: "Holiday let?",
+        a: "This is a repayment calculator, not a product. Open the holiday-let page for that wording. Lenders use different criteria.",
+      },
+      {
+        q: "Donegal or IE?",
+        a: "Same euro calculator. Northern Ireland is a separate sterling page.",
+      },
+      {
+        q: "Is this advice?",
+        a: "No. Central Bank rules and rates change. Confirm with a lender.",
+      },
+    ],
+  ),
   makeSlab({ ...ie, slug: "ireland-income-tax-calculator", pack: "ireland-income", incomeDef: "52000" }),
   t(
     "ireland-take-home-salary",
@@ -368,7 +408,15 @@ export const WORLD_FINANCE_TOOLS: FinanceTool[] = [
   makeVat({ ...za, slug: "south-africa-vat-calculator", rate: "15" }),
   makeMortgage({ ...za, slug: "south-africa-mortgage-calculator", principal: "1800000", rate: "11" }),
   makeSlab({ ...za, slug: "south-africa-income-tax-calculator", pack: "sa-2026", incomeDef: "480000" }),
-  makeStamp({ ...za, slug: "south-africa-transfer-duty-calculator", name: "South Africa Transfer Duty Calculator", price: "1800000", rate: "3" }),
+  makePriceSlab({
+    ...za,
+    slug: "south-africa-transfer-duty-calculator",
+    pack: "za-transfer-duty",
+    priceDef: "1800000",
+    name: "South Africa Transfer Duty Calculator",
+    kicker: "South Africa  /  Transfer duty",
+    lede: "What percentage is transfer duty in South Africa? SARS bands: 0% to R1.1m, then 3 / 6 / 8 / 11 / 13% on slices. Not advice — confirm on SARS.",
+  }),
   makeTakehome({ ...za, slug: "south-africa-take-home-salary", incomeDef: "480000", taxRate: "26", socialRate: "1", socialLabel: "UIF" }),
   makeRetirement({ ...za, slug: "south-africa-retirement-calculator", name: "South Africa Retirement Annuity Calculator", principal: "150000", monthly: "2500", rate: "7", years: "25" }),
 

@@ -1,11 +1,18 @@
 import { Faq } from "@/components/Faq";
+import { PresetTracker } from "@/components/PresetTracker";
 import { RelatedTools } from "@/components/RelatedTools";
 import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
+import { getDocumentSpec } from "@/data/document-specs";
 import type { ToolDef } from "@/lib/tools";
 
 export function ToolPageView({ tool }: { tool: ToolDef }) {
+  const capBytes =
+    tool.targetBytes ??
+    (tool.documentSpecId ? getDocumentSpec(tool.documentSpecId).defaultBytes : undefined);
+
   return (
     <>
+      <PresetTracker slug={tool.slug} capBytes={capBytes} />
       <section className="border-b border-[var(--line)]">
         <div className="container-page py-14 md:py-20">
           <p className="label">{tool.kicker}</p>

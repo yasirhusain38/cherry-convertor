@@ -3,6 +3,7 @@ export type DocumentSpec = {
   label: string;
   defaultBytes: number;
   locked?: boolean;
+  merge?: boolean;
   notes: string;
 };
 
@@ -18,7 +19,8 @@ export const DOCUMENT_SPECS: DocumentSpec[] = [
     label: "Compress PDF to 2MB",
     defaultBytes: 2 * 1024 * 1024,
     locked: true,
-    notes: "Visa, university, and bank portals often reject files over 2 MB.",
+    notes:
+      "Visa, university, and bank portals often reject files over 2 MB. This is a free online PDF compressor to 2MB — pages stay in this tab.",
   },
   {
     id: "compress-bank-statement",
@@ -38,14 +40,86 @@ export const DOCUMENT_SPECS: DocumentSpec[] = [
     label: "Compress PDF to 500KB",
     defaultBytes: 500 * 1024,
     locked: true,
-    notes: "A common KYC and university attachment ceiling.",
+    notes: "A common KYC and university attachment ceiling. pdf 500kb — rebuilt as JPEG pages in this tab.",
   },
   {
     id: "compress-pdf-to-1mb",
     label: "Compress PDF to 1MB",
     defaultBytes: 1024 * 1024,
     locked: true,
-    notes: "Email and many visa checklists stop at 1 MB per file.",
+    notes: "Email and many visa checklists stop at 1 MB per file. PDF size reducer 1 mb, on this device.",
+  },
+  {
+    id: "compress-pdf-under-2mb",
+    label: "PDF under 2MB",
+    defaultBytes: 2 * 1024 * 1024,
+    locked: true,
+    notes: "For forms that say “less than 2MB” or “under 2 MB”. Output is a 2 mb file or smaller.",
+  },
+  {
+    id: "compress-pdf-under-1mb",
+    label: "PDF below 1MB",
+    defaultBytes: 1024 * 1024,
+    locked: true,
+    notes: "For checklists that say below 1 MB, not 2 MB. Same compressor, 1 MB cap.",
+  },
+  {
+    id: "compress-aadhaar-pdf",
+    label: "Compress Aadhaar PDF",
+    defaultBytes: 200 * 1024,
+    locked: true,
+    notes: "KYC portals often cap an Aadhaar PDF at 200 KB. Confirm the form if yours differs.",
+  },
+  {
+    id: "compress-gas-bill-pdf",
+    label: "Compress gas bill PDF",
+    defaultBytes: 500 * 1024,
+    locked: true,
+    notes: "Address-proof gas / utility bill for KYC and visas. Default 500 KB.",
+  },
+  {
+    id: "compress-pan-document",
+    label: "Compress PAN document",
+    defaultBytes: 100 * 1024,
+    locked: true,
+    notes: "NSDL / Protean document size is often 100 KB. Confirm on the current form.",
+  },
+  {
+    id: "merge-pdf-to-500kb",
+    label: "Merge PDF to 500KB",
+    defaultBytes: 500 * 1024,
+    locked: true,
+    merge: true,
+    notes: "Several PDFs or page photos, merged in order, then capped at 500 KB.",
+  },
+  {
+    id: "compress-resume-pdf",
+    label: "Compress resume PDF",
+    defaultBytes: 500 * 1024,
+    locked: true,
+    notes: "Job-portal resume attachment cap, usually 500 KB.",
+  },
+  {
+    id: "compress-cv-pdf",
+    label: "Compress CV PDF",
+    defaultBytes: 500 * 1024,
+    locked: true,
+    notes: "UK / Ireland / Gulf CV boards often stop at 500 KB.",
+  },
+  {
+    id: "merge-pdf-to-1mb",
+    label: "Merge PDF to 1MB",
+    defaultBytes: 1024 * 1024,
+    locked: true,
+    merge: true,
+    notes: "Several PDFs or page photos, merged in order, then capped at 1 MB.",
+  },
+  {
+    id: "photo-to-pdf-1mb",
+    label: "Photo to PDF 1MB",
+    defaultBytes: 1024 * 1024,
+    locked: true,
+    notes: "Photos become one PDF at or under 1 MB. Built in this tab.",
   },
   {
     id: "compress-marksheet",
@@ -159,7 +233,8 @@ export const DOCUMENT_SPECS: DocumentSpec[] = [
     id: "compress-character-certificate",
     label: "Compress character certificate",
     defaultBytes: 500 * 1024,
-    notes: "Police / character certificates for jobs, visas, and university admissions.",
+    notes:
+      "Police / character certificates for jobs, visas, and university admissions. Default 500 KB — confirm the portal.",
   },
   {
     id: "compress-invitation-letter",

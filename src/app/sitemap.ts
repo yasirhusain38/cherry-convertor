@@ -24,7 +24,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       tool.slug.includes("50kb") ||
       tool.slug === "compress-image" ||
       tool.slug.startsWith("us-") ||
-      tool.slug.includes("compress-pdf")
+      tool.slug.includes("compress-pdf") ||
+      tool.slug.includes("merge-pdf") ||
+      tool.slug.includes("aadhaar-pdf") ||
+      tool.slug.includes("pan-document") ||
+      tool.slug.includes("gas-bill") ||
+      tool.slug.includes("resume-pdf") ||
+      tool.slug.includes("cv-pdf")
         ? 0.9
         : 0.8,
   }));

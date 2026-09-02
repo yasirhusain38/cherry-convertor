@@ -9,8 +9,11 @@ const PRESETS: Array<{ label: string; value: string; unit: SizeUnit }> = [
   { label: "3 KB", value: "3", unit: "KB" },
   { label: "10 KB", value: "10", unit: "KB" },
   { label: "20 KB", value: "20", unit: "KB" },
+  { label: "30 KB", value: "30", unit: "KB" },
   { label: "50 KB", value: "50", unit: "KB" },
   { label: "100 KB", value: "100", unit: "KB" },
+  { label: "200 KB", value: "200", unit: "KB" },
+  { label: "500 KB", value: "500", unit: "KB" },
   { label: "1 MB", value: "1", unit: "MB" },
   { label: "2 MB", value: "2", unit: "MB" },
 ];
