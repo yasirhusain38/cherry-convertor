@@ -28,6 +28,7 @@ import { ChanceStudio } from "./ChanceStudio";
 import { MouseChecker } from "./MouseChecker";
 import { ServerDown } from "./ServerDown";
 import { UrlMediaTool } from "./UrlMediaTool";
+import { AtsResumeTool } from "./AtsResumeTool";
 
 export function ToolWorkspace({ tool }: { tool: ToolDef }) {
   switch (tool.mode) {
@@ -90,6 +91,8 @@ export function ToolWorkspace({ tool }: { tool: ToolDef }) {
       return <ServerDown tool={tool} />;
     case "url-media":
       return <UrlMediaTool tool={tool} />;
+    case "ats-resume":
+      return <AtsResumeTool tool={tool} />;
     default:
       if (tool.slug === "rotate-image" || tool.slug === "flip-image" || tool.slug === "black-and-white") {
         return <ImageStudio tool={tool} />;

@@ -129,6 +129,7 @@ const FREQUENT: SearchChip[] = [
   { href: "/countries/united-states", label: "United States" },
   { href: "/tools/aadhaar-photo-resizer", label: "Aadhaar" },
   { href: "/tools/ocr-image-to-text", label: "OCR" },
+  { href: "/tools/ats-resume-builder", label: "CherryResume" },
 ];
 
 const MORE: SearchChip[] = [
@@ -136,6 +137,7 @@ const MORE: SearchChip[] = [
   { href: "/tools/coin-toss", label: "Coin toss" },
   { href: "/tools/mouse-checker", label: "Mouse checker" },
   { href: "/tools/server-down-checker", label: "Server down" },
+  { href: "/tools/ats-resume-builder", label: "CherryResume" },
   { href: "/tools/word-counter", label: "Word counter" },
   { href: "/tools/json-formatter", label: "JSON formatter" },
   { href: "/tools/uuid-generator", label: "UUID" },

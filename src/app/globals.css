@@ -769,3 +769,329 @@ input[type="range"]::-moz-range-thumb {
     letter-spacing: -0.035em;
   }
 }
+
+.ats-tpls {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.ats-tpl {
+  display: grid;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ats-tpl.is-on {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 1px var(--brand);
+}
+
+.ats-tpl-page {
+  display: block;
+  height: 78px;
+  padding: 8px 9px;
+  background: #fff;
+  color: #111;
+  border-radius: 2px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.28);
+}
+
+.ats-tpl-page--classic {
+  font-family: "Times New Roman", Times, serif;
+  text-align: center;
+}
+
+.ats-tpl-page--compact {
+  font-family: Calibri, "Segoe UI", Arial, sans-serif;
+}
+
+.ats-tpl-page--executive {
+  font-family: Georgia, "Times New Roman", serif;
+  padding-top: 6px;
+}
+
+.ats-tpl-name {
+  display: block;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+}
+
+.ats-tpl-page--executive .ats-tpl-name {
+  font-size: 13px;
+}
+
+.ats-tpl-rule {
+  display: block;
+  height: 1px;
+  margin: 5px 0 6px;
+  background: #111;
+}
+
+.ats-tpl-bar {
+  display: block;
+  height: 3px;
+  margin: 4px 0;
+  background: #d8d8d4;
+}
+
+.ats-tpl-bar--short {
+  width: 62%;
+}
+
+.ats-tpl-page--classic .ats-tpl-bar {
+  margin-inline: auto;
+}
+
+.ats-tpl-copy {
+  display: grid;
+  gap: 2px;
+}
+
+.ats-tpl-label {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.ats-tpl-note {
+  font-size: 10px;
+  line-height: 1.35;
+  color: var(--ink-soft);
+}
+
+.ats-stage {
+  display: grid;
+  gap: 8px;
+}
+
+.ats-stage-caption {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.ats-stage-frame {
+  width: 100%;
+  overflow: hidden;
+  padding: 14px 12px 18px;
+  border-radius: 12px;
+  background: #2c2929;
+}
+
+.ats-stage-inner {
+  position: relative;
+  width: 100%;
+}
+
+.ats-sheet {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 8.5in;
+  min-height: 11in;
+  box-sizing: border-box;
+  background: #fff;
+  color: #111;
+  color-scheme: light;
+  transform-origin: top left;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+}
+
+.ats-sheet h1,
+.ats-sheet h2,
+.ats-sheet p {
+  margin: 0;
+  color: inherit;
+  font-family: inherit;
+}
+
+.ats-sheet--classic {
+  font-family: "Times New Roman", Times, serif;
+  padding: 0.7in 0.75in;
+  font-size: 11pt;
+  line-height: 1.35;
+}
+
+.ats-sheet--classic .ats-name,
+.ats-sheet--classic .ats-role,
+.ats-sheet--classic .ats-contact {
+  text-align: center;
+}
+
+.ats-sheet--compact {
+  font-family: Calibri, "Segoe UI", Arial, sans-serif;
+  padding: 0.55in 0.6in;
+  font-size: 10pt;
+  line-height: 1.28;
+}
+
+.ats-sheet--executive {
+  font-family: Georgia, "Times New Roman", serif;
+  padding: 0.8in 0.85in;
+  font-size: 11pt;
+  line-height: 1.42;
+}
+
+.ats-name {
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.ats-sheet--classic .ats-name {
+  font-size: 22pt;
+  letter-spacing: 0.04em;
+}
+
+.ats-sheet--compact .ats-name {
+  font-size: 18pt;
+}
+
+.ats-sheet--executive .ats-name {
+  font-size: 26pt;
+  letter-spacing: -0.01em;
+}
+
+.ats-role {
+  margin-top: 4px;
+  font-size: 12pt;
+}
+
+.ats-sheet--compact .ats-role {
+  font-size: 11pt;
+}
+
+.ats-contact {
+  margin-top: 4px;
+  font-size: 10pt;
+}
+
+.ats-heading {
+  margin: 14px 0 8px;
+  padding-bottom: 3px;
+  border-bottom: 1px solid #111;
+  font-size: 11pt;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.ats-sheet--compact .ats-heading {
+  margin: 10px 0 6px;
+  font-size: 10pt;
+  letter-spacing: 0.12em;
+}
+
+.ats-sheet--executive .ats-heading {
+  margin: 16px 0 9px;
+  border-bottom-width: 1.5px;
+}
+
+.ats-body {
+  margin: 0 0 4px;
+}
+
+.ats-split {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 8px;
+  font-size: inherit;
+}
+
+.ats-job-title {
+  font-weight: 700;
+}
+
+.ats-job-dates {
+  flex: none;
+  white-space: nowrap;
+}
+
+.ats-meta {
+  font-style: italic;
+  margin: 1px 0 4px;
+}
+
+.ats-bullet {
+  position: relative;
+  margin: 2px 0;
+  padding-left: 14px;
+}
+
+.ats-bullet::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+}
+
+.ats-ghost {
+  color: #8a8a86;
+}
+
+.ats-meter {
+  display: grid;
+  gap: 6px;
+  align-content: end;
+}
+
+.ats-meter-track {
+  height: 4px;
+  border-radius: 999px;
+  background: var(--line);
+  overflow: hidden;
+}
+
+.ats-meter-fill {
+  display: block;
+  height: 100%;
+  background: var(--brand);
+}
+
+.ats-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 6px 0 0;
+}
+
+.ats-chip {
+  display: inline-block;
+  padding: 3px 8px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.ats-chip--in {
+  border-color: color-mix(in srgb, var(--paper) 40%, var(--brand));
+  color: var(--paper);
+}
+
+.ats-chip--miss {
+  color: var(--ink-soft);
+}
+
+.ats-chip--no {
+  opacity: 0.55;
+  text-decoration: line-through;
+}
+
+.ats-kit-pre {
+  margin: 0;
+  white-space: pre-wrap;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--ink);
+  font-family: inherit;
+}

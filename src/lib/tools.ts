@@ -53,7 +53,8 @@ export type ToolMode =
   | "chance"
   | "mouse-check"
   | "status-check"
-  | "url-media";
+  | "url-media"
+  | "ats-resume";
 
 export type FaqItem = { q: string; a: string };
 
