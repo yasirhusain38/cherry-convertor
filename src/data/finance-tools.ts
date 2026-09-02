@@ -335,10 +335,28 @@ const CORE_FINANCE_TOOLS: FinanceTool[] = [
       { value: "exclusive", label: "Before GST" }, { value: "inclusive", label: "Includes GST" },
     ] },
   ], ["singapore-cpf-calculator"]),
-  t("singapore-cpf-calculator", "Singapore CPF Calculator", "Singapore", "singapore", "Singapore  /  CPF", "CPF contribution calculator", "Type monthly wage and an employee rate (default 20%).", ["cpf calculator"], "tds", "S$", [
-    { key: "amount", label: "Monthly wage", def: "4500" },
-    { key: "rate", label: "Employee rate", suffix: "%", def: "20" },
-  ], ["singapore-gst-calculator", "loan-emi-calculator"]),
+  t(
+    "singapore-cpf-calculator",
+    "Singapore CPF Calculator",
+    "Singapore",
+    "singapore",
+    "Singapore  /  CPF",
+    "CPF contribution calculator",
+    "2026 CPF Board rates for Citizens / 3rd-year PR. Type monthly ordinary wage and age. OW ceiling $8,000. Not advice — confirm on cpf.gov.sg.",
+    ["cpf calculator", "cpf contribution calculator", "cpf calculator singapore", "cpf rate calculator"],
+    "cpf-sg",
+    "S$",
+    [
+      { key: "amount", label: "Monthly ordinary wage", def: "4500" },
+      { key: "age", label: "Age", def: "35" },
+    ],
+    ["cpf-calculator", "singapore-take-home-salary", "singapore-gst-calculator"],
+    [
+      { q: "What rates does this use?", a: "From 1 Jan 2026, wages above $750: age ≤55 is 20% employee / 17% employer. Above 55–60: 18/16. Above 60–65: 12.5/12.5. Above 65–70: 7.5/9. Above 70: 5/7.5. OW is capped at $8,000." },
+      { q: "SPR first two years?", a: "Not modelled. Graduated SPR rates are lower. Use the CPF Board tables." },
+      { q: "Bonus / additional wage?", a: "This page is ordinary wage only. Annual wage ceiling is $102,000 — not applied here." },
+    ],
+  ),
 
   t("germany-vat-calculator", "Germany VAT Calculator", "Germany", "germany", "Germany  /  MwSt", "VAT calculator (19%)", "German MwSt 19% (type 7 for reduced).", ["mwst rechner", "germany vat calculator"], "vat", "€", [
     { key: "amount", label: "Amount", def: "100" },

@@ -58,15 +58,15 @@ export function ToolWorkspace({ tool }: { tool: ToolDef }) {
     case "watermark-studio":
       return <WatermarkStudio tool={tool} />;
     case "extra-edit":
-      return <ExtraEditTools tool={tool} />;
+      return <ExtraEditTools key={tool.slug} tool={tool} />;
     case "video-studio":
       return <VideoStudio tool={tool} />;
     case "pdf-studio":
-      return <PdfStudio tool={tool} />;
+      return <PdfStudio key={tool.slug} tool={tool} />;
     case "ocr":
       return <OcrTool tool={tool} />;
     case "codes":
-      return <CodeTool tool={tool} />;
+      return <CodeTool key={tool.slug} tool={tool} />;
     case "text":
       return <TextTool tool={tool} />;
     case "image-fx":

@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { DropZone } from "@/components/DropZone";
 import { downloadBlob } from "@/lib/download";
-import { canvasToBlob } from "@/lib/image";
+import { canvasToBlob, compressToTargetBytes } from "@/lib/image";
 import { textToDocx, rowsToXlsx } from "@/lib/office";
 import { ocrCanvases } from "@/lib/ocr";
 import { stripPdfMetadata } from "@/lib/pdf-meta";
@@ -25,6 +25,7 @@ type Kind =
   | "split"
   | "extract"
   | "png"
+  | "jpg"
   | "text"
   | "word"
   | "excel"
@@ -35,6 +36,7 @@ function kindOf(slug: string): Kind {
   if (slug.includes("merger") || slug.includes("merge")) return "merge";
   if (slug.includes("split")) return "split";
   if (slug.includes("extract")) return "extract";
+  if (slug.includes("jpg") || slug.includes("jpeg")) return "jpg";
   if (slug.includes("png")) return "png";
   if (slug.includes("excel")) return "excel";
   if (slug.includes("word")) return "word";
@@ -116,19 +118,32 @@ export function PdfStudio({ tool }: { tool: ToolDef }) {
         setStatus(`Extracted ${pages.length} page${pages.length === 1 ? "" : "s"}.`);
         return;
       }
-      if (kind === "png") {
+      if (kind === "png" || kind === "jpg") {
         setStatus("Rasterising…");
         const pages = await rasterPdfOrImages(files, 2);
-        if (pages.length === 1) {
-          downloadBlob(await canvasToBlob(pages[0].canvas, "image/png"), `${baseName(files[0])}.png`);
+        const mime = kind === "jpg" ? "image/jpeg" : "image/png";
+        const ext = kind === "jpg" ? "jpg" : "png";
+        const cap = tool.targetBytes;
+        const blobs: Blob[] = [];
+        for (const page of pages) {
+          if (cap && mime === "image/jpeg") {
+            const bmp = await createImageBitmap(page.canvas);
+            const targeted = await compressToTargetBytes({ source: bmp, targetBytes: cap, mime });
+            bmp.close();
+            blobs.push(targeted.blob);
+            URL.revokeObjectURL(targeted.url);
+          } else {
+            blobs.push(await canvasToBlob(page.canvas, mime, 0.9));
+          }
+        }
+        if (blobs.length === 1) {
+          downloadBlob(blobs[0], `${baseName(files[0])}.${ext}`);
         } else {
           const zip = new JSZip();
-          for (let i = 0; i < pages.length; i += 1) {
-            zip.file(`page-${String(i + 1).padStart(2, "0")}.png`, await canvasToBlob(pages[i].canvas, "image/png"));
-          }
+          blobs.forEach((blob, i) => zip.file(`page-${String(i + 1).padStart(2, "0")}.${ext}`, blob));
           downloadBlob(await zip.generateAsync({ type: "blob" }), `${baseName(files[0])}-pages.zip`);
         }
-        setStatus(`${pages.length} PNG${pages.length === 1 ? "" : "s"}.`);
+        setStatus(`${blobs.length} ${ext.toUpperCase()}${blobs.length === 1 ? "" : "s"}${cap ? " under cap" : ""}.`);
         return;
       }
       if (kind === "excel") {

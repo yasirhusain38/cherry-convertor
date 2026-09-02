@@ -1,5 +1,6 @@
 import { EXTRA_PHOTO_TOOLS } from "@/data/world-extra";
 import { GSC_INTENT_TOOLS } from "@/data/gsc-intent-tools";
+import { GSC_MORE_TOOLS } from "@/data/gsc-more-tools";
 import { PDF_CAP_TOOLS } from "@/data/pdf-cap-tools";
 import { P0_TOOLS } from "./p0-tools";
 import { UTILITY_TOOLS } from "./utility-tools";
@@ -80,6 +81,7 @@ export type ToolDef = {
   dpiDefault?: number;
   dpiMode?: "meta" | "resample";
   grayscale?: boolean;
+  qrSize?: number;
   faqs: FaqItem[];
   related: string[];
 };
@@ -7965,6 +7967,7 @@ export const TOOLS: ToolDef[] = [
   },
   ...PDF_CAP_TOOLS,
   ...GSC_INTENT_TOOLS,
+  ...GSC_MORE_TOOLS,
   ...UTILITY_TOOLS,
   ...P0_TOOLS,
   ...EXTRA_PHOTO_TOOLS,

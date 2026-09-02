@@ -1155,6 +1155,42 @@ function computeFinance(engine: string, input: CalcInput): CalcResult {
     };
   }
 
+  if (engine === "cpf-sg") {
+    const wage = n(input, "amount") || n(input, "income") || n(input, "wage");
+    const age = n(input, "age") || 35;
+    const owCeiling = 8000;
+    const ow = Math.min(wage, owCeiling);
+    let employeePct = 20;
+    let employerPct = 17;
+    if (age > 70) {
+      employeePct = 5;
+      employerPct = 7.5;
+    } else if (age > 65) {
+      employeePct = 7.5;
+      employerPct = 9;
+    } else if (age > 60) {
+      employeePct = 12.5;
+      employerPct = 12.5;
+    } else if (age > 55) {
+      employeePct = 18;
+      employerPct = 16;
+    }
+    const employee = ow * (employeePct / 100);
+    const employer = ow * (employerPct / 100);
+    return {
+      rows: [
+        { label: "Ordinary wage used", value: money(ow, c) },
+        { label: "Employee rate", value: pct(employeePct) },
+        { label: "Employer rate", value: pct(employerPct) },
+        { label: "Employee CPF", value: money(employee, c) },
+        { label: "Employer CPF", value: money(employer, c) },
+        { label: "Total CPF", value: money(employee + employer, c), emphasize: true },
+        { label: "Take-home (wage − employee)", value: money(wage - employee, c) },
+      ],
+      note: "Singapore Citizens / 3rd-year PR, monthly ordinary wage > $750. OW ceiling $8,000 from 1 Jan 2026 (CPF Board). SPR year 1–2 and wages ≤ $750 use different tables. Additional wages / annual ceiling not modelled. Not advice — confirm on cpf.gov.sg.",
+    };
+  }
+
   if (engine === "tds") {
     const amount = n(input, "amount");
     const rate = n(input, "rate");

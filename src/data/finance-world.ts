@@ -173,8 +173,8 @@ export const WORLD_FINANCE_TOOLS: FinanceTool[] = [
     ["ireland-mortgage-repayment-calculator", "loan-repayment-calculator-ireland", "ireland-take-home-salary"],
     [
       {
-        q: "Repayments on a €150k mortgage in Ireland?",
-        a: "Type 150000 as the loan, then term and rate. Monthly EMI and total interest update in this tab. Not a lender quote.",
+        q: "Repayments on a €100k, €150k, or €200k mortgage in Ireland?",
+        a: "Type 100000, 150000, or 200000 as the loan, then term and rate. There is no separate page per amount. Monthly EMI and total interest update in this tab. Not a lender quote.",
       },
       {
         q: "Holiday let?",

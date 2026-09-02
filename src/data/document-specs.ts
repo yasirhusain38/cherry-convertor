@@ -122,6 +122,13 @@ export const DOCUMENT_SPECS: DocumentSpec[] = [
     notes: "Photos become one PDF at or under 1 MB. Built in this tab.",
   },
   {
+    id: "photo-to-pdf-500kb",
+    label: "Photo to PDF 500KB",
+    defaultBytes: 500 * 1024,
+    locked: true,
+    notes: "Photos become one PDF at or under 500 KB.",
+  },
+  {
     id: "compress-marksheet",
     label: "Compress marksheet / degree",
     defaultBytes: 500 * 1024,

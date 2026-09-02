@@ -48,6 +48,14 @@ export const SIGNATURE_PRESETS = [
     targetKB: 20,
   },
   {
+    id: "kb-30",
+    label: "30 KB signature",
+    widthMm: 60,
+    heightMm: 20,
+    dpi: 200,
+    targetKB: 30,
+  },
+  {
     id: "kb-50",
     label: "40–50 KB signature",
     widthMm: 60,

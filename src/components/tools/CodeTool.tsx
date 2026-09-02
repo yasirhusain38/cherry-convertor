@@ -29,13 +29,13 @@ function isQr(slug: string) {
 
 export function CodeTool({ tool }: { tool: ToolDef }) {
   const scan = isScan(tool.slug);
-  return scan ? <Scanner qr={isQr(tool.slug)} /> : isQr(tool.slug) ? <QrGenerator /> : <BarcodeGenerator />;
+  return scan ? <Scanner qr={isQr(tool.slug)} /> : isQr(tool.slug) ? <QrGenerator sizeDefault={tool.qrSize} /> : <BarcodeGenerator />;
 }
 
-function QrGenerator() {
+function QrGenerator({ sizeDefault }: { sizeDefault?: number }) {
   const [kind, setKind] = useState<QrKind>("url");
   const [fields, setFields] = useState<Record<string, string>>({ text: "https://www.cherryconverter.com/" });
-  const [size, setSize] = useState(512);
+  const [size, setSize] = useState(sizeDefault ?? 512);
   const [ecc, setEcc] = useState<QrEcc>("M");
   const [dark, setDark] = useState("#221F1F");
   const [light, setLight] = useState("#F5F5F1");
