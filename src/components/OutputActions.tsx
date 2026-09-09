@@ -12,18 +12,20 @@ export function OutputActions({
   format,
   busy,
   onFileName,
+  compact = false,
 }: {
   result: ProcessResult | null;
   fileName: string;
   format: ConvertFormat;
   busy?: boolean;
   onFileName?: (name: string) => void;
+  compact?: boolean;
 }) {
   const [copied, setCopied] = useState(false);
   const name = `${fileName.replace(/\.[^.]+$/, "") || "image"}-cherry.${format.ext}`;
 
   return (
-    <div className="grid gap-3">
+    <div className={compact ? "flex flex-wrap items-center gap-2" : "grid gap-3"}>
       {onFileName ? (
         <label className="grid max-w-md gap-2 text-sm">
           Download file name

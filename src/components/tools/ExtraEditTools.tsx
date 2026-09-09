@@ -7,10 +7,12 @@ import { FileStats } from "@/components/FileStats";
 import { FormatPicker } from "@/components/FormatPicker";
 import { OutputActions } from "@/components/OutputActions";
 import { addPhotoBorder, blurFaces, enhanceBitmap, extendBitmap, trimWhitespace, upscaleBitmap } from "@/lib/extra-edit";
-import { canvasToFormat } from "@/lib/export";
+import { downloadBlob } from "@/lib/download";
+import { canvasToFormat, copyBlob } from "@/lib/export";
 import { getFormat, type ConvertFormat } from "@/lib/formats";
 import { fileToBitmap, revokeResult, type ProcessResult } from "@/lib/image";
 import type { ToolDef } from "@/lib/tools";
+import { PhotoEditorShell } from "./PhotoEditorShell";
 
 function extraKind(slug: string) {
   if (slug.includes("blur-face") || slug.includes("face-blur") || slug.includes("blur-faces")) return "face-blur";
@@ -97,28 +99,59 @@ export function ExtraEditTools({ tool }: { tool: ToolDef }) {
   }, [bitmap, blurAmt, color, factor, fill, format, kind, pad]);
 
   return (
-    <div className="grid gap-6">
-      {!file ? (
-        <DropZone onFiles={load} />
-      ) : (
-        <button
-          type="button"
-          className="btn btn-ghost justify-self-end"
-          onClick={() => {
-            bitmap?.close();
-            if (sourceUrl) URL.revokeObjectURL(sourceUrl);
-            revokeResult(result);
-            setFile(null);
-            setBitmap(null);
-            setSourceUrl(null);
-            setResult(null);
-          }}
-        >
-          New file
-        </button>
-      )}
-      {sourceUrl && result ? <CompareSlider beforeUrl={sourceUrl} afterUrl={result.url} /> : null}
-      <div className="card grid gap-5 p-6">
+    <PhotoEditorShell
+      hasFile={Boolean(file)}
+      actions={{
+        onFiles: load,
+        newFile: () => {
+          bitmap?.close();
+          if (sourceUrl) URL.revokeObjectURL(sourceUrl);
+          revokeResult(result);
+          setFile(null);
+          setBitmap(null);
+          setSourceUrl(null);
+          setResult(null);
+        },
+        save: () => {
+          if (!result || !file) return;
+          downloadBlob(result.blob, `${file.name.replace(/\.[^.]+$/, "")}-cherry.${format.ext}`);
+        },
+        copy: () => {
+          if (result) void copyBlob(result.blob);
+        },
+      }}
+      empty={<DropZone onFiles={load} />}
+      toolbar={
+        <>
+          <p className="min-w-0 truncate text-sm">{file?.name} · local</p>
+          <span className="ml-auto" />
+          <OutputActions result={result} fileName={file?.name ?? "edit"} format={format} busy={busy} compact />
+          <button
+            type="button"
+            className="btn btn-ghost"
+            onClick={() => {
+              bitmap?.close();
+              if (sourceUrl) URL.revokeObjectURL(sourceUrl);
+              revokeResult(result);
+              setFile(null);
+              setBitmap(null);
+              setSourceUrl(null);
+              setResult(null);
+            }}
+          >
+            New file
+          </button>
+        </>
+      }
+      canvas={
+        sourceUrl && result ? (
+          <CompareSlider fill beforeUrl={sourceUrl} afterUrl={result.url} />
+        ) : (
+          <p className="text-sm text-[var(--ink-soft)]">{busy ? "Working…" : "Preview"}</p>
+        )
+      }
+      panel={
+        <>
         <p className="text-sm leading-6 text-[var(--ink-soft)]">
           {kind === "upscale"
             ? "Local 2× / 3× / 4× upscale with sharpen. Not a cloud ESRGAN model — good for web and prints when you cannot upload."
@@ -190,14 +223,12 @@ export function ExtraEditTools({ tool }: { tool: ToolDef }) {
         ) : null}
         {faceNote ? <p className="text-sm text-[var(--ink-soft)]">{faceNote}</p> : null}
         <FormatPicker value={format.id} onChange={setFormat} />
-      </div>
-      {file && result ? (
-        <>
+        {file && result ? (
           <FileStats originalBytes={file.size} outputBytes={result.bytes} width={result.width} height={result.height} />
-          <OutputActions result={result} fileName={file.name} format={format} busy={busy} />
+        ) : null}
+        {error ? <p className="text-sm text-brand">{error}</p> : null}
         </>
-      ) : null}
-      {error ? <p className="text-sm text-brand">{error}</p> : null}
-    </div>
+      }
+    />
   );
 }

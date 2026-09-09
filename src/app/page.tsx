@@ -29,18 +29,18 @@ export default function Home() {
             100% Privacy.
           </h1>
           <p className="hero-copy-delay mt-8 max-w-xl text-base leading-7 text-[#F5F5F1]/80 md:text-lg">
-            Compress to any KB, merge PDFs, generate a QR code, run OCR, or make an Indian passport photo — entirely
-            in the browser. {SITE.name} never sees the file.
+            HEIC to JPG, merge PDFs, compress to 2MB, DS-160 or 2×2 photos — entirely in the browser. {SITE.name} never
+            sees the file.
           </p>
           <div className="mt-10 flex flex-wrap gap-3">
             <Magnetic>
-              <Link href="/tools/resize-image-to-50kb" className="btn btn-dark">
-                Resize to 50KB
+              <Link href="/tools/heic-to-jpg" className="btn btn-dark">
+                HEIC to JPG
               </Link>
             </Magnetic>
             <Magnetic>
-              <Link href="/tools" className="btn border border-[#F5F5F1]/40 text-[#F5F5F1]">
-                View all tools
+              <Link href="/tools/compress-pdf-to-2mb" className="btn border border-[#F5F5F1]/40 text-[#F5F5F1]">
+                PDF to 2MB
               </Link>
             </Magnetic>
           </div>

@@ -11,7 +11,8 @@ import { OutputActions } from "@/components/OutputActions";
 import { UndoRedoBar } from "@/components/UndoRedoBar";
 import { cutOut, replaceBackground, samplePixel, type CutoutMode } from "@/lib/cutout";
 import { applyEnhance, cloneEnhance, enhanceForSlug, type EnhanceSettings } from "@/lib/enhance";
-import { canvasToFormat } from "@/lib/export";
+import { downloadBlob } from "@/lib/download";
+import { canvasToFormat, copyBlob } from "@/lib/export";
 import { getFormat, type ConvertFormat } from "@/lib/formats";
 import { applyAutoToCanvas, computeHistogram, type Histogram } from "@/lib/grade";
 import {
@@ -28,6 +29,7 @@ import { fileToBitmap, revokeResult, type ProcessResult } from "@/lib/image";
 import type { ToolDef } from "@/lib/tools";
 import { useEditHistory, type HistoryMode } from "./useEditHistory";
 import { useLookMatch } from "./useLookMatch";
+import { PhotoEditorShell } from "./PhotoEditorShell";
 
 type EditSnap = {
   enhance: EnhanceSettings;
@@ -429,81 +431,129 @@ export function ImageStudio({ tool }: { tool: ToolDef }) {
   const watermarkPage = tool.slug.includes("watermark") && !tool.slug.includes("add");
 
   return (
-    <div className="grid gap-6">
-      {!file ? (
-        <DropZone onFiles={load} label="Drop a photo to edit" />
-      ) : (
-        <div className="flex flex-wrap items-center justify-end gap-2">
+    <PhotoEditorShell
+      hasFile={Boolean(file)}
+      actions={{
+        undo: history.undo,
+        redo: history.redo,
+        onFiles: load,
+        newFile: resetSource,
+        save: () => {
+          if (!result) return;
+          downloadBlob(result.blob, `${(file?.name ?? "edit").replace(/\.[^.]+$/, "")}-cherry.${format.ext}`);
+        },
+        copy: () => {
+          if (result) void copyBlob(result.blob);
+        },
+        toolBrush: () => {
+          setPanel("heal");
+          setHealMode("brush");
+        },
+        toolMarquee: () => {
+          setPanel("heal");
+          setHealMode("rect");
+        },
+        toolWand: () => {
+          setPanel("heal");
+          setHealMode("wand");
+        },
+        toolHeal: () => setPanel("heal"),
+        toolEyedropper: () => setPanel("cutout"),
+        toolCutout: () => setPanel("cutout"),
+        toolGrade: () => setPanel("adjust"),
+        toolMove: () => setPanel("adjust"),
+        brushSmaller: () => setBrush((n) => Math.max(6, n - 4)),
+        brushLarger: () => setBrush((n) => Math.min(140, n + 4)),
+        apply: runHeal,
+        deselect: () => {
+          const work = workRef.current;
+          if (!work) return;
+          maskRef.current = emptyMask(work.width, work.height);
+          redrawHeal();
+        },
+        deleteSelection: () => {
+          const work = workRef.current;
+          if (!work) return;
+          maskRef.current = emptyMask(work.width, work.height);
+          redrawHeal();
+        },
+        defaultColors: () => patchEdit({ fillColor: "#ffffff" }, "instant"),
+        swapColors: () =>
+          patchEdit({ fillColor: fillColor.toLowerCase() === "#ffffff" ? "#000000" : "#ffffff" }, "instant"),
+        desaturate: () => patchEdit({ enhance: { ...enhance, grayscale: !enhance.grayscale } }, "instant"),
+      }}
+      empty={<DropZone onFiles={load} label="Drop a photo to edit" />}
+      toolbar={
+        <>
+          <p className="min-w-0 truncate text-sm">{file?.name} · local</p>
+          <span className="ml-auto" />
           <UndoRedoBar undo={history.undo} redo={history.redo} canUndo={history.canUndo} canRedo={history.canRedo} />
+          <OutputActions result={result} fileName={file?.name ?? "edit"} format={format} busy={busy} compact />
           <button type="button" className="btn btn-ghost" onClick={resetSource}>
             New file
           </button>
-        </div>
-      )}
-
-      {file && sourceUrl && result && panel === "adjust" ? (
-        <CompareSlider beforeUrl={sourceUrl} afterUrl={result.url} />
-      ) : null}
-
-      {file && result && panel === "cutout" ? (
-        <div
-          className="cursor-crosshair overflow-hidden rounded-[16px] border border-[var(--line)] bg-[linear-gradient(45deg,#F5F5F1_25%,transparent_25%),linear-gradient(-45deg,#F5F5F1_25%,transparent_25%),linear-gradient(45deg,transparent_75%,#F5F5F1_75%),linear-gradient(-45deg,transparent_75%,#F5F5F1_75%)] bg-[length:20px_20px] bg-[position:0_0,0_10px,10px_-10px,-10px_0] bg-[#221F1F]"
-          onClick={(event) => {
-            const staged = stagedRef.current;
-            if (!staged) return;
-            const pt = pointerToImage(event, event.currentTarget, staged.width, staged.height);
-            if (pt.x < 0 || pt.y < 0 || pt.x > staged.width || pt.y > staged.height) return;
-            const rgb = samplePixel(staged, staged.width, staged.height, pt.x, pt.y, 3);
-            patchEdit(
-              {
-                seed: pt,
-                chroma: [rgb[0], rgb[1], rgb[2]],
-                cutMode: cutMode === "corners" ? "wand" : cutMode,
-                cutOn: true,
-              },
-              "instant",
-            );
-          }}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={result.url} alt="Cutout preview — click the backdrop" className="mx-auto max-h-[460px] object-contain" />
-          <p className="border-t border-[var(--line)] px-4 py-2 text-center text-[10px] tracking-[0.18em] text-[#F5F5F1]/70 uppercase">
-            Click the backdrop to sample
-          </p>
-        </div>
-      ) : null}
-
-      {file && panel === "heal" ? (
-        <canvas
-          ref={viewRef}
-          className="mx-auto h-auto max-h-[480px] w-auto max-w-full touch-none cursor-crosshair rounded-[16px] border border-[var(--line)] bg-[#221F1F]"
-          onPointerDown={onHealDown}
-          onPointerMove={onHealMove}
-          onPointerUp={onHealUp}
-          onPointerCancel={onHealUp}
-        />
-      ) : null}
-
-      <div className="flex flex-wrap gap-2">
-        {(
+        </>
+      }
+      rail={
+        (
           [
-            ["adjust", "Grade & rotate"],
-            ["cutout", "Background"],
-            ["heal", "Remove object"],
+            ["adjust", "Grade"],
+            ["cutout", "Cut"],
+            ["heal", "Heal"],
           ] as const
         ).map(([id, label]) => (
           <button
             key={id}
             type="button"
-            className={`btn min-h-10 px-3 ${panel === id ? "btn-primary" : "btn-ghost"}`}
+            className="photo-editor__rail-btn"
+            data-on={panel === id}
             onClick={() => setPanel(id)}
           >
             {label}
           </button>
-        ))}
-      </div>
-
-      <div className="card grid gap-6 p-6">
+        ))
+      }
+      canvas={
+        panel === "adjust" && sourceUrl && result ? (
+          <CompareSlider fill beforeUrl={sourceUrl} afterUrl={result.url} />
+        ) : panel === "cutout" && result ? (
+          <div
+            className="flex h-full w-full cursor-crosshair flex-col"
+            onClick={(event) => {
+              const staged = stagedRef.current;
+              if (!staged) return;
+              const pt = pointerToImage(event, event.currentTarget, staged.width, staged.height);
+              if (pt.x < 0 || pt.y < 0 || pt.x > staged.width || pt.y > staged.height) return;
+              const rgb = samplePixel(staged, staged.width, staged.height, pt.x, pt.y, 3);
+              patchEdit(
+                {
+                  seed: pt,
+                  chroma: [rgb[0], rgb[1], rgb[2]],
+                  cutMode: cutMode === "corners" ? "wand" : cutMode,
+                  cutOn: true,
+                },
+                "instant",
+              );
+            }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={result.url} alt="Cutout preview — click the backdrop" className="mx-auto h-full w-full object-contain" />
+          </div>
+        ) : panel === "heal" ? (
+          <canvas
+            ref={viewRef}
+            className="h-auto max-h-full w-auto max-w-full touch-none cursor-crosshair"
+            onPointerDown={onHealDown}
+            onPointerMove={onHealMove}
+            onPointerUp={onHealUp}
+            onPointerCancel={onHealUp}
+          />
+        ) : (
+          <p className="text-sm text-[var(--ink-soft)]">{busy ? "Working…" : "Preview"}</p>
+        )
+      }
+      panel={
+        <>
         <p className="text-sm leading-6 text-[var(--ink-soft)]">
           Full editor on this page: free rotation (try 36.6°), colour grade, match a reference still, cut out a backdrop,
           or select an object and heal it. Pixels stay in this tab. Drag the preview to compare before and after.
@@ -719,16 +769,13 @@ export function ImageStudio({ tool }: { tool: ToolDef }) {
         ) : null}
 
         <FormatPicker value={format.id} onChange={setFormat} />
-      </div>
-
-      {file && result ? (
-        <>
+        {file && result ? (
           <FileStats originalBytes={file.size} outputBytes={result.bytes} width={result.width} height={result.height} />
-          <OutputActions result={result} fileName={file.name} format={format} busy={busy} />
+        ) : null}
+        {error ? <p className="text-sm text-brand">{error}</p> : null}
         </>
-      ) : null}
-      {error ? <p className="text-sm text-brand">{error}</p> : null}
-    </div>
+      }
+    />
   );
 }
 

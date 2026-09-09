@@ -1,11 +1,13 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { PdfPageGrid } from "@/components/PdfPageGrid";
 import { DropZone } from "@/components/DropZone";
 import { TargetSizeField } from "@/components/TargetSizeField";
 import { downloadBlob } from "@/lib/download";
 import { formatBytes } from "@/lib/format";
-import { filesToPageCanvases, type PageCanvas } from "@/lib/pdf-raster";
+import { filesToPageCanvases, thumbsFromFiles, type PageCanvas, type PdfThumb } from "@/lib/pdf-raster";
+import { isPdfFile, mergePdfs } from "@/lib/pdf-ops";
 import { blobToDataUrl, imagesToPdf } from "@/lib/pdf";
 import { canvasToBlob, drawExact } from "@/lib/image";
 import { bytesToSizeInput, capLabel, parseTypedSize, type SizeUnit } from "@/lib/target-size";
@@ -52,6 +54,9 @@ export function DocumentCompressTool({ tool }: { tool: ToolDef }) {
   const targetBytes = parsed?.bytes ?? spec.defaultBytes;
   const cap = capLabel(spec.defaultBytes);
   const merge = Boolean(spec.merge);
+  const [forceRaster, setForceRaster] = useState(false);
+  const [thumbs, setThumbs] = useState<PdfThumb[]>([]);
+  const [focusPage, setFocusPage] = useState<number | null>(null);
 
   async function run() {
     if (!files.length) return;
@@ -59,6 +64,19 @@ export function DocumentCompressTool({ tool }: { tool: ToolDef }) {
     setError(null);
     setResultNote(null);
     try {
+      const original = files.reduce((sum, file) => sum + file.size, 0);
+      if (!forceRaster && files.every(isPdfFile)) {
+        setProgress("Copying pages — selectable text kept…");
+        const copied = await mergePdfs(files);
+        if (copied.size <= targetBytes) {
+          setResultNote(
+            `${formatBytes(original)} → ${formatBytes(copied.size)} · cap ${formatBytes(targetBytes)} · text kept`,
+          );
+          downloadBlob(copied, `${tool.slug}.pdf`);
+          return;
+        }
+        setProgress("Still over the cap with text kept. Rebuilding as JPEG pages…");
+      }
       setProgress("Reading pages…");
       const pages = await filesToPageCanvases(files);
       if (!pages.length) throw new Error("No pages found.");
@@ -76,14 +94,13 @@ export function DocumentCompressTool({ tool }: { tool: ToolDef }) {
         }
       }
       if (!blob) throw new Error("Could not build the PDF.");
-      const original = files.reduce((sum, file) => sum + file.size, 0);
       if (blob.size > targetBytes) {
         setError(
           `Still ${formatBytes(blob.size)} after shrinking pages (cap ${formatBytes(targetBytes)}). Drop fewer pages or split the file, then run again.`,
         );
       } else {
         setResultNote(
-          `${formatBytes(original)} → ${formatBytes(blob.size)} · cap ${formatBytes(targetBytes)}`,
+          `${formatBytes(original)} → ${formatBytes(blob.size)} · cap ${formatBytes(targetBytes)} · JPEG pages (text not selectable)`,
         );
       }
       downloadBlob(blob, `${tool.slug}.pdf`);
@@ -141,11 +158,38 @@ export function DocumentCompressTool({ tool }: { tool: ToolDef }) {
         label={merge ? "Drop PDFs to merge" : "Drop a PDF or photos of pages"}
         hint={
           merge
-            ? "Merged in drop order, then rebuilt under the cap. Stays on this device."
-            : "Bank statements, marksheets, bills — rebuilt locally as a smaller PDF."
+            ? "PDFs are copied first (text kept) if they already fit. Otherwise pages rebuild as JPEG."
+            : "Born-digital PDFs keep selectable text when they already fit the cap. Scans rebuild as JPEG."
         }
-        onFiles={(next) => setFiles((prev) => [...prev, ...next])}
+        onFiles={(next) => {
+          setFiles((prev) => {
+            const list = [...prev, ...next];
+            void thumbsFromFiles(list)
+              .then((items) => {
+                setThumbs(items);
+                setFocusPage(items[0]?.page ?? null);
+              })
+              .catch(() => setThumbs([]));
+            return list;
+          });
+        }}
       />
+      {thumbs.length ? (
+        <div className="pdf-live">
+          <PdfPageGrid
+            pages={thumbs}
+            selected={focusPage ? [focusPage] : []}
+            focusPage={focusPage}
+            onSelect={(page) => setFocusPage(page)}
+          />
+          {focusPage ? (
+            <div className="pdf-live__stage">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={thumbs.find((item) => item.page === focusPage)?.url} alt={`Page ${focusPage}`} />
+            </div>
+          ) : null}
+        </div>
+      ) : null}
       {files.length ? (
         <ul className="card divide-y divide-[var(--line)]">
           {files.map((file, index) => (
@@ -171,13 +215,26 @@ export function DocumentCompressTool({ tool }: { tool: ToolDef }) {
           onValue={setTargetSize}
           onUnit={setTargetUnit}
         />
+        <label className="flex items-center gap-3 text-sm">
+          <input type="checkbox" checked={forceRaster} onChange={(event) => setForceRaster(event.target.checked)} />
+          Rebuild as JPEG pages (fits the cap; selectable text is lost)
+        </label>
       </div>
       <div className="flex flex-wrap gap-3">
         <button type="button" className="btn btn-primary" disabled={!files.length || busy} onClick={run}>
           {busy ? progress || "Working…" : merge ? "Merge and download PDF" : "Download smaller PDF"}
         </button>
         {files.length ? (
-          <button type="button" className="btn btn-ghost" onClick={() => setFiles([])} disabled={busy}>
+          <button
+            type="button"
+            className="btn btn-ghost"
+            onClick={() => {
+              setFiles([]);
+              setThumbs([]);
+              setFocusPage(null);
+            }}
+            disabled={busy}
+          >
             Clear
           </button>
         ) : null}

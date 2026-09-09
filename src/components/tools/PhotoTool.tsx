@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { DropZone } from "@/components/DropZone";
 import { EnhanceBar } from "@/components/EnhanceBar";
 import { UndoRedoBar } from "@/components/UndoRedoBar";
@@ -9,7 +9,7 @@ import { FormatPicker } from "@/components/FormatPicker";
 import { OutputActions } from "@/components/OutputActions";
 import { downloadBlob } from "@/lib/download";
 import { applyEnhance, cloneEnhance, DEFAULT_ENHANCE, type EnhanceSettings } from "@/lib/enhance";
-import { canvasToFormat } from "@/lib/export";
+import { canvasToFormat, copyBlob } from "@/lib/export";
 import { getFormat, type ConvertFormat } from "@/lib/formats";
 import {
   compressToTargetBytes,
@@ -25,12 +25,28 @@ import type { ToolDef } from "@/lib/tools";
 import { adviceFromBitmap, checkCompliance, sampleCorners } from "@/lib/face-crop";
 import { useEditHistory } from "./useEditHistory";
 import { useLookMatch } from "./useLookMatch";
+import { PhotoEditorShell } from "./PhotoEditorShell";
+import { formatBytes } from "@/lib/format";
 
 export function PhotoTool({ tool }: { tool: ToolDef }) {
   const [file, setFile] = useState<File | null>(null);
   const [bitmap, setBitmap] = useState<ImageBitmap | null>(null);
   const [presetId, setPresetId] = useState(tool.photoPreset ?? "in-passport");
+  const [presetQuery, setPresetQuery] = useState("");
   const spec = useMemo(() => getPhotoSpec(presetId), [presetId]);
+  const presetOptions = useMemo(() => {
+    const q = presetQuery.trim().toLowerCase();
+    const list = q
+      ? PHOTO_SPECS.filter((item) =>
+          `${item.label} ${item.country} ${item.document} ${item.id}`.toLowerCase().includes(q),
+        )
+      : PHOTO_SPECS;
+    if (!list.some((item) => item.id === presetId)) {
+      const current = PHOTO_SPECS.find((item) => item.id === presetId);
+      return current ? [current, ...list] : list;
+    }
+    return list;
+  }, [presetId, presetQuery]);
   const [bg, setBg] = useState(spec.background);
   const [targetKb, setTargetKb] = useState(spec.maxKB ?? 50);
   const [useTarget, setUseTarget] = useState(true);
@@ -52,13 +68,31 @@ export function PhotoTool({ tool }: { tool: ToolDef }) {
   const [facePct, setFacePct] = useState<number | null>(null);
   const [checks, setChecks] = useState<Array<{ label: string; pass: boolean; detail: string }>>([]);
   const [faceNote, setFaceNote] = useState<string | null>(null);
+  const [infant, setInfant] = useState(false);
 
   const pixels = photoPixels(spec);
 
   useEffect(() => {
-    setBg(spec.background);
-    setTargetKb(spec.maxKB ?? 50);
-  }, [spec]);
+    if (!bitmap) return;
+    let cancelled = false;
+    void adviceFromBitmap(bitmap, spec, infant).then((advice) => {
+      if (cancelled) return;
+      setFacePct(advice.facePct);
+      setFaceNote(
+        infant
+          ? `${advice.note} Infant mode: smaller face, more space above the head. Confirm the form.`
+          : advice.note,
+      );
+      if (advice.found) {
+        setZoom(advice.zoom);
+        setOffsetX(advice.offsetX);
+        setOffsetY(advice.offsetY);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [bitmap, infant, spec]);
 
   async function load(files: File[]) {
     const next = files[0];
@@ -71,14 +105,6 @@ export function PhotoTool({ tool }: { tool: ToolDef }) {
       const bmp = await fileToBitmap(next);
       setFile(next);
       setBitmap(bmp);
-      const advice = await adviceFromBitmap(bmp, spec);
-      setFacePct(advice.facePct);
-      setFaceNote(advice.note);
-      if (advice.found) {
-        setZoom(advice.zoom);
-        setOffsetX(advice.offsetX);
-        setOffsetY(advice.offsetY);
-      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not read that image.");
     } finally {
@@ -147,6 +173,7 @@ export function PhotoTool({ tool }: { tool: ToolDef }) {
               mime: next.mime,
               facePct: facePct != null ? Math.round(facePct * zoom) : null,
               cornerRgb: sampleCorners(preview),
+              infant,
             }),
           );
         }
@@ -160,7 +187,16 @@ export function PhotoTool({ tool }: { tool: ToolDef }) {
       cancelled = true;
       window.clearTimeout(handle);
     };
-  }, [bg, bitmap, enhance, format, look.match, offsetX, offsetY, pixels.height, pixels.width, targetKb, useTarget, zoom]);
+  }, [bg, bitmap, enhance, format, infant, look.match, offsetX, offsetY, pixels.height, pixels.width, spec, targetKb, useTarget, zoom, facePct]);
+
+  const resetFile = useCallback(() => {
+    bitmap?.close();
+    revokeResult(result);
+    setFile(null);
+    setBitmap(null);
+    setResult(null);
+    history.reset({ enhance: cloneEnhance(DEFAULT_ENHANCE), matchAmount: 80 });
+  }, [bitmap, history, result]);
 
   async function downloadSheet(pageSize: "a4" | "4x6") {
     if (!result) return;
@@ -176,67 +212,114 @@ export function PhotoTool({ tool }: { tool: ToolDef }) {
   }
 
   return (
-    <div className="grid gap-6">
-      {!file ? (
-        <div className="grid gap-3">
-          <DropZone
-            onFiles={load}
-            label="Drop a portrait"
-            hint="Face the camera, even lighting, then we crop to the official frame. File stays on this device."
-          />
-          <DropZone
-            capture
-            onFiles={load}
-            label="Or use the phone camera"
-            hint="capture=user — still local, never uploaded."
-          />
-        </div>
-      ) : (
-        <div className="flex flex-wrap items-center justify-end gap-2">
+    <PhotoEditorShell
+      hasFile={Boolean(file)}
+      actions={{
+        undo: history.undo,
+        redo: history.redo,
+        onFiles: load,
+        newFile: resetFile,
+        save: () => {
+          if (!result) return;
+          downloadBlob(result.blob, `${(file?.name ?? "photo").replace(/\.[^.]+$/, "")}-cherry.${format.ext}`);
+        },
+        copy: () => {
+          if (result) void copyBlob(result.blob);
+        },
+        zoomIn: () => setZoom((z) => Math.min(2.4, z + 0.08)),
+        zoomOut: () => setZoom((z) => Math.max(1, z - 0.08)),
+        zoomFit: () => {
+          setZoom(1);
+          setOffsetX(0);
+          setOffsetY(0);
+        },
+        zoom100: () => setZoom(1),
+        nudge: (dx, dy) => {
+          setOffsetX((x) => Math.max(-1, Math.min(1, x + dx)));
+          setOffsetY((y) => Math.max(-1, Math.min(1, y + dy)));
+        },
+        defaultColors: () => setBg(spec.background),
+        swapColors: () => setBg((c) => (c.toLowerCase() === "#ffffff" ? "#000000" : "#ffffff")),
+        desaturate: () => setEnhance({ ...enhance, grayscale: !enhance.grayscale }),
+      }}
+      empty={
+        <DropZone
+          onFiles={load}
+          label="Drop a portrait"
+          hint="Face the camera, even lighting, then we crop to the official frame. File stays on this device."
+        />
+      }
+      toolbar={
+        <>
+          <p className="min-w-0 truncate text-sm">{file?.name} · local</p>
+          {result ? (
+            <p className="hidden text-xs text-[var(--ink-soft)] md:block">
+              {formatBytes(result.bytes)} · {result.width}×{result.height}
+            </p>
+          ) : null}
+          <span className="ml-auto" />
           <UndoRedoBar undo={history.undo} redo={history.redo} canUndo={history.canUndo} canRedo={history.canRedo} />
-          <button
-            type="button"
-            className="btn btn-ghost"
-            onClick={() => {
-              bitmap?.close();
-              revokeResult(result);
-              setFile(null);
-              setBitmap(null);
-              setResult(null);
-              history.reset({ enhance: cloneEnhance(DEFAULT_ENHANCE), matchAmount: 80 });
-            }}
-          >
+          <OutputActions result={result} fileName={file?.name ?? "photo"} format={format} busy={busy} compact />
+          <button type="button" className="btn btn-ghost" onClick={resetFile}>
             New file
           </button>
+        </>
+      }
+      canvas={
+        <div
+          className="overflow-hidden border border-[var(--line)] bg-[var(--cream)]"
+          style={{
+            aspectRatio: `${spec.widthMm} / ${spec.heightMm}`,
+            height: "100%",
+            maxHeight: "100%",
+            width: "auto",
+          }}
+        >
+          {result && result.mime.startsWith("image/") ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={result.url} alt="Passport preview" className="h-full w-full object-cover" />
+          ) : (
+            <div className="flex h-full min-h-[200px] items-center justify-center text-sm text-[var(--ink-soft)]">
+              Preview
+            </div>
+          )}
         </div>
-      )}
-
-      <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
-        <div className="card overflow-hidden p-6">
-          <div
-            className="mx-auto overflow-hidden border border-[var(--line)] bg-[var(--cream)]"
-            style={{
-              aspectRatio: `${spec.widthMm} / ${spec.heightMm}`,
-              maxWidth: 360,
-            }}
-          >
-            {result && result.mime.startsWith("image/") ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={result.url} alt="Passport preview" className="h-full w-full object-cover" />
-            ) : (
-              <div className="flex h-full min-h-[280px] items-center justify-center text-sm text-[var(--ink-soft)]">
-                Preview
-              </div>
-            )}
-          </div>
-          <p className="mt-4 text-center text-sm text-[var(--ink-soft)]">{spec.notes}</p>
-        </div>
-
-        <div className="grid gap-4">
+      }
+      panel={
+        <>
+          <p className="text-sm leading-6 text-[var(--ink-soft)]">{spec.notes}</p>
+          {!file ? (
+            <DropZone
+              capture
+              onFiles={load}
+              label="Use the phone camera"
+              hint="capture=user — still local, never uploaded."
+            />
+          ) : null}
+          <label className="grid gap-2 text-sm">
+            Search country / exam
+            <input
+              className="field"
+              value={presetQuery}
+              onChange={(event) => setPresetQuery(event.target.value)}
+              placeholder="India, NID, DS-160, IBPS…"
+              autoComplete="off"
+            />
+          </label>
           <label className="grid gap-2 text-sm">
             Official size
-            <select className="field" value={presetId} onChange={(event) => setPresetId(event.target.value)}>
-              {PHOTO_SPECS.map((item) => (
+            <select
+              className="field"
+              value={presetId}
+              onChange={(event) => {
+                const id = event.target.value;
+                setPresetId(id);
+                const next = getPhotoSpec(id);
+                setBg(next.background);
+                setTargetKb(next.maxKB ?? 50);
+              }}
+            >
+              {presetOptions.map((item) => (
                 <option key={item.id} value={item.id}>
                   {item.label}
                 </option>
@@ -270,13 +353,17 @@ export function PhotoTool({ tool }: { tool: ToolDef }) {
             <input className="field h-12" type="color" value={bg} onChange={(event) => setBg(event.target.value)} />
           </label>
           {faceNote ? <p className="text-sm text-[var(--ink-soft)]">{faceNote}</p> : null}
+          <label className="flex items-center gap-3 text-sm">
+            <input type="checkbox" checked={infant} onChange={(event) => setInfant(event.target.checked)} />
+            Infant crop (more head room — confirm the form)
+          </label>
           <button
             type="button"
             className="btn btn-ghost"
             disabled={!bitmap}
             onClick={async () => {
               if (!bitmap) return;
-              const advice = await adviceFromBitmap(bitmap, spec);
+              const advice = await adviceFromBitmap(bitmap, spec, infant);
               setFacePct(advice.facePct);
               setFaceNote(advice.note);
               if (advice.found) {
@@ -342,52 +429,70 @@ export function PhotoTool({ tool }: { tool: ToolDef }) {
             </label>
           ) : null}
           <FormatPicker value={format.id} onChange={setFormat} />
-          <EnhanceBar
-            value={enhance}
-            onChange={setEnhance}
-            matchAmount={look.amount}
-            hasReference={look.hasReference}
-            onMatchAmount={(n) => {
-              look.setAmount(n);
-              history.set({ enhance, matchAmount: n });
-            }}
-            onReference={look.loadReference}
-          />
-        </div>
-      </div>
-
-      {file && result ? (
-        <>
-          <FileStats
-            originalBytes={file.size}
-            outputBytes={result.bytes}
-            width={result.width}
-            height={result.height}
-          />
-          <OutputActions result={result} fileName={file.name} format={format} busy={busy} />
-          {checks.length ? (
-            <ul className="card divide-y divide-[var(--line)]">
-              {checks.map((c) => (
-                <li key={c.label} className="flex justify-between gap-4 px-5 py-3 text-sm">
-                  <span>
-                    {c.pass ? "Pass" : "Check"} · {c.label}
-                  </span>
-                  <span className="text-[var(--ink-soft)]">{c.detail}</span>
-                </li>
-              ))}
-            </ul>
+          <details className="border-t border-[var(--line)] pt-4">
+            <summary className="cursor-pointer text-sm text-[var(--ink-soft)]">Adjust (optional)</summary>
+            <div className="mt-4">
+              <EnhanceBar
+                value={enhance}
+                onChange={setEnhance}
+                matchAmount={look.amount}
+                hasReference={look.hasReference}
+                onMatchAmount={(n) => {
+                  look.setAmount(n);
+                  history.set({ enhance, matchAmount: n });
+                }}
+                onReference={look.loadReference}
+              />
+            </div>
+          </details>
+          {file && result ? (
+            <>
+              <FileStats
+                originalBytes={file.size}
+                outputBytes={result.bytes}
+                width={result.width}
+                height={result.height}
+              />
+              {checks.length ? (
+                <ul className="divide-y divide-[var(--line)] rounded-[12px] border border-[var(--line)]">
+                  <li className="px-4 py-3 text-sm">
+                    <p className="label">Live check</p>
+                    <p className={`mt-1 ${checks.every((c) => c.pass) ? "" : "text-brand"}`}>
+                      {checks.every((c) => c.pass)
+                        ? "All checks passed — still confirm the form."
+                        : "Fix the items marked Fail before you upload."}
+                    </p>
+                  </li>
+                  {checks.map((c) => (
+                    <li key={c.label} className="flex justify-between gap-4 px-4 py-2 text-sm">
+                      <span className={c.pass ? "" : "text-brand"}>
+                        {c.pass ? "Pass" : "Fail"} · {c.label}
+                      </span>
+                      <span className="text-[var(--ink-soft)]">{c.detail}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+              <div className="text-sm leading-6 text-[var(--ink-soft)]">
+                <p className="label">Portals reject for</p>
+                <p className="mt-2">
+                  File over the KB cap · wrong pixels · blur · glare · cropped ears or chin · photo of a printed photo ·
+                  black-and-white when the form wants colour. Confirm the circular.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <button type="button" className="btn btn-ghost" onClick={() => downloadSheet("4x6")}>
+                  4×6 / 4-up sheet
+                </button>
+                <button type="button" className="btn btn-ghost" onClick={() => downloadSheet("a4")}>
+                  A4 / 8-up sheet
+                </button>
+              </div>
+            </>
           ) : null}
-          <div className="flex flex-wrap gap-3">
-            <button type="button" className="btn btn-ghost" onClick={() => downloadSheet("4x6")}>
-              4×6 / 4-up sheet
-            </button>
-            <button type="button" className="btn btn-ghost" onClick={() => downloadSheet("a4")}>
-              A4 / 8-up sheet
-            </button>
-          </div>
+          {error ? <p className="text-sm text-brand">{error}</p> : null}
         </>
-      ) : null}
-      {error ? <p className="text-sm text-brand">{error}</p> : null}
-    </div>
+      }
+    />
   );
 }

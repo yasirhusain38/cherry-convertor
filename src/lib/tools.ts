@@ -2,6 +2,8 @@ import { EXTRA_PHOTO_TOOLS } from "@/data/world-extra";
 import { GSC_INTENT_TOOLS } from "@/data/gsc-intent-tools";
 import { GSC_MORE_TOOLS } from "@/data/gsc-more-tools";
 import { PDF_CAP_TOOLS } from "@/data/pdf-cap-tools";
+import { TIER1_ENGINE_TOOLS } from "@/data/tier1-engine-tools";
+import { TIER1_PDF_TOOLS } from "@/data/tier1-pdf-tools";
 import { P0_TOOLS } from "./p0-tools";
 import { UTILITY_TOOLS } from "./utility-tools";
 
@@ -312,11 +314,12 @@ export const TOOLS: ToolDef[] = [
     category: "resize",
     mode: "target-size",
     kicker: "Target  /  20 KB",
-    h1: "Resize an image to 20KB online",
-    lede: "A common ceiling for SSC, banking, and state exam photo uploads. Drop a file and download a JPEG at or under 20 KB.",
-    metaTitle: "Resize Image to 20KB Online Free – Cherry Converter",
+    h1: "Resize image to 20KB online, on this device",
+    lede:
+      "SSC, banking, and many state forms reject a JPEG over 20 KB. Drop the photo; this tab compresses until the file is 20 KB or smaller.",
+    metaTitle: "Resize image to 20KB (SSC / form cap) — No Upload – Cherry Converter",
     metaDescription:
-      "Resize any image to 20KB free in your browser. Used for SSC, IBPS, and government form photos. No upload, no watermark.",
+      "Resize a photo to 20KB for SSC, IBPS, and government forms. Browser-only JPEG. No upload. No account.",
     keywords: [
       "resize image to 20kb",
       "20 kb photo size",
@@ -332,6 +335,18 @@ export const TOOLS: ToolDef[] = [
       {
         q: "10 KB to 20 KB?",
         a: "This page caps at 20 KB. If the form says 10–20 KB, stay here. If it says 4–12 KB, use Resize image to 10KB.",
+      },
+      {
+        q: "IBPS / SBI wants 200×230 px as well?",
+        a: "Crop on the exam or IBPS photo page first, then use this 20 KB cap if the notification still names it. Bytes and pixels are different checks.",
+      },
+      {
+        q: "Can you increase a 8 KB file to 20 KB?",
+        a: "No. If the photo is already under 20 KB, the download stays at the real size. We do not pad junk bytes.",
+      },
+      {
+        q: "Signature or photo?",
+        a: "This page is a face JPEG cap. Signature uploads use the signature tools — often a different aspect even at 20 KB.",
       },
     ],
     related: ["resize-image-to-10kb", "resize-image-to-50kb", "exam-form-photo-resizer", "aadhaar-photo-resizer"],
@@ -372,11 +387,12 @@ export const TOOLS: ToolDef[] = [
     category: "resize",
     mode: "target-size",
     kicker: "Target  /  50 KB",
-    h1: "Resize an image to 50KB online",
-    lede: "The most requested Indian form size. Passport portals, Aadhaar-related uploads, PAN, and college applications often stop at 50 KB.",
-    metaTitle: "Resize Image to 50KB Online Free – Cherry Converter",
+    h1: "Resize image to 50KB online, on this device",
+    lede:
+      "Passport portals, Aadhaar-related uploads, PAN, and college forms often stop at 50 KB. Drop a JPEG; encoding stays in this tab.",
+    metaTitle: "Resize image to 50KB (passport / Aadhaar) — No Upload – Cherry Converter",
     metaDescription:
-      "Resize any image to 50KB free. Browser-based compression for passport, Aadhaar, PAN, and college forms. See original vs new size instantly.",
+      "Resize a photo to 50KB for passport, Aadhaar, PAN, and college forms. No upload. Confirm the form if the cap differs.",
     keywords: ["resize image to 50kb", "compress image to 50kb", "photo 50kb online"],
     targetBytes: 50 * 1024,
     outputMime: "image/jpeg",
@@ -700,11 +716,12 @@ export const TOOLS: ToolDef[] = [
     category: "documents",
     mode: "photo",
     kicker: "Documents  /  Passport",
-    h1: "Passport photo maker for India and international sizes",
-    lede: "Crop to official aspect, set a white background, export the exact millimetre size, and optionally print a sheet of copies.",
-    metaTitle: "Passport Photo Maker Online Free – Cherry Converter",
+    h1: "Passport photo maker online, on this device",
+    lede:
+      "India 51×51 mm (600×600 at 300 DPI), US 2×2, UK/Schengen 35×45. White or light-grey background, optional 10–50 KB JPEG. Print an A4 sheet after crop. Confirm on Passport Seva or the embassy form.",
+    metaTitle: "Passport photo maker (India 51×51) — No Upload – Cherry Converter",
     metaDescription:
-      "Make India, US, UK, and Schengen passport photos in your browser. Crop, white background, exact mm size, and a printable sheet. No upload.",
+      "India 51×51 mm, US 2×2, UK 35×45. Crop, background, KB cap in this browser. No upload. No account.",
     keywords: ["passport photo maker", "passport size photo online", "india passport photo"],
     photoPreset: "in-passport",
     faqs: [
@@ -719,6 +736,10 @@ export const TOOLS: ToolDef[] = [
       {
         q: "Is this an official government tool?",
         a: "No. It follows published size guides. Always re-check the latest Passport Seva or embassy instructions before you apply.",
+      },
+      {
+        q: "Infant photo?",
+        a: "Tick infant crop for more space above the head, then confirm the form. Some missions still use the adult face-height band.",
       },
     ],
     related: ["passport-photo-resizer", "visa-photo-resizer", "resize-image-to-50kb", "photo-cropper"],
@@ -754,11 +775,12 @@ export const TOOLS: ToolDef[] = [
     category: "documents",
     mode: "photo",
     kicker: "Documents  /  Aadhaar",
-    h1: "Aadhaar photo resizer — 3.5 × 4.5 cm",
-    lede: "UIDAI-style portrait: 35×45 mm, white background, typically 20–50 KB JPEG. Crop and export without uploading.",
-    metaTitle: "Aadhaar Photo Resizer Online Free – Cherry Converter",
+    h1: "Aadhaar photo resizer online, on this device",
+    lede:
+      "UIDAI-style 35×45 mm, white background, typically 20–50 KB JPEG. Crop here; you upload the file on the official portal.",
+    metaTitle: "Aadhaar photo resizer (35×45 mm, 20–50 KB) — No Upload – Cherry Converter",
     metaDescription:
-      "Resize a photo for Aadhaar / UIDAI: 3.5×4.5 cm, white background, 20–50 KB. Processed in your browser. Free.",
+      "Aadhaar / UIDAI photo: 3.5×4.5 cm, white background, 20–50 KB JPEG. Browser-only. No upload. Confirm on the form.",
     keywords: ["aadhaar photo resizer", "aadhaar photo size", "uidai photo 50kb"],
     photoPreset: "in-aadhaar",
     faqs: [
@@ -767,8 +789,16 @@ export const TOOLS: ToolDef[] = [
         a: "4.5 cm height × 3.5 cm width. White background. Digital copies are usually JPEG between 20 and 50 KB.",
       },
       {
+        q: "आधार फोटो का साइज़ क्या है?",
+        a: "आमतौर पर 3.5×4.5 सेमी, सफेद बैकग्राउंड, 20–50 KB JPEG. पोर्टल पर दिए गए KB की पुष्टि करें.",
+      },
+      {
         q: "Do you send photos to UIDAI?",
         a: "No. This is an independent browser tool. You download the file and upload it yourself on the official portal.",
+      },
+      {
+        q: "Why was the photo rejected?",
+        a: "File over 50 KB, grey studio sweep, cropped ears, or a scan of a printed photo. Recrop here and leave the KB cap on.",
       },
     ],
     related: ["pan-card-photo-resizer", "resize-image-to-50kb", "government-form-photo-resizer"],
@@ -891,7 +921,7 @@ export const TOOLS: ToolDef[] = [
         a: "If the form says 20 KB, use the 20 KB tool after sizing. If it says 4–12 KB, use 10 KB.",
       },
     ],
-    related: ["resize-image-to-20kb", "resize-image-to-10kb", "signature-resizer", "college-admission-photo-resizer"],
+    related: ["exam-photo-resizer", "india-ibps-photo", "resize-image-to-20kb"],
   },
   {
     slug: "college-admission-photo-resizer",
@@ -1301,6 +1331,10 @@ export const TOOLS: ToolDef[] = [
         q: "Is this NADRA’s official tool?",
         a: "No. It follows common CNIC portrait sizes. Confirm the current NADRA circular before you submit.",
       },
+      {
+        q: "Is this a CNIC maker?",
+        a: "No. Crop and file size only. NADRA issues the card.",
+      },
     ],
     related: ["aadhaar-photo-resizer", "bangladesh-nid-photo", "resize-image-to-50kb"],
   },
@@ -1310,11 +1344,12 @@ export const TOOLS: ToolDef[] = [
     category: "documents",
     mode: "photo",
     kicker: "Bangladesh  /  NID",
-    h1: "Bangladesh NID / voter photo resizer",
-    lede: "Square-ish colour portrait used on many Bangladesh e-services. White background, small JPEG.",
-    metaTitle: "Bangladesh NID Photo Size Online Free – Cherry Converter",
+    h1: "Bangladesh NID photo resizer online, on this device",
+    lede:
+      "Many e-services want a small square JPEG (this page: 300×300, 50 KB cap), white background. Confirm the circular. Not a NID issuer.",
+    metaTitle: "Bangladesh NID photo (300×300, 50 KB) — No Upload – Cherry Converter",
     metaDescription:
-      "Resize a Bangladesh national ID photo in your browser. White background, under 50KB. No upload.",
+      "Resize a Bangladesh NID / voter photo: 300×300 JPEG under 50 KB. Browser-only. Confirm the portal. No upload.",
     keywords: [
       "bangladesh nid photo",
       "nid photocopy size editor",
@@ -1327,6 +1362,26 @@ export const TOOLS: ToolDef[] = [
       {
         q: "What size does NID want?",
         a: "Many portals want a small square JPEG. This page exports 300×300 at a 50 KB cap — recrop if your circular differs.",
+      },
+      {
+        q: "এনআইডি ফটো সাইজ কত?",
+        a: "অনেক পোর্টাল ছোট স্কয়ার JPEG চায়। এই পেজ ৩০০×৩০০, সাধারণত ৫০ KB। সার্কুলার দেখে নিশ্চিত করুন।",
+      },
+      {
+        q: "Photocopy of the card?",
+        a: "Use NID photocopy size editor for a scan of the physical card. This page is the enrolment-style portrait.",
+      },
+      {
+        q: "Why was it rejected?",
+        a: "File over 50 KB, wrong aspect, glare, or a photo of a printed NID. Recrop and leave the KB cap on.",
+      },
+      {
+        q: "Is this a NID card maker?",
+        a: "No. Crop and file size only. The Election Commission / NID wing issues the card.",
+      },
+      {
+        q: "JPEG or PNG?",
+        a: "Export JPEG. Many e-service forms reject PNG and HEIC even at 300×300.",
       },
     ],
     related: ["pakistan-cnic-photo", "aadhaar-photo-resizer", "resize-image-to-50kb"],
@@ -1389,7 +1444,15 @@ export const TOOLS: ToolDef[] = [
     faqs: [
       {
         q: "Iqama vs passport photo?",
-        a: "Iqama uses a slightly taller resident portrait. Do not submit a US 2×2 square to Absher.",
+        a: "Iqama uses a slightly taller resident portrait (about 40×60 mm). Do not submit a US 2×2 square to Absher.",
+      },
+      {
+        q: "ما مقاس صورة الإقامة؟",
+        a: "غالباً 40×60 مم، خلفية بيضاء، وحدّ قريب من 100 كيلوبايت على أبشر. أكّد الشاشة الحالية.",
+      },
+      {
+        q: "Is this Absher?",
+        a: "No. Crop and KB only. You upload the JPEG on Absher yourself.",
       },
     ],
     related: ["emirates-id-photo", "uae-visa-photo", "compress-payslip"],
@@ -5574,12 +5637,12 @@ export const TOOLS: ToolDef[] = [
     category: "convert",
     mode: "document-compress",
     kicker: "PDF  /  2 MB",
-    h1: "Compress PDF to 2MB online free",
+    h1: "Compress PDF to 2MB online, on this device",
     lede:
-      "Visa, university, and bank portals often reject a file over 2 MB. Drop a PDF or page photos. This tab rebuilds a PDF at or under 2 MB — a free online pdf compressor to 2mb, no account.",
-    metaTitle: "Compress PDF to 2MB online free – Cherry Converter",
+      "Visa, university, and bank portals often reject a file over 2 MB. Drop a PDF or page photos. This tab rebuilds a PDF at or under 2 MB. No account.",
+    metaTitle: "Compress PDF to 2MB (portal cap) — No Upload – Cherry Converter",
     metaDescription:
-      "Compress a PDF to 2MB in your browser. pdf compressor 2mb for visa and university uploads. No account, no server upload.",
+      "Compress a PDF to 2MB for visa and university uploads. Browser-only. No account. Confirm the form if the cap is 1 MB or 500 KB.",
     keywords: [
       "compress pdf to 2mb",
       "pdf compressor 2mb",
@@ -5600,7 +5663,7 @@ export const TOOLS: ToolDef[] = [
       },
       {
         q: "Scanned vs born-digital PDF?",
-        a: "Scans compress well because they are already pictures. A text PDF from Word is rasterized, so selectable text is lost. Keep the original if you still need to copy.",
+        a: "If a Word-exported PDF already fits 2 MB, we copy the pages and text stays selectable. If it is still over, we rebuild as JPEG so the portal accepts it — then you cannot search inside the file. Keep the original if you still need to copy.",
       },
       {
         q: "Still over 2 MB after one pass?",
@@ -5614,8 +5677,20 @@ export const TOOLS: ToolDef[] = [
         q: "Need less than 2 MB, not equal to 2 MB?",
         a: "Use PDF under 2MB. Same engine; copy is aimed at “less than 2MB” forms.",
       },
+      {
+        q: "Does compress keep selectable text?",
+        a: "If the PDF already fits the cap, pages are copied and text stays selectable. If it is still over, pages rebuild as JPEG and text is no longer selectable — tick that option only when you must hit the cap.",
+      },
+      {
+        q: "Several certificates in one file?",
+        a: "Use Family document pack — same engine, merge then cap at 2 MB.",
+      },
+      {
+        q: "Can you increase a small PDF to 2 MB?",
+        a: "No. If the file is already under 2 MB, the download stays at the real size. We do not pad bytes.",
+      },
     ],
-    related: ["compress-pdf-under-2mb", "compress-pdf-to-1mb", "compress-pdf-to-500kb"],
+    related: ["family-document-pack", "compress-pdf-to-1mb", "compress-pdf-to-500kb"],
   },
   {
     slug: "compress-bank-statement",
@@ -5669,12 +5744,12 @@ export const TOOLS: ToolDef[] = [
     category: "convert",
     mode: "document-compress",
     kicker: "PDF  /  500 KB",
-    h1: "Compress PDF to 500KB online free",
+    h1: "Compress PDF to 500KB online, on this device",
     lede:
-      "KYC and university forms often cap a file at 500 KB. Drop a PDF or page photos. This tab rebuilds a pdf 500kb file — no account.",
-    metaTitle: "Compress PDF to 500KB online free – Cherry Converter",
+      "KYC and university forms often cap a file at 500 KB. Drop a PDF or page photos. This tab rebuilds a PDF at or under 500 KB.",
+    metaTitle: "Compress PDF to 500KB (KYC cap) — No Upload – Cherry Converter",
     metaDescription:
-      "Compress a PDF to 500KB in your browser. pdf 500kb for KYC and university forms. No upload, no account.",
+      "Compress a PDF to 500KB for KYC and university forms. Browser-only. No account. Confirm the circular if the cap is tighter.",
     keywords: ["compress pdf to 500kb", "pdf 500kb", "pdf under 500kb", "reduce pdf 500kb"],
     documentSpecId: "compress-pdf-to-500kb",
     faqs: [
@@ -5711,12 +5786,12 @@ export const TOOLS: ToolDef[] = [
     category: "convert",
     mode: "document-compress",
     kicker: "PDF  /  1 MB",
-    h1: "Compress PDF to 1MB free",
+    h1: "Compress PDF to 1MB online, on this device",
     lede:
-      "Email and many visa checklists stop at 1 MB per file. Drop a PDF. This tab is a pdf size reducer 1 mb — processing stays on this device.",
-    metaTitle: "Compress PDF to 1MB free – Cherry Converter",
+      "Email and many visa checklists stop at 1 MB per file. Drop a PDF. This tab is a PDF size reducer to 1 MB — processing stays on this device.",
+    metaTitle: "Compress PDF to 1MB (email / visa cap) — No Upload – Cherry Converter",
     metaDescription:
-      "Compress a PDF to 1MB free in your browser. PDF size reducer 1 mb for visa and email attachments. No upload.",
+      "Compress a PDF to 1MB for visa and email attachments. Browser-only. No account. Use 2 MB when the checklist allows it.",
     keywords: ["compress pdf to 1mb", "pdf size reducer 1 mb", "pdf under 1mb", "reduce pdf 1mb"],
     documentSpecId: "compress-pdf-to-1mb",
     faqs: [
@@ -6893,13 +6968,33 @@ export const TOOLS: ToolDef[] = [
     category: "documents",
     mode: "photo",
     kicker: "UAE  /  Labour",
-    h1: "UAE labour card / work-permit photo (35×45 mm)",
-    lede: "MOHRE-style 35×45 mm JPEG. Many portals cap the file at 100 KB.",
-    metaTitle: "UAE Labour Card Photo 100KB Free – Cherry Converter",
-    metaDescription: "Resize a UAE labour-card photo in your browser. 35×45 mm, 100 KB. No upload.",
+    h1: "UAE labour card photo online, on this device",
+    lede:
+      "MOHRE-style 35×45 mm JPEG. Many portals cap the file at 100 KB, white background. Confirm on the form.",
+    metaTitle: "UAE labour card photo (35×45 mm, 100 KB) — No Upload – Cherry Converter",
+    metaDescription:
+      "Resize a UAE labour / MOHRE photo: 35×45 mm, often 100 KB. Browser-only. Confirm the portal. No upload.",
     keywords: ["uae labour card photo", "mohre photo size", "uae work permit photo"],
     photoPreset: "uae-labour",
-    faqs: [{ q: "Emirates ID or labour card?", a: "Both are 35×45 mm with a 100 KB cap. This page is worded for MOHRE." }],
+    faqs: [
+      { q: "Emirates ID or labour card?", a: "Both are 35×45 mm with a 100 KB cap. This page is worded for MOHRE." },
+      {
+        q: "ما مقاس صورة بطاقة العمل؟",
+        a: "غالباً 35×45 مم، خلفية بيضاء، وحدّ 100 كيلوبايت. أكّد الرقم على النموذج.",
+      },
+      {
+        q: "Why was it rejected?",
+        a: "File over 100 KB, grey background, or a cropped passport square. Recrop here and leave the cap on.",
+      },
+      {
+        q: "Is this MOHRE?",
+        a: "No. Independent browser crop. You upload the JPEG on the official labour / work-permit form.",
+      },
+      {
+        q: "US 2×2 photo?",
+        a: "Wrong aspect. Labour card here is 35×45 mm. Switch preset if you need a US visa 2×2.",
+      },
+    ],
     related: ["emirates-id-photo", "uae-visa-photo", "uae-driving-licence-photo"],
   },
   {
@@ -7966,6 +8061,8 @@ export const TOOLS: ToolDef[] = [
     related: ["photo-cropper", "image-upscaler", "replace-background"],
   },
   ...PDF_CAP_TOOLS,
+  ...TIER1_PDF_TOOLS,
+  ...TIER1_ENGINE_TOOLS,
   ...GSC_INTENT_TOOLS,
   ...GSC_MORE_TOOLS,
   ...UTILITY_TOOLS,
@@ -7989,12 +8086,14 @@ export function getRelated(slugs: string[]): ToolDef[] {
 
 export function popularTools(): ToolDef[] {
   const slugs = [
+    "heic-to-jpg",
+    "compress-pdf-to-2mb",
+    "pdf-merger",
+    "us-visa-photo-ds-160",
+    "us-passport-photo",
     "compress-image",
     "resize-image-to-50kb",
     "resize-image-to-20kb",
-    "us-passport-photo",
-    "us-visa-photo-ds-160",
-    "compress-pdf-to-2mb",
     "compress-bank-statement",
     "emirates-id-photo",
     "uk-passport-photo",
@@ -8004,7 +8103,8 @@ export function popularTools(): ToolDef[] {
     "rotate-image",
     "add-watermark",
     "jpg-to-pdf",
-    "heic-to-jpg",
+    "sign-pdf",
+    "pdf-to-excel",
     "signature-resizer",
     "png-to-jpg",
     "photo-cropper",
@@ -8012,8 +8112,8 @@ export function popularTools(): ToolDef[] {
     "color-grading",
     "background-remover",
     "object-remover",
-    "pdf-merger",
     "pdf-to-word",
+    "delete-pdf-pages",
     "color-picker",
     "time-zone-converter",
     "uuid-generator",

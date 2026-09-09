@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import JSZip from "jszip";
-import { CompareSlider } from "@/components/CompareSlider";
 import { DropZone } from "@/components/DropZone";
 import { FileStats } from "@/components/FileStats";
 import { FormatPicker } from "@/components/FormatPicker";
@@ -21,12 +20,13 @@ import {
   selectOverlayAt,
   type MarkPreset,
 } from "@/lib/detect-mark";
-import { canvasToFormat } from "@/lib/export";
+import { canvasToFormat, copyBlob } from "@/lib/export";
 import { getFormat, type ConvertFormat } from "@/lib/formats";
 import { emptyMask, healCanvas, healImageData, maskHasPaint, overlayMask, paintBrush, tightenToOverlay } from "@/lib/heal";
 import { drawExact, fileToBitmap, revokeResult, type ProcessResult } from "@/lib/image";
 import type { ToolDef } from "@/lib/tools";
 import { useEditHistory } from "./useEditHistory";
+import { PhotoEditorShell } from "./PhotoEditorShell";
 
 const PRESETS: Array<{ id: MarkPreset; label: string; hint: string }> = [
   { id: "auto", label: "Auto detect", hint: "Tight corner badges only" },
@@ -300,61 +300,95 @@ export function WatermarkStudio({ tool }: { tool: ToolDef }) {
   }
 
   return (
-    <div className="grid gap-6">
-      {!file ? (
+    <PhotoEditorShell
+      hasFile={Boolean(file)}
+      openMultiple
+      actions={{
+        undo: history.undo,
+        redo: history.redo,
+        onFiles,
+        newFile: () => {
+          bitmap?.close();
+          if (sourceUrl) URL.revokeObjectURL(sourceUrl);
+          revokeResult(result);
+          setFiles([]);
+          setBitmap(null);
+          setSourceUrl(null);
+          setResult(null);
+        },
+        save: () => {
+          if (!result || !file) return;
+          downloadBlob(result.blob, `${file.name.replace(/\.[^.]+$/, "")}-cherry.${format.ext}`);
+        },
+        copy: () => {
+          if (result) void copyBlob(result.blob);
+        },
+        toolBrush: () => setPaint(true),
+        toolWand: () => setPaint(false),
+        brushSmaller: () => setBrush((n) => Math.max(4, n - 2)),
+        brushLarger: () => setBrush((n) => Math.min(48, n + 2)),
+        apply: () => void removeMarks(),
+        deselect: () => {
+          const work = workRef.current;
+          if (!work) return;
+          maskRef.current = emptyMask(work.width, work.height);
+          setStatus("Mask cleared. Click the watermark.");
+          redraw();
+        },
+        deleteSelection: () => {
+          const work = workRef.current;
+          if (!work) return;
+          maskRef.current = emptyMask(work.width, work.height);
+          redraw();
+        },
+      }}
+      empty={
         <DropZone
           multiple
           onFiles={onFiles}
           label="Drop a photo with a visible stamp"
           hint="Click the watermark — only those pixels are healed"
         />
-      ) : (
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <p className="text-sm text-[var(--ink-soft)]">
-            {file.name}
-            {files.length > 1 ? ` · ${index + 1}/${files.length}` : ""} · local only
+      }
+      toolbar={
+        <>
+          <p className="min-w-0 truncate text-sm">
+            {file?.name}
+            {files.length > 1 ? ` · ${index + 1}/${files.length}` : ""} · local
           </p>
-          <div className="flex flex-wrap items-center gap-2">
-            <UndoRedoBar
-              undo={history.undo}
-              redo={history.redo}
-              canUndo={history.canUndo}
-              canRedo={history.canRedo}
-            />
-            <button
-              type="button"
-              className="btn btn-ghost"
-              onClick={() => {
-                bitmap?.close();
-                if (sourceUrl) URL.revokeObjectURL(sourceUrl);
-                revokeResult(result);
-                setFiles([]);
-                setBitmap(null);
-                setSourceUrl(null);
-                setResult(null);
-              }}
-            >
-              New file
-            </button>
-          </div>
-        </div>
-      )}
-
-      {sourceUrl && result ? <CompareSlider beforeUrl={sourceUrl} afterUrl={result.url} /> : null}
-
-      {file ? (
+          <span className="ml-auto" />
+          <UndoRedoBar undo={history.undo} redo={history.redo} canUndo={history.canUndo} canRedo={history.canRedo} />
+          <OutputActions result={result} fileName={file?.name ?? "clean"} format={format} busy={busy} compact />
+          <button
+            type="button"
+            className="btn btn-ghost"
+            onClick={() => {
+              bitmap?.close();
+              if (sourceUrl) URL.revokeObjectURL(sourceUrl);
+              revokeResult(result);
+              setFiles([]);
+              setBitmap(null);
+              setSourceUrl(null);
+              setResult(null);
+            }}
+          >
+            New file
+          </button>
+        </>
+      }
+      canvas={
         <canvas
           ref={viewRef}
-          className="mx-auto h-auto max-h-[480px] w-auto max-w-full touch-none cursor-crosshair rounded-[16px] border border-[var(--line)] bg-[#221F1F]"
+          className="h-auto max-h-full w-auto max-w-full touch-none cursor-crosshair"
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={() => {
             drawing.current = false;
           }}
         />
-      ) : null}
-
-      <div className="card grid gap-5 p-6">
+      }
+      panel={
+        <>
         <p className="text-sm leading-6 text-[var(--ink-soft)]">{status}</p>
         {coverage ? (
           <p className="rounded-[12px] border border-[var(--line)] px-4 py-3 text-sm leading-6">
@@ -426,15 +460,12 @@ export function WatermarkStudio({ tool }: { tool: ToolDef }) {
           corner. Reversed and healed on this device — no account, no key. Rest of the photo is untouched.
         </p>
         <FormatPicker value={format.id} onChange={setFormat} />
-      </div>
-
-      {file && result ? (
-        <>
+        {file && result ? (
           <FileStats originalBytes={file.size} outputBytes={result.bytes} width={result.width} height={result.height} />
-          <OutputActions result={result} fileName={file.name} format={format} busy={busy} />
+        ) : null}
+        {error ? <p className="text-sm text-brand">{error}</p> : null}
         </>
-      ) : null}
-      {error ? <p className="text-sm text-brand">{error}</p> : null}
-    </div>
+      }
+    />
   );
 }

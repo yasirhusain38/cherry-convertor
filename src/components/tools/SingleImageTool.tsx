@@ -14,7 +14,8 @@ import { applyEnhance, cloneEnhance, enhanceForSlug, type EnhanceSettings } from
 import { useEditHistory } from "./useEditHistory";
 import { useLookMatch } from "./useLookMatch";
 import { parseTypedSize, type SizeUnit } from "@/lib/target-size";
-import { canvasToFormat, isLossyFormat } from "@/lib/export";
+import { downloadBlob } from "@/lib/download";
+import { canvasToFormat, copyBlob, isLossyFormat } from "@/lib/export";
 import { getFormat, type ConvertFormat } from "@/lib/formats";
 import {
   compressToTargetBytes,
@@ -25,6 +26,7 @@ import {
   type ProcessResult,
 } from "@/lib/image";
 import type { ToolDef } from "@/lib/tools";
+import { PhotoEditorShell } from "./PhotoEditorShell";
 
 function defaultFormat(tool: ToolDef): ConvertFormat {
   if (tool.slug === "image-to-base64") return getFormat("txt")!;
@@ -184,43 +186,63 @@ export function SingleImageTool({ tool }: { tool: ToolDef }) {
   }, [activeTargetBytes, result]);
 
   return (
-    <div className="grid gap-6">
-      {!file ? (
-        <DropZone onFiles={onFiles} />
-      ) : (
+    <PhotoEditorShell
+      hasFile={Boolean(file)}
+      actions={{
+        undo: history.undo,
+        redo: history.redo,
+        onFiles,
+        newFile: reset,
+        save: () => {
+          if (!result) return;
+          downloadBlob(result.blob, `${(fileName || file?.name || "image").replace(/\.[^.]+$/, "")}-cherry.${format.ext}`);
+        },
+        copy: () => {
+          if (result) void copyBlob(result.blob);
+        },
+        desaturate: () => setEnhance({ ...enhance, grayscale: !enhance.grayscale }),
+      }}
+      empty={<DropZone onFiles={onFiles} />}
+      toolbar={
         <>
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <p className="text-sm text-[var(--ink-soft)]">{file.name} · local only</p>
-            <div className="flex flex-wrap items-center gap-2">
-              <UndoRedoBar undo={history.undo} redo={history.redo} canUndo={history.canUndo} canRedo={history.canRedo} />
-              <button type="button" className="btn btn-ghost" onClick={reset}>
-                New file
-              </button>
-            </div>
-          </div>
-
-          {sourceUrl && result && result.mime.startsWith("image/") ? (
-            <CompareSlider beforeUrl={sourceUrl} afterUrl={result.url} />
-          ) : (
-            <div className="card flex min-h-[240px] items-center justify-center text-sm text-[var(--ink-soft)]">
-              {busy ? "Encoding…" : "Preview appears after processing"}
-            </div>
-          )}
-
-          <FileStats
-            originalBytes={file.size}
-            outputBytes={result?.bytes}
-            width={result?.width}
-            height={result?.height}
-            extra={[
-              { label: "Format", value: `.${format.ext}` },
-              ...(activeTargetBytes
-                ? [{ label: "Target", value: underTarget ? "Met" : busy ? "Working" : "Over" }]
-                : []),
-            ]}
+          <p className="min-w-0 truncate text-sm">{file?.name} · local</p>
+          <span className="ml-auto" />
+          <UndoRedoBar undo={history.undo} redo={history.redo} canUndo={history.canUndo} canRedo={history.canRedo} />
+          <OutputActions
+            result={result}
+            fileName={fileName || file?.name || "image"}
+            format={format}
+            busy={busy}
+            compact
           />
-
-          <div className="card grid gap-6 p-6 md:grid-cols-2">
+          <button type="button" className="btn btn-ghost" onClick={reset}>
+            New file
+          </button>
+        </>
+      }
+      canvas={
+        sourceUrl && result && result.mime.startsWith("image/") ? (
+          <CompareSlider fill beforeUrl={sourceUrl} afterUrl={result.url} />
+        ) : (
+          <p className="text-sm text-[var(--ink-soft)]">{busy ? "Encoding…" : "Preview"}</p>
+        )
+      }
+      panel={
+        <>
+          {file ? (
+            <FileStats
+              originalBytes={file.size}
+              outputBytes={result?.bytes}
+              width={result?.width}
+              height={result?.height}
+              extra={[
+                { label: "Format", value: `.${format.ext}` },
+                ...(activeTargetBytes
+                  ? [{ label: "Target", value: underTarget ? "Met" : busy ? "Working" : "Over" }]
+                  : []),
+              ]}
+            />
+          ) : null}
             {tool.slug === "add-watermark" ? (
               <WatermarkPanel value={enhance} onChange={setEnhance} featured />
             ) : null}
@@ -388,21 +410,19 @@ export function SingleImageTool({ tool }: { tool: ToolDef }) {
               }}
               onReference={look.loadReference}
             />
-          </div>
-
-          <OutputActions
-            result={result}
-            fileName={fileName || file.name}
-            format={format}
-            busy={busy}
-            onFileName={setFileName}
-          />
-          {underTarget === false ? (
-            <p className="text-sm text-brand">Still above target — try JPEG or a smaller crop.</p>
-          ) : null}
+            <OutputActions
+              result={result}
+              fileName={fileName || file?.name || "image"}
+              format={format}
+              busy={busy}
+              onFileName={setFileName}
+            />
+            {underTarget === false ? (
+              <p className="text-sm text-brand">Still above target — try JPEG or a smaller crop.</p>
+            ) : null}
+            {error ? <p className="text-sm text-brand">{error}</p> : null}
         </>
-      )}
-      {error ? <p className="text-sm text-brand">{error}</p> : null}
-    </div>
+      }
+    />
   );
 }

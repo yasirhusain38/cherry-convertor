@@ -8,6 +8,7 @@ type CompareSliderProps = {
   afterUrl: string;
   beforeAlt?: string;
   afterAlt?: string;
+  fill?: boolean;
 };
 
 export function CompareSlider({
@@ -15,6 +16,7 @@ export function CompareSlider({
   afterUrl,
   beforeAlt = "Original",
   afterAlt = "Processed",
+  fill = false,
 }: CompareSliderProps) {
   const [pos, setPos] = useState(52);
   const frameRef = useRef<HTMLDivElement>(null);
@@ -29,10 +31,16 @@ export function CompareSlider({
   }
 
   return (
-    <div className="relative overflow-hidden rounded-[16px] border border-[var(--line)] bg-[#221F1F]">
+    <div
+      className={`relative overflow-hidden bg-[#221F1F] ${
+        fill ? "h-full w-full min-h-0 rounded-none border-0" : "rounded-[16px] border border-[var(--line)]"
+      }`}
+    >
       <div
         ref={frameRef}
-        className="relative aspect-[4/3] w-full touch-none cursor-ew-resize select-none"
+        className={`relative w-full touch-none cursor-ew-resize select-none ${
+          fill ? "h-full min-h-0" : "aspect-[4/3]"
+        }`}
         onPointerDown={(event) => {
           dragging.current = true;
           event.currentTarget.setPointerCapture(event.pointerId);
@@ -69,10 +77,12 @@ export function CompareSlider({
           </div>
         </div>
       </div>
-      <div className="flex justify-between border-t border-[var(--line)] bg-[#221F1F] px-4 py-2 text-[10px] tracking-[0.18em] text-[#F5F5F1]/70 uppercase">
-        <span>Original</span>
-        <span>Processed · drag to compare</span>
-      </div>
+      {fill ? null : (
+        <div className="flex justify-between border-t border-[var(--line)] bg-[#221F1F] px-4 py-2 text-[10px] tracking-[0.18em] text-[#F5F5F1]/70 uppercase">
+          <span>Original</span>
+          <span>Processed · drag to compare</span>
+        </div>
+      )}
     </div>
   );
 }

@@ -31,9 +31,12 @@ function rotate(items: SearchChip[], take: number, offset: number): SearchChip[]
 }
 
 const MORNING: SearchChip[] = [
+  { href: "/tools/heic-to-jpg", label: "HEIC to JPG" },
+  { href: "/tools/compress-pdf-to-2mb", label: "PDF to 2MB" },
+  { href: "/tools/pdf-merger", label: "Merge PDF" },
+  { href: "/tools/sign-pdf", label: "Sign PDF" },
   { href: "/tools/resize-image-to-50kb", label: "50KB photo" },
   { href: "/tools/compress-image", label: "Compress" },
-  { href: "/tools/heic-to-jpg", label: "HEIC to JPG" },
   { href: "/tools/aadhaar-photo-resizer", label: "Aadhaar photo" },
   { href: "/tools/passport-photo-maker", label: "Passport photo" },
   { href: "/tools/us-visa-photo-ds-160", label: "DS-160" },
@@ -46,6 +49,10 @@ const MORNING: SearchChip[] = [
   { href: "/finance/ireland-mortgage-calculator", label: "Ireland mortgage" },
   { href: "/tools/resize-image-to-20kb", label: "20KB photo" },
   { href: "/tools/malaysia-mykad-photo", label: "MyKad" },
+  { href: "/passport-photo-sizes", label: "Passport sizes" },
+  { href: "/tools/id-photo-maker", label: "ID photo" },
+  { href: "/tools/print-passport-photos-a4", label: "A4 photo sheet" },
+  { href: "/tools/family-document-pack", label: "Family PDF pack" },
   { href: "/tools/jpg-to-pdf", label: "JPG to PDF" },
   { href: "/countries/india", label: "India" },
 ];

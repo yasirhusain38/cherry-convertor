@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { faqJsonLd } from "@/components/Faq";
 import { ToolPageView } from "@/components/ToolPageView";
+import { getLandingCopy } from "@/data/tool-landing-copy";
 import { absoluteUrl } from "@/lib/site";
 import { TOOLS, getTool } from "@/lib/tools";
 
@@ -48,11 +49,17 @@ export default async function ToolSlugPage({
   const tool = getTool(slug);
   if (!tool) notFound();
 
+  const copy = getLandingCopy(tool.slug);
+  const howTo = copy?.howTo ?? [
+    "The file stays in this browser tab.",
+    tool.mode === "photo" ? "Confirm millimetres, background, and KB cap." : "Set the cap or preset.",
+    "Download from this device. Nothing is uploaded.",
+  ];
   const jsonLd = [
     faqJsonLd(tool.faqs),
     {
       "@context": "https://schema.org",
-      "@type": "SoftwareApplication",
+      "@type": "WebApplication",
       name: tool.name,
       applicationCategory: "MultimediaApplication",
       operatingSystem: "Web",
@@ -65,11 +72,11 @@ export default async function ToolSlugPage({
       "@type": "HowTo",
       name: tool.h1,
       description: tool.lede,
-      step: [
-        { "@type": "HowToStep", name: "Open this page", text: "The file or value stays in this browser tab." },
-        { "@type": "HowToStep", name: "Set the spec", text: tool.mode === "photo" ? "Confirm millimetres, background, and KB cap in the table." : "Adjust the controls for this tool." },
-        { "@type": "HowToStep", name: "Download", text: "Save the result from this device. Nothing is uploaded." },
-      ],
+      step: howTo.map((text, index) => ({
+        "@type": "HowToStep",
+        name: ["Drop", "Set the spec", "Download"][index] ?? "Step",
+        text,
+      })),
     },
   ];
 

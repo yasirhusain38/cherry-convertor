@@ -417,6 +417,46 @@ export const PDF_CAP_TOOLS: ToolDef[] = [
     related: ["merge-pdf-to-500kb", "compress-pdf-to-1mb", "pdf-merger"],
   }),
   pdfCap({
+    slug: "family-document-pack",
+    name: "Family document pack",
+    kicker: "PDF  /  Family pack",
+    h1: "Family document pack online, on this device",
+    lede:
+      "Drop several certificates or page photos — passbook, marksheet, Aadhaar scan. They are merged in order, then capped at 2 MB. Confirm the portal. No upload.",
+    metaTitle: "Family document pack (merge + 2MB) — No Upload – Cherry Converter",
+    metaDescription:
+      "Merge family certificates into one PDF under 2 MB in your browser. No account. Confirm the form if the cap is 1 MB or 500 KB.",
+    keywords: ["family document pack", "merge certificates pdf", "kyc document pack 2mb"],
+    documentSpecId: "family-document-pack",
+    faqs: [
+      {
+        q: "What files go in?",
+        a: "PDFs or photos of pages, in the order the form lists. Output is one PDF at or under 2 MB.",
+      },
+      {
+        q: "Photo and signature too?",
+        a: "Portraits and signatures are separate JPEGs on the photo and signature tools. This pack is document scans.",
+      },
+      {
+        q: "Still over 2 MB?",
+        a: "Drop fewer pages, or use the 1 MB / 500 KB merge pages if the portal is tighter.",
+      },
+      {
+        q: "Selectable text?",
+        a: "No. Pages are rasterized so the combined file fits.",
+      },
+      {
+        q: "Three separate uploads on the form?",
+        a: "Do not merge. Compress each file on the 2 MB / 1 MB / 500 KB pages instead.",
+      },
+      {
+        q: "Is the file uploaded?",
+        a: "No. Merge and encode stay in this browser tab.",
+      },
+    ],
+    related: ["compress-pdf-to-2mb", "merge-pdf-to-500kb", "compress-passbook"],
+  }),
+  pdfCap({
     slug: "photo-to-pdf-1mb",
     name: "Photo to PDF 1MB",
     kicker: "PDF  /  Photo 1 MB",

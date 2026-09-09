@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { PdfPageGrid } from "@/components/PdfPageGrid";
 import { DropZone } from "@/components/DropZone";
 import { FormatPicker } from "@/components/FormatPicker";
 import { downloadBlob } from "@/lib/download";
@@ -8,6 +9,7 @@ import { canvasToFormat } from "@/lib/export";
 import { getFormat, type ConvertFormat } from "@/lib/formats";
 import { fileToBitmap, encodeImage, revokeResult, drawExact } from "@/lib/image";
 import { blobToDataUrl, imagesToPdf } from "@/lib/pdf";
+import { thumbsFromFiles, type PdfThumb } from "@/lib/pdf-raster";
 import JSZip from "jszip";
 
 export function PdfTool() {
@@ -15,6 +17,8 @@ export function PdfTool() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pageSize, setPageSize] = useState<"a4" | "letter" | "4x6">("a4");
+  const [thumbs, setThumbs] = useState<PdfThumb[]>([]);
+  const [focusPage, setFocusPage] = useState<number | null>(null);
   const [format, setFormat] = useState<ConvertFormat>(getFormat("pdf")!);
 
   async function build() {
@@ -67,8 +71,35 @@ export function PdfTool() {
         multiple
         label="Drop images for a PDF"
         hint="Each file becomes one page. Order is the order you add them."
-        onFiles={(next) => setFiles((prev) => [...prev, ...next])}
+        onFiles={(next) => {
+          setFiles((prev) => {
+            const list = [...prev, ...next];
+            void thumbsFromFiles(list)
+              .then((items) => {
+                setThumbs(items);
+                setFocusPage(items[0]?.page ?? null);
+              })
+              .catch(() => setThumbs([]));
+            return list;
+          });
+        }}
       />
+      {thumbs.length ? (
+        <div className="pdf-live">
+          <PdfPageGrid
+            pages={thumbs}
+            selected={focusPage ? [focusPage] : []}
+            focusPage={focusPage}
+            onSelect={(page) => setFocusPage(page)}
+          />
+          {focusPage ? (
+            <div className="pdf-live__stage">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={thumbs.find((item) => item.page === focusPage)?.url} alt={`Page ${focusPage}`} />
+            </div>
+          ) : null}
+        </div>
+      ) : null}
       {files.length ? (
         <ul className="card divide-y divide-[var(--line)]">
           {files.map((file, index) => (

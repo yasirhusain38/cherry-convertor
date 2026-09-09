@@ -5,7 +5,8 @@ import { DropZone } from "@/components/DropZone";
 import { FileStats } from "@/components/FileStats";
 import { FormatPicker } from "@/components/FormatPicker";
 import { OutputActions } from "@/components/OutputActions";
-import { canvasToFormat } from "@/lib/export";
+import { downloadBlob } from "@/lib/download";
+import { canvasToFormat, copyBlob } from "@/lib/export";
 import { getFormat, type ConvertFormat } from "@/lib/formats";
 import {
   compressToTargetBytes,
@@ -19,6 +20,7 @@ import {
 } from "@/lib/image";
 import { SIGNATURE_PRESETS, mmToPx } from "@/lib/presets";
 import type { ToolDef } from "@/lib/tools";
+import { PhotoEditorShell } from "./PhotoEditorShell";
 
 type SignatureId = (typeof SIGNATURE_PRESETS)[number]["id"];
 
@@ -288,36 +290,55 @@ function EditorShell({
   children: React.ReactNode;
 }) {
   return (
-    <div className="grid gap-6">
-      {!img.file ? (
-        <DropZone onFiles={img.load} />
-      ) : (
-        <button type="button" className="btn btn-ghost justify-self-end" onClick={img.clear}>
-          New file
-        </button>
-      )}
-      {result && result.mime.startsWith("image/") ? (
-        <div className={`overflow-hidden rounded-[16px] border border-[var(--line)] ${checker ? "bg-[linear-gradient(45deg,#F5F5F1_25%,transparent_25%),linear-gradient(-45deg,#F5F5F1_25%,transparent_25%),linear-gradient(45deg,transparent_75%,#F5F5F1_75%),linear-gradient(-45deg,transparent_75%,#F5F5F1_75%)] bg-[length:20px_20px] bg-[position:0_0,0_10px,10px_-10px,-10px_0] bg-[#221F1F]" : "bg-[#F5F5F1]"}`}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={result.url} alt="Result" className="mx-auto max-h-[420px] object-contain" />
-        </div>
-      ) : null}
-      <div className="card grid gap-5 p-6">
-        {children}
-        <FormatPicker value={format.id} onChange={setFormat} />
-      </div>
-      {img.file && result ? (
+    <PhotoEditorShell
+      hasFile={Boolean(img.file)}
+      actions={{
+        onFiles: img.load,
+        newFile: img.clear,
+        save: () => {
+          if (!result || !img.file) return;
+          downloadBlob(result.blob, `${img.file.name.replace(/\.[^.]+$/, "")}-cherry.${format.ext}`);
+        },
+        copy: () => {
+          if (result) void copyBlob(result.blob);
+        },
+      }}
+      empty={<DropZone onFiles={img.load} />}
+      toolbar={
         <>
-          <FileStats
-            originalBytes={img.file.size}
-            outputBytes={result.bytes}
-            width={result.width}
-            height={result.height}
-          />
-          <OutputActions result={result} fileName={img.file.name} format={format} busy={busy} />
+          <p className="min-w-0 truncate text-sm">{img.file?.name} · local</p>
+          <span className="ml-auto" />
+          <OutputActions result={result} fileName={img.file?.name ?? "image"} format={format} busy={busy} compact />
+          <button type="button" className="btn btn-ghost" onClick={img.clear}>
+            New file
+          </button>
         </>
-      ) : null}
-      {img.error ? <p className="text-sm text-brand">{img.error}</p> : null}
-    </div>
+      }
+      canvas={
+        result && result.mime.startsWith("image/") ? (
+          <div className={checker ? "h-full w-full" : "h-full w-full bg-[#F5F5F1]"}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={result.url} alt="Result" className="h-full w-full object-contain" />
+          </div>
+        ) : (
+          <p className="text-sm text-[var(--ink-soft)]">{busy ? "Working…" : "Preview"}</p>
+        )
+      }
+      panel={
+        <>
+          {children}
+          <FormatPicker value={format.id} onChange={setFormat} />
+          {img.file && result ? (
+            <FileStats
+              originalBytes={img.file.size}
+              outputBytes={result.bytes}
+              width={result.width}
+              height={result.height}
+            />
+          ) : null}
+          {img.error ? <p className="text-sm text-brand">{img.error}</p> : null}
+        </>
+      }
+    />
   );
 }

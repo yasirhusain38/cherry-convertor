@@ -7,7 +7,23 @@ import { TOOLS } from "@/lib/tools";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
-  const staticRoutes = ["", "/tools", "/countries", "/regions", "/finance", "/search", "/about", "/privacy", "/contact", "/blog"].map(
+  const staticRoutes = [
+    "",
+    "/tools",
+    "/countries",
+    "/regions",
+    "/finance",
+    "/search",
+    "/about",
+    "/privacy",
+    "/contact",
+    "/blog",
+    "/passport-photo-sizes",
+    "/visa-photo-sizes",
+    "/id-photo-sizes",
+    "/exam-photo-sizes",
+    "/indian-government-document-sizes-2026",
+  ].map(
     (path) => ({
       url: absoluteUrl(path || "/"),
       lastModified: now,

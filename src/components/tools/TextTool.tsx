@@ -135,7 +135,7 @@ export function TextTool({ tool }: { tool: ToolDef }) {
   return (
     <div className="grid gap-6">
       {kind === "count" ? (
-        <dl className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        <dl className="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-7">
           {(
             [
               ["Words", stats.words, "words"],
@@ -149,20 +149,21 @@ export function TextTool({ tool }: { tool: ToolDef }) {
           ).map(([label, value, key]) => (
             <div
               key={label}
-              className={`card p-4 ${highlight === key || (highlight === "characters" && key === "characters") || (highlight === "sentences" && key === "sentences") || (highlight === "words" && key === "words") ? "ring-1 ring-[#F2013F]" : ""}`}
+              className={`card px-3 py-3 ${highlight === key || (highlight === "characters" && key === "characters") || (highlight === "sentences" && key === "sentences") || (highlight === "words" && key === "words") ? "ring-1 ring-[#F2013F]" : ""}`}
             >
               <dt className="label">{label}</dt>
-              <dd className="stat mt-2 text-2xl">{value}</dd>
+              <dd className="stat mt-1 text-xl">{value}</dd>
             </div>
           ))}
         </dl>
       ) : null}
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className={`grid gap-4 ${kind === "count" ? "" : "md:grid-cols-2"}`}>
         <label className="grid gap-2 text-sm">
           Input
           <textarea
-            className="field min-h-[280px] font-mono text-sm"
+            className="field font-mono text-sm"
+            rows={kind === "count" ? 18 : 12}
             value={input}
             onChange={(event) => setInput(event.target.value)}
             placeholder="Paste text"

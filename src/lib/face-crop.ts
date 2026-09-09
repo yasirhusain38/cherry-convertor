@@ -12,13 +12,21 @@ export type FaceAdvice = {
   note: string;
 };
 
-/** ICAO-ish: head ~70–80% of height; US 2×2 wants face (chin to crown) 50–69%. */
-export function targetFacePct(spec: PhotoSpec): { min: number; max: number; aim: number } {
+/** ICAO-ish: head ~70–80% of height; US 2×2 wants face (chin to crown) 50–69%. Infant: more head room. */
+export function targetFacePct(
+  spec: PhotoSpec,
+  infant = false,
+): { min: number; max: number; aim: number } {
+  if (infant) return { min: 45, max: 62, aim: 52 };
   if (spec.countrySlug === "united-states") return { min: 50, max: 69, aim: 58 };
   return { min: 70, max: 80, aim: 74 };
 }
 
-export async function adviceFromBitmap(bitmap: ImageBitmap, spec: PhotoSpec): Promise<FaceAdvice> {
+export async function adviceFromBitmap(
+  bitmap: ImageBitmap,
+  spec: PhotoSpec,
+  infant = false,
+): Promise<FaceAdvice> {
   const faces = await detectFaces(bitmap);
   if (!faces.length) {
     return {
@@ -32,12 +40,13 @@ export async function adviceFromBitmap(bitmap: ImageBitmap, spec: PhotoSpec): Pr
     };
   }
   const face = faces.reduce((a, b) => (a.w * a.h > b.w * b.h ? a : b));
-  const aim = targetFacePct(spec).aim / 100;
+  const aim = targetFacePct(spec, infant).aim / 100;
   const zoom = Math.min(2.4, Math.max(1, aim / Math.max(0.08, face.h)));
   const cx = face.x + face.w / 2;
   const cy = face.y + face.h / 2;
+  const eyeLine = infant ? 0.5 : 0.42;
   const offsetX = clamp((0.5 - cx) * 2, -1, 1);
-  const offsetY = clamp((0.42 - cy) * 2, -1, 1);
+  const offsetY = clamp((eyeLine - cy) * 2, -1, 1);
   const tiltWarning = face.w / Math.max(face.h, 0.01) > 0.95;
   return {
     found: true,
@@ -64,10 +73,11 @@ export function checkCompliance(options: {
   mime: string;
   facePct: number | null;
   cornerRgb: Array<{ r: number; g: number; b: number }>;
+  infant?: boolean;
 }): Array<{ label: string; pass: boolean; detail: string }> {
   const px = photoPixels(options.spec);
   const kb = options.bytes / 1024;
-  const face = targetFacePct(options.spec);
+  const face = targetFacePct(options.spec, options.infant);
   const bg = hexRgb(options.spec.background);
   const cornersOk = options.cornerRgb.every((c) => colorDist(c, bg) < 48);
   const rows = [

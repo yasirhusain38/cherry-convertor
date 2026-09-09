@@ -27,6 +27,11 @@ const PAGES: Array<{ href: string; title: string; lede: string; keywords: string
   { href: "/privacy", title: "Privacy", lede: "No uploads. Processing stays on your device.", keywords: "privacy gdpr" },
   { href: "/contact", title: "Contact", lede: "Get in touch.", keywords: "email support" },
   { href: "/blog", title: "Journal", lede: "Notes from the project.", keywords: "blog journal" },
+  { href: "/passport-photo-sizes", title: "Passport photo sizes", lede: "mm, px, KB by country.", keywords: "passport photo size 35x45 51x51 2x2 icao" },
+  { href: "/visa-photo-sizes", title: "Visa photo sizes", lede: "Schengen, DS-160, India visa.", keywords: "schengen visa photo ds-160 visa size" },
+  { href: "/id-photo-sizes", title: "ID photo sizes", lede: "NID, CNIC, Emirates ID, Aadhaar.", keywords: "nid cnic emirates id aadhaar photo size" },
+  { href: "/exam-photo-sizes", title: "Exam photo sizes", lede: "NEET, JEE, UPSC, SSC, IBPS.", keywords: "neet jee upsc ssc ibps photo size 200x230" },
+  { href: "/indian-government-document-sizes-2026", title: "Indian government document sizes", lede: "Passport, Aadhaar, PAN, exam, PDF caps.", keywords: "india document size 2026 passport aadhaar pan 50kb" },
 ];
 
 const categoryLabel = new Map(CATEGORIES.map((item) => [item.id, item.label]));

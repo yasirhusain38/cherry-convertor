@@ -8,7 +8,8 @@ import { FormatPicker } from "@/components/FormatPicker";
 import { OutputActions } from "@/components/OutputActions";
 import { clamp } from "@/lib/format";
 import { useEditHistory } from "./useEditHistory";
-import { canvasToFormat } from "@/lib/export";
+import { downloadBlob } from "@/lib/download";
+import { canvasToFormat, copyBlob } from "@/lib/export";
 import { getFormat, type ConvertFormat } from "@/lib/formats";
 import {
   cropSource,
@@ -16,6 +17,7 @@ import {
   revokeResult,
   type ProcessResult,
 } from "@/lib/image";
+import { PhotoEditorShell } from "./PhotoEditorShell";
 
 type Rect = { x: number; y: number; w: number; h: number };
 
@@ -113,12 +115,46 @@ export function CropTool() {
   }
 
   return (
-    <div className="grid gap-6">
-      {!file ? (
-        <DropZone onFiles={load} label="Drop a photo to crop" />
-      ) : (
-        <div className="flex flex-wrap items-center justify-end gap-2">
+    <PhotoEditorShell
+      hasFile={Boolean(file && sourceUrl && bitmap)}
+      actions={{
+        undo: history.undo,
+        redo: history.redo,
+        onFiles: load,
+        newFile: () => {
+          bitmap?.close();
+          if (sourceUrl) URL.revokeObjectURL(sourceUrl);
+          revokeResult(result);
+          setFile(null);
+          setBitmap(null);
+          setSourceUrl(null);
+          history.reset({ x: 0.1, y: 0.1, w: 0.8, h: 0.8 });
+        },
+        save: () => {
+          if (!result || !file) return;
+          downloadBlob(result.blob, `${file.name.replace(/\.[^.]+$/, "")}-cherry.${format.ext}`);
+        },
+        copy: () => {
+          if (result) void copyBlob(result.blob);
+        },
+        zoomFit: () => history.reset({ x: 0.1, y: 0.1, w: 0.8, h: 0.8 }),
+        zoom100: () => history.set({ x: 0, y: 0, w: 1, h: 1 }, "instant"),
+        nudge: (dx, dy) => {
+          setCrop({
+            ...crop,
+            x: clamp(crop.x + dx, 0, 1 - crop.w),
+            y: clamp(crop.y + dy, 0, 1 - crop.h),
+          });
+        },
+        deselect: () => history.reset({ x: 0.1, y: 0.1, w: 0.8, h: 0.8 }),
+      }}
+      empty={<DropZone onFiles={load} label="Drop a photo to crop" />}
+      toolbar={
+        <>
+          <p className="min-w-0 truncate text-sm">{file?.name} · local</p>
+          <span className="ml-auto" />
           <UndoRedoBar undo={history.undo} redo={history.redo} canUndo={history.canUndo} canRedo={history.canRedo} />
+          <OutputActions result={result} fileName={file?.name ?? "crop"} format={format} busy={busy} compact />
           <button
             type="button"
             className="btn btn-ghost"
@@ -134,72 +170,69 @@ export function CropTool() {
           >
             New file
           </button>
-        </div>
-      )}
-
-      {sourceUrl && bitmap ? (
-        <div
-          ref={frameRef}
-          className="relative overflow-hidden rounded-[16px] border border-[var(--line)] bg-[#221F1F]"
-          onPointerMove={(event) => {
-            if (!drag.current || !frameRef.current) return;
-            const box = frameRef.current.getBoundingClientRect();
-            const dx = (event.clientX - drag.current.px) / box.width;
-            const dy = (event.clientY - drag.current.py) / box.height;
-            setCrop({
-              ...drag.current.crop,
-              x: clamp(drag.current.crop.x + dx, 0, 1 - drag.current.crop.w),
-              y: clamp(drag.current.crop.y + dy, 0, 1 - drag.current.crop.h),
-            });
-          }}
-          onPointerUp={() => {
-            drag.current = null;
-          }}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={sourceUrl}
-            alt="Crop source"
-            className="block w-full object-contain"
-            style={{ aspectRatio: `${bitmap.width} / ${bitmap.height}`, maxHeight: 520 }}
-          />
-          <div
-            className="absolute cursor-move border-2 border-[#F5F5F1]"
-            style={{
-              left: `${crop.x * 100}%`,
-              top: `${crop.y * 100}%`,
-              width: `${crop.w * 100}%`,
-              height: `${crop.h * 100}%`,
-              boxShadow: "0 0 0 9999px rgba(34, 31, 31, 0.7)",
-            }}
-            onPointerDown={(event) => {
-              event.currentTarget.setPointerCapture(event.pointerId);
-              drag.current = { px: event.clientX, py: event.clientY, crop };
-            }}
-          />
-        </div>
-      ) : null}
-
-      <div className="flex flex-wrap gap-2">
-        {ASPECTS.map((item) => (
-          <button
-            key={item.id}
-            type="button"
-            className={`btn min-h-10 px-3 ${aspect === item.value ? "btn-primary" : "btn-ghost"}`}
-            onClick={() => applyAspect(item.value)}
-          >
-            {item.label}
-          </button>
-        ))}
-      </div>
-      <FormatPicker value={format.id} onChange={setFormat} />
-
-      {file && result ? (
-        <>
-          <FileStats originalBytes={file.size} outputBytes={result.bytes} width={result.width} height={result.height} />
-          <OutputActions result={result} fileName={file.name} format={format} busy={busy} />
         </>
-      ) : null}
-    </div>
+      }
+      canvas={
+        sourceUrl && bitmap ? (
+          <div
+            ref={frameRef}
+            className="relative h-full max-h-full w-auto max-w-full overflow-hidden"
+            style={{ aspectRatio: `${bitmap.width} / ${bitmap.height}` }}
+            onPointerMove={(event) => {
+              if (!drag.current || !frameRef.current) return;
+              const box = frameRef.current.getBoundingClientRect();
+              const dx = (event.clientX - drag.current.px) / box.width;
+              const dy = (event.clientY - drag.current.py) / box.height;
+              setCrop({
+                ...drag.current.crop,
+                x: clamp(drag.current.crop.x + dx, 0, 1 - drag.current.crop.w),
+                y: clamp(drag.current.crop.y + dy, 0, 1 - drag.current.crop.h),
+              });
+            }}
+            onPointerUp={() => {
+              drag.current = null;
+            }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={sourceUrl} alt="Crop source" className="block h-full w-full object-contain" />
+            <div
+              className="absolute cursor-move border-2 border-[#F5F5F1]"
+              style={{
+                left: `${crop.x * 100}%`,
+                top: `${crop.y * 100}%`,
+                width: `${crop.w * 100}%`,
+                height: `${crop.h * 100}%`,
+                boxShadow: "0 0 0 9999px rgba(34, 31, 31, 0.7)",
+              }}
+              onPointerDown={(event) => {
+                event.currentTarget.setPointerCapture(event.pointerId);
+                drag.current = { px: event.clientX, py: event.clientY, crop };
+              }}
+            />
+          </div>
+        ) : null
+      }
+      panel={
+        <>
+          <p className="label">Aspect</p>
+          <div className="flex flex-wrap gap-2">
+            {ASPECTS.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                className={`btn min-h-10 px-3 ${aspect === item.value ? "btn-primary" : "btn-ghost"}`}
+                onClick={() => applyAspect(item.value)}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+          <FormatPicker value={format.id} onChange={setFormat} />
+          {file && result ? (
+            <FileStats originalBytes={file.size} outputBytes={result.bytes} width={result.width} height={result.height} />
+          ) : null}
+        </>
+      }
+    />
   );
 }

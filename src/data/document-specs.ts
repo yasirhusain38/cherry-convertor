@@ -129,6 +129,14 @@ export const DOCUMENT_SPECS: DocumentSpec[] = [
     notes: "Photos become one PDF at or under 500 KB.",
   },
   {
+    id: "family-document-pack",
+    label: "Family document pack",
+    defaultBytes: 2 * 1024 * 1024,
+    locked: true,
+    merge: true,
+    notes: "Several certificates or page photos, merged in drop order, then capped at 2 MB. Confirm the portal cap.",
+  },
+  {
     id: "compress-marksheet",
     label: "Compress marksheet / degree",
     defaultBytes: 500 * 1024,

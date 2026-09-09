@@ -67,6 +67,25 @@ ${paragraphs.join("\n")}
   return zip.generateAsync({ type: "blob" });
 }
 
+function csvCell(value: string): string {
+  const v = (value ?? "").replace(/\r?\n/g, " ");
+  if (/[",]/.test(v)) return `"${v.replace(/"/g, '""')}"`;
+  return v;
+}
+
+/** UTF-8 CSV with BOM so Excel opens it. Several sheets are stacked with a title row. */
+export function rowsToCsv(sheets: Array<{ name: string; rows: string[][] }>): Blob {
+  const lines: string[] = [];
+  sheets.forEach((sheet, i) => {
+    if (sheets.length > 1) {
+      if (i) lines.push("");
+      lines.push(csvCell(sheet.name));
+    }
+    for (const row of sheet.rows) lines.push(row.map(csvCell).join(","));
+  });
+  return new Blob([`\uFEFF${lines.join("\r\n")}`], { type: "text/csv;charset=utf-8" });
+}
+
 export async function rowsToXlsx(sheets: Array<{ name: string; rows: string[][] }>): Promise<Blob> {
   const zip = new JSZip();
   const sheetOverrides = sheets

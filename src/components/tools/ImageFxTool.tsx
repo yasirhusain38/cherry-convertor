@@ -6,7 +6,7 @@ import { FileStats } from "@/components/FileStats";
 import { FormatPicker } from "@/components/FormatPicker";
 import { OutputActions } from "@/components/OutputActions";
 import { downloadBlob } from "@/lib/download";
-import { canvasToFormat } from "@/lib/export";
+import { canvasToFormat, copyBlob } from "@/lib/export";
 import { getFormat, type ConvertFormat } from "@/lib/formats";
 import {
   addBorder,
@@ -28,6 +28,7 @@ import {
 import { drawExact, fileToBitmap, revokeResult, type ProcessResult } from "@/lib/image";
 import type { ToolDef } from "@/lib/tools";
 import JSZip from "jszip";
+import { PhotoEditorShell } from "./PhotoEditorShell";
 
 type Kind =
   | "sketch"
@@ -178,15 +179,115 @@ export function ImageFxTool({ tool }: { tool: ToolDef }) {
   const source = bitmaps[0];
 
   return (
-    <div className="grid gap-6">
-      <DropZone
-        multiple={multi}
-        onFiles={load}
-        label={multi ? "Drop images, or browse" : "Drop a photo, or browse"}
-        hint="Local filters and crops. Not a cloud generative model."
-      />
-      {files.length ? <p className="text-sm text-[var(--ink-soft)]">{files.map((f) => f.name).join(" · ")}</p> : null}
-
+    <PhotoEditorShell
+      hasFile={files.length > 0}
+      openMultiple={multi}
+      actions={{
+        onFiles: load,
+        newFile: () => {
+          bitmaps.forEach((b) => b.close());
+          setFiles([]);
+          setBitmaps([]);
+          setResult(null);
+        },
+        save: () => {
+          if (!result) return;
+          downloadBlob(
+            result.blob,
+            `${(files[0]?.name.replace(/\.[^.]+$/, "") || "image")}-cherry.${format.ext}`,
+          );
+        },
+        copy: () => {
+          if (result) void copyBlob(result.blob);
+        },
+      }}
+      empty={
+        <DropZone
+          multiple={multi}
+          onFiles={load}
+          label={multi ? "Drop images, or browse" : "Drop a photo, or browse"}
+          hint="Local filters and crops. Not a cloud generative model."
+        />
+      }
+      toolbar={
+        <>
+          <p className="min-w-0 truncate text-sm">{files.map((f) => f.name).join(" · ") || "local"}</p>
+          <span className="ml-auto" />
+          {kind !== "split" ? (
+            <OutputActions
+              result={result}
+              fileName={files[0]?.name.replace(/\.[^.]+$/, "") || "image"}
+              format={format}
+              busy={busy}
+              compact
+            />
+          ) : null}
+          <button
+            type="button"
+            className="btn btn-ghost"
+            onClick={() => {
+              bitmaps.forEach((b) => b.close());
+              setFiles([]);
+              setBitmaps([]);
+              setResult(null);
+            }}
+          >
+            New file
+          </button>
+        </>
+      }
+      canvas={
+        preview && kind !== "split" ? (
+          <div
+            ref={frameRef}
+            className="relative h-full w-full max-w-full overflow-hidden"
+            onPointerDown={(event) => {
+              if (kind !== "blur-face" && kind !== "mosaic") return;
+              const box = event.currentTarget.getBoundingClientRect();
+              const x = (event.clientX - box.left) / box.width;
+              const y = (event.clientY - box.top) / box.height;
+              dragOrigin.current = { x, y };
+              setDrawing({ x, y, w: 0, h: 0 });
+              event.currentTarget.setPointerCapture(event.pointerId);
+            }}
+            onPointerMove={(event) => {
+              const origin = dragOrigin.current;
+              if (!origin) return;
+              const box = event.currentTarget.getBoundingClientRect();
+              const nx = (event.clientX - box.left) / box.width;
+              const ny = (event.clientY - box.top) / box.height;
+              setDrawing({
+                x: Math.min(origin.x, nx),
+                y: Math.min(origin.y, ny),
+                w: Math.abs(nx - origin.x),
+                h: Math.abs(ny - origin.y),
+              });
+            }}
+            onPointerUp={() => {
+              setDrawing((current) => {
+                if (current && current.w > 0.01 && current.h > 0.01) {
+                  setRects((prev) => [...prev, current]);
+                }
+                return null;
+              });
+              dragOrigin.current = null;
+            }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={preview} alt="Result" className="h-full w-full object-contain" />
+          </div>
+        ) : (
+          <p className="text-sm text-[var(--ink-soft)]">
+            {kind === "split" && source
+              ? `${source.width} × ${source.height} → ${rows} × ${cols} tiles`
+              : busy
+                ? "Working…"
+                : "Preview"}
+          </p>
+        )
+      }
+      panel={
+        <>
       <div className="flex flex-wrap items-end gap-4">
         {kind === "pixelate" || kind === "mosaic" ? (
           <label className="grid gap-2 text-sm">
@@ -267,7 +368,7 @@ export function ImageFxTool({ tool }: { tool: ToolDef }) {
       </div>
 
       {kind === "meme" ? (
-        <div className="grid gap-3 md:grid-cols-2">
+        <div className="grid gap-3">
           <input className="field" value={top} placeholder="Top text" onChange={(e) => setTop(e.target.value)} />
           <input className="field" value={bottom} placeholder="Bottom text" onChange={(e) => setBottom(e.target.value)} />
         </div>
@@ -277,59 +378,22 @@ export function ImageFxTool({ tool }: { tool: ToolDef }) {
         <p className="text-sm text-[var(--ink-soft)]">Drag on the preview to mark a region. {kind === "mosaic" ? "Pixelates the box." : "Blurs the box."}</p>
       ) : null}
 
-      {preview && kind !== "split" ? (
-        <div
-          ref={frameRef}
-          className="relative max-w-3xl overflow-hidden"
-          onPointerDown={(event) => {
-            if (kind !== "blur-face" && kind !== "mosaic") return;
-            const box = event.currentTarget.getBoundingClientRect();
-            const x = (event.clientX - box.left) / box.width;
-            const y = (event.clientY - box.top) / box.height;
-            dragOrigin.current = { x, y };
-            setDrawing({ x, y, w: 0, h: 0 });
-            event.currentTarget.setPointerCapture(event.pointerId);
-          }}
-          onPointerMove={(event) => {
-            const origin = dragOrigin.current;
-            if (!origin) return;
-            const box = event.currentTarget.getBoundingClientRect();
-            const nx = (event.clientX - box.left) / box.width;
-            const ny = (event.clientY - box.top) / box.height;
-            setDrawing({
-              x: Math.min(origin.x, nx),
-              y: Math.min(origin.y, ny),
-              w: Math.abs(nx - origin.x),
-              h: Math.abs(ny - origin.y),
-            });
-          }}
-          onPointerUp={() => {
-            setDrawing((current) => {
-              if (current && current.w > 0.01 && current.h > 0.01) {
-                setRects((prev) => [...prev, current]);
-              }
-              return null;
-            });
-            dragOrigin.current = null;
-          }}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={preview} alt="Result" className="max-h-[640px] w-full object-contain" />
-        </div>
-      ) : source && kind === "split" ? (
-        <p className="text-sm text-[var(--ink-soft)]">
-          {source.width} × {source.height} → {rows} × {cols} tiles
-        </p>
+      {multi ? (
+        <DropZone
+          multiple
+          onFiles={load}
+          label="Add more images"
+          hint="Collage and join take several files."
+        />
       ) : null}
 
       {result && kind !== "split" ? (
-        <>
-          <FileStats originalBytes={files[0]?.size ?? 0} outputBytes={result.bytes} width={result.width} height={result.height} />
-          <OutputActions result={result} fileName={files[0]?.name.replace(/\.[^.]+$/, "") || "image"} format={format} busy={busy} />
-        </>
+        <FileStats originalBytes={files[0]?.size ?? 0} outputBytes={result.bytes} width={result.width} height={result.height} />
       ) : null}
       {error ? <p className="text-sm text-brand">{error}</p> : null}
-    </div>
+        </>
+      }
+    />
   );
 }
 

@@ -22,6 +22,50 @@ export async function rasterPdfPages(file: File, scale = 1.4): Promise<PageCanva
   return pages;
 }
 
+export type PdfThumb = {
+  page: number;
+  url: string;
+  width: number;
+  height: number;
+};
+
+export async function thumbsFromPdf(file: File, scale = 0.42): Promise<PdfThumb[]> {
+  const pages = await rasterPdfPages(file, scale);
+  return pages.map((item, index) => ({
+    page: index + 1,
+    url: item.canvas.toDataURL("image/jpeg", 0.72),
+    width: item.width,
+    height: item.height,
+  }));
+}
+
+export async function thumbsFromFiles(files: File[], scale = 0.36): Promise<PdfThumb[]> {
+  const out: PdfThumb[] = [];
+  let page = 1;
+  for (const file of files) {
+    const isPdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
+    if (isPdf) {
+      const pages = await thumbsFromPdf(file, scale);
+      for (const thumb of pages) {
+        out.push({ ...thumb, page });
+        page += 1;
+      }
+    } else {
+      const bitmap = await fileToBitmap(file);
+      const canvas = drawExact(bitmap, bitmap.width, bitmap.height, "#ffffff");
+      bitmap.close();
+      out.push({
+        page,
+        url: canvas.toDataURL("image/jpeg", 0.72),
+        width: canvas.width,
+        height: canvas.height,
+      });
+      page += 1;
+    }
+  }
+  return out;
+}
+
 export async function filesToPageCanvases(files: File[]): Promise<PageCanvas[]> {
   const pages: PageCanvas[] = [];
   for (const file of files) {

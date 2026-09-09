@@ -87,6 +87,13 @@ export const COUNTRIES: CountryHub[] = [
     "Personalausweis and passport photos at 35×45 mm with a light-grey biometric background.",
     ["compress-pdf-to-2mb"],
   ),
+  hub(
+    "schengen",
+    "Schengen",
+    EU,
+    "One 35×45 mm visa photo for Schengen posts. National ID crops that differ (Spain DNI 26×32, Finland 36×47) stay on those country hubs.",
+    ["schengen-visa-photo", "compress-pdf-to-2mb"],
+  ),
   hub("greece", "Greece", EU, "Tautotita, passport, and driving-licence photos at 35×45 mm."),
   hub("hungary", "Hungary", EU, "Személyi igazolvány and jogosítvány photos at 35×45 mm."),
   hub("iceland", "Iceland", EU, "Passport photos at 35×45 mm with a light-grey background."),
